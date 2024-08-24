@@ -1,0 +1,17 @@
+{
+    "name": "@tmp/source",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {},
+    "private": true,
+    "devDependencies": {
+        "@angular-devkit/core": "~18.0.0",
+        "@nx-go/nx-go": "3.2.0",
+        "@nx/angular": "19.2.2",
+        "@nx/js": "19.6.2",
+        "@nx/workspace": "19.6.2",
+        "nx": "19.2.2",
+        "prettier": "^3.3.3"
+    },
+    "nx": {}
+}
