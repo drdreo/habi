@@ -34,6 +34,10 @@ jobs:
                   node-version: 22
                   cache: "pnpm"
 
+            - uses: actions/setup-go@v5
+              with:
+                go-version: '^1.22.0'
+
             - name: "pnpm: install"
               run: pnpm install
 
