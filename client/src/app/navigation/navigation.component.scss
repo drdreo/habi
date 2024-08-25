@@ -1,17 +1,79 @@
+@use "@angular/material" as mat;
+@use "../../themes/m3-theme";
+
+$sidebar-width: 80px;
+$nav-button-color: mat.get-theme-color(m3-theme.$light-theme, "on-surface");
+$nav-button-background-active: mat.get-theme-color(m3-theme.$light-theme, 'secondary-container');
+$nav-button-label-font: mat.get-theme-typography(m3-theme.$light-theme, label-medium, "font");
+$nav-button-label-active-font-weight: bold;
+
 .sidenav-container {
-  height: 100%;
+    height: 100%;
 }
 
 .sidenav {
-  width: 200px;
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: $sidebar-width;
 }
 
-.sidenav .mat-toolbar {
-  background: inherit;
+.fab-button {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 40px;
+
+    button {
+        @include mat.fab-color(m3-theme.$light-theme, $color-variant: tertiary);
+    }
 }
 
-.mat-toolbar.mat-primary {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+.nav-buttons {
+
+    .nav-button {
+        align-items: center;
+        color: $nav-button-color;
+        display: flex;
+        flex-direction: column;
+
+        margin-bottom: 10px;
+
+        button {
+            color: inherit;
+
+            &[mat-button] {
+                mat-icon {
+                    margin: 0;
+                }
+            }
+        }
+
+        .label {
+            font: $nav-button-label-font;
+            margin-top: 4px;
+        }
+
+        &.active {
+            button {
+                background-color: $nav-button-background-active;
+            }
+
+            .label {
+                font-weight: $nav-button-label-active-font-weight;
+            }
+        }
+    }
 }
+
+//.sidenav .mat-toolbar {
+//  background: inherit;
+//}
+//
+//.mat-toolbar.mat-primary {
+//  position: sticky;
+//  top: 0;
+//  z-index: 1;
+//}
