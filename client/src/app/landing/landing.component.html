@@ -1,0 +1,6 @@
+<p>landing works!</p>
+
+@let isAuthenticated = auth.isAuthenticated$ | async;
+@if (!isAuthenticated) {
+    <app-login></app-login>
+}
