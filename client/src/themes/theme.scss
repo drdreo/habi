@@ -3,7 +3,7 @@
 // https://github.com/angular/components/blob/main/src/material/schematics/ng-generate/m3-theme/README.md
 
 @use "sass:map";
-@use "@angular/material" as mat;
+@use "../../../node_modules/@angular/material/index" as mat;
 
 // Note: Color palettes are generated from primary: #009688, secondary: #FFC107, neutral: #404040
 $_palettes: (
@@ -144,8 +144,8 @@ $light-theme: mat.define-theme(
             tertiary: $_tertiary
         ),
         typography: (
-            brand-family: "Comic Sans",
-            bold-weight: 900
+                brand-family: "Abel",
+                bold-weight: 400
         ),
         density: (
             scale: -1 // The level of compactness of the components in your app, from 0 (most space) to -5 (most compact).

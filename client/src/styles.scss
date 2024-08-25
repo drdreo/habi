@@ -1,17 +1,42 @@
 /* You can add global styles to this file, and also import other style files */
-@use '@angular/material' as mat;
-//@use "./m3-theme";
-@import "@angular/material/prebuilt-themes/azure-blue.css";
 
-//@include mat.core();
-//
-//html {
-//    // Apply the light theme by default
-//    @include mat.core-theme(m3-theme.$light-theme);
-//    @include mat.button-theme(m3-theme.$light-theme);
-//
-//    // When using system variables, remember to provide values for them
-//    // or uncomment the lines below to generate them from the theme.
-//    // @include mat.system-level-colors(m3-theme.$light-theme);
-//    // @include mat.system-level-typography(m3-theme.$light-theme);
-//}
+// MATERIAL
+@use '@angular/material' as mat;
+@use "themes/m3-theme";
+
+@include mat.core();
+
+
+// FONTS
+@import url('https://fonts.googleapis.com/css2?family=Abel&display=swap');
+// ICONS
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+html {
+    // Apply the light theme by default
+    // @include mat.all-component-themes(theme.$light-theme); // remove since this imports all styles
+    // Optimized theme imports
+    @include mat.core-theme(m3-theme.$light-theme);
+    @include mat.sidenav-theme(m3-theme.$light-theme);
+    @include mat.toolbar-theme(m3-theme.$light-theme);
+    @include mat.button-theme(m3-theme.$light-theme);
+    @include mat.icon-theme(m3-theme.$light-theme);
+    @include mat.icon-button-theme(m3-theme.$light-theme);
+    @include mat.fab-theme(m3-theme.$light-theme);
+    @include mat.list-theme(m3-theme.$light-theme);
+
+    // When using system variables, remember to provide values for them
+    // or uncomment the lines below to generate them from the theme.
+    // @include mat.system-level-colors(theme.$light-theme);
+    // @include mat.system-level-typography(theme.$light-theme);
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    margin: 0;
+}
