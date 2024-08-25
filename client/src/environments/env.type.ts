@@ -1,6 +1,7 @@
 type Auth0Config = {
     domain: string;
     clientId: string;
+    audience: string;
 };
 
 type Origins = {

@@ -4,7 +4,8 @@ export const environment: AppEnvironment = {
     production: true,
     auth0: {
         domain: "",
-        clientId: ""
+        clientId: "",
+        audience: ""
     },
     origins: {
         api: ""

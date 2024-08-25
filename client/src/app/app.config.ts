@@ -1,8 +1,8 @@
-import { HTTP_INTERCEPTORS, provideHttpClient } from "@angular/common/http";
+import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from "@angular/core";
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { provideRouter } from "@angular/router";
-import { AuthHttpInterceptor, provideAuth0 } from "@auth0/auth0-angular";
+import { authHttpInterceptorFn, provideAuth0 } from "@auth0/auth0-angular";
 
 import { environment } from "../environments/environment";
 import { appRoutes } from "./app.routes";
@@ -11,18 +11,27 @@ export const appConfig: ApplicationConfig = {
     providers: [
         provideExperimentalZonelessChangeDetection(),
         provideRouter(appRoutes),
-        provideHttpClient(),
+        provideHttpClient(withInterceptors([authHttpInterceptorFn])),
         provideAuth0({
             domain: environment.auth0.domain,
             clientId: environment.auth0.clientId,
             authorizationParams: {
-                redirect_uri: window.location.origin
+                redirect_uri: window.location.origin,
+                audience: environment.auth0.audience
             },
             httpInterceptor: {
-                allowedList: [`${environment.origins.api}/api/*`]
+                allowedList: [
+                    {
+                        uri: `${environment.origins.api}/*`
+                        // tokenOptions: {
+                        //     authorizationParams: {
+                        //         audience: environment.auth0.audience
+                        //     }
+                        // }
+                    }
+                ]
             }
         }),
-        provideAnimations(),
-        { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true }
+        provideAnimations()
     ]
 };

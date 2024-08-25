@@ -1,8 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+    "fmt"
+    "github.com/joho/godotenv"
+    "github.com/rs/cors"
+    "log"
+    "net/http"
+
+    "api/authenticator"
 )
 
 const PORT = ":3333"
@@ -11,40 +16,39 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(":)"))
 }
 
-func handleGetPosts(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	fmt.Fprintf(w, "Retrieving post with ID: %s", id)
-}
-
-// in the future use proper CORS https://github.com/rs/cors
-func EnableCors(next http.HandlerFunc) http.HandlerFunc {
-  return func(w http.ResponseWriter, r *http.Request) {
-    w.Header().Add("Access-Control-Allow-Origin", "*")
-    w.Header().Add("Access-Control-Allow-Credentials", "true")
-    w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-    w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-
-    if r.Method == "OPTIONS" {
-        http.Error(w, "No Content", http.StatusNoContent)
-        return
-    }
-
-    next(w, r)
-  }
+func handleGetHabits() http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        log.Printf("Handling habits")
+        id := r.PathValue("id")
+        fmt.Fprintf(w, "Retrieving post with ID: %s", id)
+    })
 }
 
 func main() {
-	mux := http.NewServeMux()
+    err := godotenv.Load()
+    if err != nil {
+      log.Fatal("Error loading .env file")
+    }
 
-	mux.HandleFunc("GET /", EnableCors(handleRoot))
-	mux.HandleFunc("GET /posts/{id}", EnableCors(handleGetPosts))
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowCredentials: true,
+        AllowedHeaders:   []string{"Authorization"},
+	})
 
-
-	fmt.Printf("starting API at http://localhost%s\n", PORT)
-
-
-	err := http.ListenAndServe(PORT, mux)
+	auth, err := authenticator.New()
 	if err != nil {
-		fmt.Printf("failed to start API: %s", err)
+		log.Fatalf("Failed to initialize the authenticator: %v", err)
+	}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /", handleRoot)
+    mux.Handle("GET /api/habits/{id}", auth.AuthMiddleware(handleGetHabits()))
+
+    log.Printf("starting API at http://localhost%s\n", PORT)
+
+	err = http.ListenAndServe(PORT, c.Handler(mux))
+	if err != nil {
+        log.Printf("failed to start API: %s", err)
 	}
 }
