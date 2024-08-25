@@ -28,6 +28,13 @@
                 </button>
                 <span class="label">Settings</span>
             </div>
+
+            <div (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })" class="nav-button">
+                <button mat-button>
+                    <mat-icon>logout</mat-icon>
+                </button>
+                <span class="label">Logout</span>
+            </div>
         </div>
     </mat-sidenav>
 

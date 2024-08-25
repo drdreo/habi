@@ -5,5 +5,8 @@ export const environment: AppEnvironment = {
     auth0: {
         domain: "drdreo-dev.eu.auth0.com",
         clientId: "9z0aHELMGaMt1A1M470K9chvyvMxFq5Q"
+    },
+    origins: {
+        api: "http://localhost:3333"
     }
 };

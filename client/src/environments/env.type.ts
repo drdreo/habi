@@ -3,7 +3,12 @@ type Auth0Config = {
     clientId: string;
 };
 
+type Origins = {
+    api: string;
+};
+
 export type AppEnvironment = {
     production: boolean;
     auth0: Auth0Config;
+    origins: Origins;
 };

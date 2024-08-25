@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, DOCUMENT } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { AuthService } from "@auth0/auth0-angular";
 import { LoginComponent } from "../login/login.component";
@@ -12,5 +12,6 @@ import { LoginComponent } from "../login/login.component";
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LandingComponent {
-    auth = inject(AuthService);
+    protected readonly auth = inject(AuthService);
+    protected readonly document = inject(DOCUMENT);
 }

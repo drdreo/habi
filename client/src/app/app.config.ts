@@ -17,6 +17,9 @@ export const appConfig: ApplicationConfig = {
             clientId: environment.auth0.clientId,
             authorizationParams: {
                 redirect_uri: window.location.origin
+            },
+            httpInterceptor: {
+                allowedList: [`${environment.origins.api}/api/*`]
             }
         }),
         provideAnimations(),

@@ -39,10 +39,11 @@ $nav-button-label-active-font-weight: bold;
         display: flex;
         flex-direction: column;
 
-        margin-bottom: 10px;
+        margin-bottom: 14px;
 
         button {
             color: inherit;
+            height: 32px;
 
             &[mat-button] {
                 mat-icon {
@@ -53,7 +54,7 @@ $nav-button-label-active-font-weight: bold;
 
         .label {
             font: $nav-button-label-font;
-            margin-top: 4px;
+            margin: 4px 0;
         }
 
         &.active {
@@ -61,6 +62,12 @@ $nav-button-label-active-font-weight: bold;
                 background-color: $nav-button-background-active;
             }
 
+            .label {
+                font-weight: $nav-button-label-active-font-weight;
+            }
+        }
+
+        &:hover {
             .label {
                 font-weight: $nav-button-label-active-font-weight;
             }

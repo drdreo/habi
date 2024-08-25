@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 
 @Component({
@@ -17,7 +17,7 @@ export class HomeComponent {
     constructor() {
         setTimeout(async () => {
             const res = await firstValueFrom(
-                this.http.get("http://localhost:3333/posts/123", { responseType: "text" })
+                this.http.get("http://localhost:3333/api/posts/123", { responseType: "text" })
             );
             console.log(res);
         }, 2000);

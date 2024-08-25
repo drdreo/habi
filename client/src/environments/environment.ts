@@ -5,5 +5,8 @@ export const environment: AppEnvironment = {
     auth0: {
         domain: "",
         clientId: ""
+    },
+    origins: {
+        api: ""
     }
 };

@@ -3,4 +3,8 @@
 @let isAuthenticated = auth.isAuthenticated$ | async;
 @if (!isAuthenticated) {
     <app-login></app-login>
+} @else {
+    <button (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })">
+        Log out
+    </button>
 }
