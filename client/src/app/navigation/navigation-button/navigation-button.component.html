@@ -1,0 +1,15 @@
+@if (link()) {
+    <a class="nav-button" [routerLink]="link()" routerLinkActive="active">
+        <button mat-button>
+            <mat-icon>{{ icon() }}</mat-icon>
+        </button>
+        <span class="label">{{ label() }}</span>
+    </a>
+} @else {
+    <a class="nav-button">
+        <button mat-button>
+            <mat-icon>{{ icon() }}</mat-icon>
+        </button>
+        <span class="label">{{ label() }}</span>
+    </a>
+}

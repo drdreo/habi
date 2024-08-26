@@ -1,16 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 
 // MATERIAL
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 @use "themes/m3-theme";
 
 @include mat.core();
 
-
 // FONTS
-@import url('https://fonts.googleapis.com/css2?family=Abel&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Abel&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap");
+
 // ICONS
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
 html {
     // Apply the light theme by default
@@ -24,6 +25,18 @@ html {
     @include mat.icon-button-theme(m3-theme.$light-theme);
     @include mat.fab-theme(m3-theme.$light-theme);
     @include mat.list-theme(m3-theme.$light-theme);
+    
+    //@media (prefers-color-scheme: dark) {
+    //    // Use the `-color` mixins to only apply color styles without reapplying the same
+    //    @include mat.core-color(m3-theme.$dark-theme);
+    //    @include mat.sidenav-color(m3-theme.$dark-theme);
+    //    @include mat.toolbar-color(m3-theme.$dark-theme);
+    //    @include mat.button-color(m3-theme.$dark-theme);
+    //    @include mat.icon-color(m3-theme.$dark-theme);
+    //    @include mat.icon-button-color(m3-theme.$dark-theme);
+    //    @include mat.fab-color(m3-theme.$dark-theme);
+    //    @include mat.list-color(m3-theme.$dark-theme);
+    //}
 
     // When using system variables, remember to provide values for them
     // or uncomment the lines below to generate them from the theme.

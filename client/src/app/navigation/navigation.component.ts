@@ -6,9 +6,11 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
+import { RouterLink, RouterLinkActive } from "@angular/router";
 import { AuthService } from "@auth0/auth0-angular";
 import { Observable } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
+import { NavigationButtonComponent } from "./navigation-button/navigation-button.component";
 
 @Component({
     selector: "app-navigation",
@@ -16,7 +18,17 @@ import { map, shareReplay } from "rxjs/operators";
     styleUrl: "./navigation.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone: true,
-    imports: [MatToolbarModule, MatButtonModule, MatSidenavModule, MatListModule, MatIconModule, AsyncPipe]
+    imports: [
+        MatToolbarModule,
+        MatButtonModule,
+        MatSidenavModule,
+        MatListModule,
+        MatIconModule,
+        AsyncPipe,
+        RouterLink,
+        RouterLinkActive,
+        NavigationButtonComponent
+    ]
 })
 export class NavigationComponent {
     protected readonly auth = inject(AuthService);
@@ -27,4 +39,8 @@ export class NavigationComponent {
         map((result) => result.matches),
         shareReplay()
     );
+
+    constructor() {
+        console.log("NavigationComponent created");
+    }
 }

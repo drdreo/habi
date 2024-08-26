@@ -7,7 +7,7 @@
         class="sidenav"
         fixedInViewport
     >
-        <mat-toolbar>Menu</mat-toolbar>
+        <mat-toolbar class="logo">Logo</mat-toolbar>
 
         <div class="fab-button">
             <button aria-label="Create new habit" mat-fab type="button">
@@ -16,25 +16,13 @@
         </div>
 
         <div class="nav-buttons">
-            <div class="nav-button">
-                <button mat-button>
-                    <mat-icon>home</mat-icon>
-                </button>
-                <span class="label">Home</span>
-            </div>
-            <div class="nav-button active">
-                <button mat-button>
-                    <mat-icon>settings</mat-icon>
-                </button>
-                <span class="label">Settings</span>
-            </div>
-
-            <div (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })" class="nav-button">
-                <button mat-button>
-                    <mat-icon>logout</mat-icon>
-                </button>
-                <span class="label">Logout</span>
-            </div>
+            <navigation-button icon="home" label="Home" link="/app/home"/>
+            <navigation-button icon="settings" label="Settings" link="/app/settings"/>
+            <navigation-button
+                    (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })"
+                    icon="logout"
+                    label="Logout"
+            />
         </div>
     </mat-sidenav>
 
