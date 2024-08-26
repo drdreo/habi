@@ -1,12 +1,25 @@
 import { CommonModule } from "@angular/common";
 import { HttpClient } from "@angular/common/http";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { MatIconButton } from "@angular/material/button";
+import { MatDivider } from "@angular/material/divider";
+import { MatIcon } from "@angular/material/icon";
+import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
 import { firstValueFrom } from "rxjs";
+import { HabitEntryComponent } from "../habits/habit-entry.component";
 
 @Component({
     selector: "app-home",
     standalone: true,
-    imports: [CommonModule],
+    imports: [
+        CommonModule,
+        HabitEntryComponent,
+        MatDivider,
+        MatListModule,
+        MatIcon,
+        MatListSubheaderCssMatStyler,
+        MatIconButton
+    ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush

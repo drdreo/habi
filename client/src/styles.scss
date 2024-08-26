@@ -15,7 +15,7 @@
 
 html {
     // Apply the light theme by default
-    // @include mat.all-component-themes(theme.$light-theme); // remove since this imports all styles
+    // @include mat.all-component-themes(m3-theme.$light-theme); // remove since this imports all styles
     // Optimized theme imports
     @include mat.core-theme(m3-theme.$light-theme);
     @include mat.sidenav-theme(m3-theme.$light-theme);
@@ -25,6 +25,8 @@ html {
     @include mat.icon-button-theme(m3-theme.$light-theme);
     @include mat.fab-theme(m3-theme.$light-theme);
     @include mat.list-theme(m3-theme.$light-theme);
+    @include mat.grid-list-theme(m3-theme.$light-theme);
+    @include mat.divider-theme(m3-theme.$light-theme);
     
     //@media (prefers-color-scheme: dark) {
     //    // Use the `-color` mixins to only apply color styles without reapplying the same
@@ -50,6 +52,14 @@ body {
 }
 
 body {
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: Roboto Flex, "Helvetica Neue", sans-serif;
     margin: 0;
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+    width: 100%;
 }

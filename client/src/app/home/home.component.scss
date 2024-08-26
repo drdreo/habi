@@ -1,0 +1,10 @@
+@use "@angular/material" as mat;
+
+mat-divider {
+    margin-left: 16px;
+    @include mat.divider-overrides(
+        $tokens: (
+            color: grey
+        )
+    );
+}

@@ -1,1 +1,30 @@
-<p>home works!</p>
+<div class="content-container">
+    <!--    <habit-entry></habit-entry>-->
+    <!--    <mat-divider></mat-divider>-->
+    <!--    <habit-entry></habit-entry>-->
+
+    <h3 mat-subheader>Your Habits</h3>
+
+    <mat-list>
+        <habit-entry></habit-entry>
+        <mat-divider></mat-divider>
+        <habit-entry></habit-entry>
+        <mat-divider></mat-divider>
+
+        <mat-list-item [lines]="3">
+            <div class="title" matListItemTitle>Title</div>
+            <div class="description" matListItemLine>
+                asdasdas
+            </div>
+            <div matListItemLine>
+                12.12.22023
+                32.13.223
+            </div>
+            <span matListItemMeta>
+                <button mat-icon-button>
+                    <mat-icon>info</mat-icon>
+                </button>
+            </span>
+        </mat-list-item>
+    </mat-list>
+</div>

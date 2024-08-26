@@ -21,16 +21,16 @@ a {
     color: $nav-button-color;
     display: flex;
     flex-direction: column;
-    
+
     margin-bottom: 14px;
     
     transition: font-variation-settings 3s ease; /* Smooth transition */
     
     button {
-        color: inherit;
-        height: 32px;
-        
         &[mat-button] {
+            color: inherit;
+            height: 32px;
+
             mat-icon {
                 margin: 0;
             }
