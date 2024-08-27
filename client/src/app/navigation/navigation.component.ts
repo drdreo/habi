@@ -51,7 +51,7 @@ export class NavigationComponent {
 
     openCreateHabitDialog() {
         let dialogRef = this.dialog.open(CreateHabitComponent, {
-            height: "400px",
+            height: "800px",
             width: "600px"
         });
     }

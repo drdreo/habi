@@ -35,6 +35,7 @@ html {
     @include mat.toolbar-theme($theme);
     @include mat.tooltip-theme($theme);
     @include mat.button-theme($theme);
+    @include mat.button-toggle-theme($theme);
     @include mat.fab-theme($theme);
     @include mat.icon-theme($theme);
     @include mat.icon-button-theme($theme);
@@ -47,6 +48,8 @@ html {
     @include mat.menu-theme($theme);
     @include mat.progress-bar-theme($theme);
     @include mat.progress-spinner-theme($theme);
+    @include mat.form-field-theme($theme);
+    @include mat.datepicker-theme($theme);
     
     // maybe override menu colors
     //$color: mat.get-theme-color(m3-theme.$light-theme, surface);
