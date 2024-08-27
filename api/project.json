@@ -18,7 +18,7 @@
 //            }
             "executor": "nx:run-commands",
             "options": {
-                "command": "go run {projectRoot}/main.go"
+                "command": "go run {projectRoot}/cmd/api/main.go"
             }
         },
         "test": {
