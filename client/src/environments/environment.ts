@@ -8,6 +8,6 @@ export const environment: AppEnvironment = {
         audience: "habit-api-dev.drdreo.com"
     },
     origins: {
-        api: ""
+        api: "https://habit-api.drdreo.com"
     }
 };
