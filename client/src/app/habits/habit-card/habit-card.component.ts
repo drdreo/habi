@@ -1,6 +1,6 @@
 import { animate, keyframes, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, computed, input, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, input, signal, WritableSignal } from "@angular/core";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatChipsModule } from "@angular/material/chips";
@@ -31,6 +31,7 @@ import { MatTooltip } from "@angular/material/tooltip";
     animations: [
         trigger("fadeIn", [
             transition(":enter", [style({ opacity: 0 }), animate("300ms ease-in", style({ opacity: 1 }))])
+            // transition(":leave", [animate("300ms ease-out", style({ opacity: 0 }))])
         ]),
         trigger("checkmarkAnimation", [
             transition(":enter", [
@@ -50,33 +51,22 @@ export class HabitCardComponent {
     title = input.required();
     id = 1;
 
-    isLoading = signal(false);
-    isSuccess = signal(false);
+    completeState: WritableSignal<"start" | "loading" | "success" | "reset"> = signal("start");
+
     showCompleteButton = computed(() => {
-        return !this.isLoading() && !this.isSuccess();
+        return this.completeState() === "start" || this.completeState() === "reset";
     });
 
     completeHabit() {
-        this.isLoading.set(true);
-        this.isSuccess.set(false);
+        console.count("completeHabit");
+        this.completeState.set("loading");
 
-        // Simulate an async task with setTimeout (e.g., API call)
         setTimeout(() => {
-            this.isLoading.set(false);
-            this.isSuccess.set(true);
+            this.completeState.set("success");
 
-            // After showing the checkmark, revert to the original state
             setTimeout(() => {
-                this.isSuccess.set(false);
-            }, 1000);
+                this.completeState.set("reset");
+            }, 1350);
         }, 2000);
-    }
-
-    onCheckmarkAnimationDone() {
-        if (this.isSuccess()) {
-            setTimeout(() => {
-                this.isSuccess.set(false);
-            }, 1000); // Delay before reverting to the original state (1 second)
-        }
     }
 }

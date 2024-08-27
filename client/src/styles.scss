@@ -21,39 +21,39 @@
     "opsz" 20;
 }
 
-html {
-    // Apply the light theme by default
-    // @include mat.all-component-themes(m3-theme.$light-theme); // remove since this imports all styles
-    // Optimized theme imports
-    @include mat.core-theme(m3-theme.$light-theme);
-    @include mat.sidenav-theme(m3-theme.$light-theme);
-    @include mat.toolbar-theme(m3-theme.$light-theme);
-    @include mat.tooltip-theme(m3-theme.$light-theme);
-    @include mat.button-theme(m3-theme.$light-theme);
-    @include mat.fab-theme(m3-theme.$light-theme);
-    @include mat.icon-theme(m3-theme.$light-theme);
-    @include mat.icon-button-theme(m3-theme.$light-theme);
-    @include mat.list-theme(m3-theme.$light-theme);
-    @include mat.grid-list-theme(m3-theme.$light-theme);
-    @include mat.divider-theme(m3-theme.$light-theme);
-    @include mat.dialog-theme(m3-theme.$light-theme);
-    @include mat.chips-theme(m3-theme.$light-theme);
-    @include mat.card-theme(m3-theme.$light-theme);
-    @include mat.menu-theme(m3-theme.$light-theme);
-    @include mat.progress-bar-theme(m3-theme.$light-theme);
-    @include mat.progress-spinner-theme(m3-theme.$light-theme);
 
+html {
+    $theme: m3-theme.$light-theme;
     //@media (prefers-color-scheme: dark) {
-    //    // Use the `-color` mixins to only apply color styles without reapplying the same
-    //    @include mat.core-color(m3-theme.$dark-theme);
-    //    @include mat.sidenav-color(m3-theme.$dark-theme);
-    //    @include mat.toolbar-color(m3-theme.$dark-theme);
-    //    @include mat.button-color(m3-theme.$dark-theme);
-    //    @include mat.icon-color(m3-theme.$dark-theme);
-    //    @include mat.icon-button-color(m3-theme.$dark-theme);
-    //    @include mat.fab-color(m3-theme.$dark-theme);
-    //    @include mat.list-color(m3-theme.$dark-theme);
+    //    $theme: m3-theme.$dark-theme;
     //}
+    // Apply the light theme by default
+    // @include mat.all-component-themes($theme); // remove since this imports all styles
+    // Optimized theme imports
+    @include mat.core-theme($theme);
+    @include mat.sidenav-theme($theme);
+    @include mat.toolbar-theme($theme);
+    @include mat.tooltip-theme($theme);
+    @include mat.button-theme($theme);
+    @include mat.fab-theme($theme);
+    @include mat.icon-theme($theme);
+    @include mat.icon-button-theme($theme);
+    @include mat.list-theme($theme);
+    @include mat.grid-list-theme($theme);
+    @include mat.divider-theme($theme);
+    @include mat.dialog-theme($theme);
+    @include mat.chips-theme($theme);
+    @include mat.card-theme($theme);
+    @include mat.menu-theme($theme);
+    @include mat.progress-bar-theme($theme);
+    @include mat.progress-spinner-theme($theme);
+    
+    // maybe override menu colors
+    //$color: mat.get-theme-color(m3-theme.$light-theme, surface);
+    //@include mat.menu-overrides($tokens: (
+    //    container-color: $color,
+    //
+    //));
 
     // When using system variables, remember to provide values for them
     // or uncomment the lines below to generate them from the theme.

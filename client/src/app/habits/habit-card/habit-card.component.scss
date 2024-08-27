@@ -1,5 +1,5 @@
-//@use "@angular/material" as mat;
-//@use "../../../themes/m3-theme";
+@use "@angular/material" as mat;
+@use "../../../themes/m3-theme";
 
 :host {
     //min-height: 100%;
@@ -10,5 +10,9 @@
     
     &__footer {
         padding: 16px;
+    }
+    
+    .complete-checkmark {
+        @include mat.icon-color(m3-theme.$light-theme, $color-variant: primary);
     }
 }

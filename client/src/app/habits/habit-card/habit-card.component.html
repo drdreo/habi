@@ -28,11 +28,11 @@
     <mat-card-actions align="end">
         <!--        <button mat-button (click)="completeHabit()">Complete</button>-->
 
-        <button (click)="completeHabit()" [disabled]="isLoading()" mat-button>
-            @if (isLoading()) {
-                <mat-spinner diameter="20" @fadeIn></mat-spinner>
-            } @else if (isSuccess()) {
-                <mat-icon @checkmarkAnimation (@checkmarkAnimation.done)="onCheckmarkAnimationDone()">check</mat-icon>
+        <button (click)="completeHabit()" [disabled]="!showCompleteButton()" mat-button>
+            @if (completeState() == "loading") {
+                <mat-spinner diameter="20"></mat-spinner>
+            } @else if (completeState() == "success") {
+                <mat-icon class="complete-checkmark" @checkmarkAnimation>check</mat-icon>
             }
             @if (showCompleteButton()) {
                 <span @fadeIn>Complete</span>
