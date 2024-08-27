@@ -38,6 +38,7 @@ jobs:
             - uses: actions/setup-go@v5
               with:
                 go-version: '^1.22.0'
+                cache-dependency-path: api/go.sum
 
             - name: "pnpm: install"
               run: pnpm install
