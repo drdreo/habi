@@ -5,7 +5,7 @@ export const environment: AppEnvironment = {
     auth0: {
         domain: "drdreo.eu.auth0.com",
         clientId: "sBu4MMLZKo2G4XbJV3XHnLvkMAyZyGF8",
-        audience: "habit-api-dev.drdreo.com"
+        audience: "habit-api.drdreo.com"
     },
     origins: {
         api: "https://habit-api.drdreo.com"
