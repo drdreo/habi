@@ -9,7 +9,7 @@
     >
         <mat-toolbar class="logo">Logo</mat-toolbar>
 
-        <div class="fab-button">
+        <div class="fab-button" matTooltip="Create new habit">
             <button aria-label="Create new habit" mat-fab type="button">
                 <mat-icon aria-label="new habit button icon">add</mat-icon>
             </button>
@@ -17,6 +17,8 @@
 
         <div class="nav-buttons">
             <navigation-button icon="home" label="Home" link="/app/home"/>
+            <navigation-button icon="rule" label="Missed" link="/app/settings"/>
+            <navigation-button icon="calendar_today" label="Calendar" link="/app/settings"/>
             <navigation-button icon="settings" label="Settings" link="/app/settings"/>
             <navigation-button
                     (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })"

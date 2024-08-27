@@ -20,10 +20,11 @@ html {
     @include mat.core-theme(m3-theme.$light-theme);
     @include mat.sidenav-theme(m3-theme.$light-theme);
     @include mat.toolbar-theme(m3-theme.$light-theme);
+    @include mat.tooltip-theme(m3-theme.$light-theme);
     @include mat.button-theme(m3-theme.$light-theme);
+    @include mat.fab-theme(m3-theme.$light-theme);
     @include mat.icon-theme(m3-theme.$light-theme);
     @include mat.icon-button-theme(m3-theme.$light-theme);
-    @include mat.fab-theme(m3-theme.$light-theme);
     @include mat.list-theme(m3-theme.$light-theme);
     @include mat.grid-list-theme(m3-theme.$light-theme);
     @include mat.divider-theme(m3-theme.$light-theme);

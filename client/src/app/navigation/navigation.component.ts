@@ -6,6 +6,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
 import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatTooltipModule } from "@angular/material/tooltip";
 import { RouterLink, RouterLinkActive } from "@angular/router";
 import { AuthService } from "@auth0/auth0-angular";
 import { Observable } from "rxjs";
@@ -27,7 +28,8 @@ import { NavigationButtonComponent } from "./navigation-button/navigation-button
         AsyncPipe,
         RouterLink,
         RouterLinkActive,
-        NavigationButtonComponent
+        NavigationButtonComponent,
+        MatTooltipModule
     ]
 })
 export class NavigationComponent {
