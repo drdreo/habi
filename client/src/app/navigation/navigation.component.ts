@@ -2,6 +2,7 @@ import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { AsyncPipe, DOCUMENT } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
+import { MatDialog } from "@angular/material/dialog";
 import { MatIconModule } from "@angular/material/icon";
 import { MatListModule } from "@angular/material/list";
 import { MatSidenavModule } from "@angular/material/sidenav";
@@ -11,6 +12,7 @@ import { RouterLink, RouterLinkActive } from "@angular/router";
 import { AuthService } from "@auth0/auth0-angular";
 import { Observable } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
+import { CreateHabitComponent } from "../habits/create-habit/create-habit.component";
 import { NavigationButtonComponent } from "./navigation-button/navigation-button.component";
 
 @Component({
@@ -37,6 +39,7 @@ export class NavigationComponent {
     protected readonly document = inject(DOCUMENT);
     private breakpointObserver = inject(BreakpointObserver);
 
+    private readonly dialog = inject(MatDialog);
     isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
         map((result) => result.matches),
         shareReplay()
@@ -44,5 +47,12 @@ export class NavigationComponent {
 
     constructor() {
         console.log("NavigationComponent created");
+    }
+
+    openCreateHabitDialog() {
+        let dialogRef = this.dialog.open(CreateHabitComponent, {
+            height: "400px",
+            width: "600px"
+        });
     }
 }

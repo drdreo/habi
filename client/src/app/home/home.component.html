@@ -5,6 +5,19 @@
 
     <h3 mat-subheader>Your Habits</h3>
 
+    <mat-grid-list cols="5" gutterSize="16" style="margin:16px;">
+        <mat-grid-tile>
+            <habit-card title="Exercise for 30 Minutes"></habit-card>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <habit-card title="Drink 8 Glasses of Water"></habit-card>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <habit-card title="Meditate"></habit-card>
+        </mat-grid-tile>
+        <!--            <mat-grid-tile>4</mat-grid-tile>-->
+    </mat-grid-list>
+
     <mat-list>
         <habit-entry></habit-entry>
         <mat-divider></mat-divider>
@@ -13,13 +26,8 @@
 
         <mat-list-item [lines]="3">
             <div class="title" matListItemTitle>Title</div>
-            <div class="description" matListItemLine>
-                asdasdas
-            </div>
-            <div matListItemLine>
-                12.12.22023
-                32.13.223
-            </div>
+            <div class="description" matListItemLine>asdasdas</div>
+            <div matListItemLine>12.12.22023 32.13.223</div>
             <span matListItemMeta>
                 <button mat-icon-button>
                     <mat-icon>info</mat-icon>

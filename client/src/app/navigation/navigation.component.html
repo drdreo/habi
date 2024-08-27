@@ -9,7 +9,7 @@
     >
         <mat-toolbar class="logo">Logo</mat-toolbar>
 
-        <div class="fab-button" matTooltip="Create new habit">
+        <div (click)="openCreateHabitDialog()" class="fab-button" matTooltip="Create new habit">
             <button aria-label="Create new habit" mat-fab type="button">
                 <mat-icon aria-label="new habit button icon">add</mat-icon>
             </button>

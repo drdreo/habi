@@ -1,0 +1,14 @@
+//@use "@angular/material" as mat;
+//@use "../../../themes/m3-theme";
+
+:host {
+    //min-height: 100%;
+}
+
+.habit-card {
+    overflow: hidden;
+    
+    &__footer {
+        padding: 16px;
+    }
+}

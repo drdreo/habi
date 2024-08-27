@@ -3,10 +3,12 @@ import { HttpClient } from "@angular/common/http";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { MatIconButton } from "@angular/material/button";
 import { MatDivider } from "@angular/material/divider";
+import { MatGridListModule } from "@angular/material/grid-list";
 import { MatIcon } from "@angular/material/icon";
 import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
 import { firstValueFrom } from "rxjs";
-import { HabitEntryComponent } from "../habits/habit-entry.component";
+import { HabitCardComponent } from "../habits/habit-card/habit-card.component";
+import { HabitEntryComponent } from "../habits/habit-entry/habit-entry.component";
 
 @Component({
     selector: "app-home",
@@ -18,7 +20,9 @@ import { HabitEntryComponent } from "../habits/habit-entry.component";
         MatListModule,
         MatIcon,
         MatListSubheaderCssMatStyler,
-        MatIconButton
+        MatIconButton,
+        HabitCardComponent,
+        MatGridListModule
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",

@@ -11,7 +11,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap");
 
 // ICONS
-@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Symbols+Outlined|Material+Symbols+Rounded|");
+.material-icons {
+    font-family: "Material Symbols Outlined", sans-serif;
+    
+    font-variation-settings: "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 20;
+}
 
 html {
     // Apply the light theme by default
@@ -28,7 +36,13 @@ html {
     @include mat.list-theme(m3-theme.$light-theme);
     @include mat.grid-list-theme(m3-theme.$light-theme);
     @include mat.divider-theme(m3-theme.$light-theme);
-    
+    @include mat.dialog-theme(m3-theme.$light-theme);
+    @include mat.chips-theme(m3-theme.$light-theme);
+    @include mat.card-theme(m3-theme.$light-theme);
+    @include mat.menu-theme(m3-theme.$light-theme);
+    @include mat.progress-bar-theme(m3-theme.$light-theme);
+    @include mat.progress-spinner-theme(m3-theme.$light-theme);
+
     //@media (prefers-color-scheme: dark) {
     //    // Use the `-color` mixins to only apply color styles without reapplying the same
     //    @include mat.core-color(m3-theme.$dark-theme);
@@ -53,7 +67,9 @@ body {
 }
 
 body {
-    font-family: Roboto Flex, "Helvetica Neue", sans-serif;
+    font-family: Roboto Flex,
+    "Helvetica Neue",
+    sans-serif;
     margin: 0;
 }
 

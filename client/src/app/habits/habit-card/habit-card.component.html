@@ -1,0 +1,50 @@
+<mat-card appearance="outlined" class="habit-card">
+    <mat-card-header>
+        <!--        <div mat-card-avatar class="example-header-image"></div>-->
+        <mat-card-title-group>
+            <mat-card-title>{{ title() }}</mat-card-title>
+
+            <mat-card-subtitle matTooltip="Current Streak 3 days">
+                <mat-icon size="8">mode_heat</mat-icon>
+                3 days
+            </mat-card-subtitle>
+        </mat-card-title-group>
+        <button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" mat-icon-button>
+            <mat-icon>more_vert</mat-icon>
+        </button>
+    </mat-card-header>
+
+    <!--    <mat-card-content>-->
+    <!--        <p>sarsarars asdas</p>-->
+    <!--    </mat-card-content>-->
+
+    <!--    <mat-card-footer class="habit-card__footer">-->
+    <!--        <mat-chip-set>-->
+    <!--            <mat-chip>Mark Completed</mat-chip>-->
+    <!--            <mat-chip>delete</mat-chip>-->
+    <!--        </mat-chip-set>-->
+    <!--    </mat-card-footer>-->
+
+    <mat-card-actions align="end">
+        <button mat-button>Complete</button>
+    </mat-card-actions>
+
+    <mat-card-footer>
+        <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+    </mat-card-footer>
+</mat-card>
+
+<mat-menu #menu="matMenu">
+    <button mat-menu-item>
+        <mat-icon>edit</mat-icon>
+        <span>Edit</span>
+    </button>
+    <button disabled mat-menu-item>
+        <mat-icon>voicemail</mat-icon>
+        <span>Skip</span>
+    </button>
+    <button disabled mat-menu-item>
+        <mat-icon>archive</mat-icon>
+        <span>Archive</span>
+    </button>
+</mat-menu>

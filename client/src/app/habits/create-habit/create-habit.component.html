@@ -1,0 +1,5 @@
+<mat-chip-listbox aria-label="Habit frequency">
+    @for (freq of habitFrequencies; track freq) {
+        <mat-chip-option selected>{{ freq }}</mat-chip-option>
+    }
+</mat-chip-listbox>
