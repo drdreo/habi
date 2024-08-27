@@ -38,19 +38,18 @@ export class NavigationComponent {
     protected readonly auth = inject(AuthService);
     protected readonly document = inject(DOCUMENT);
     private breakpointObserver = inject(BreakpointObserver);
-
-    private readonly dialog = inject(MatDialog);
     isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
         map((result) => result.matches),
         shareReplay()
     );
+    private readonly dialog = inject(MatDialog);
 
     constructor() {
         console.log("NavigationComponent created");
     }
 
     openCreateHabitDialog() {
-        let dialogRef = this.dialog.open(CreateHabitComponent, {
+        this.dialog.open(CreateHabitComponent, {
             height: "800px",
             width: "600px"
         });

@@ -29,9 +29,9 @@
         <!--        <button mat-button (click)="completeHabit()">Complete</button>-->
 
         <button (click)="completeHabit()" [disabled]="!showCompleteButton()" mat-button>
-            @if (completeState() == "loading") {
+            @if (completeState() === "loading") {
                 <mat-spinner diameter="20"></mat-spinner>
-            } @else if (completeState() == "success") {
+            } @else if (completeState() === "success") {
                 <mat-icon class="complete-checkmark" @checkmarkAnimation>check</mat-icon>
             }
             @if (showCompleteButton()) {

@@ -50,3 +50,20 @@ jobs:
             # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
           # --no-agents disables remote task execution
             - run: npx nx affected -t lint test build --no-agents
+
+            - name: Publish to Cloudflare Pages
+              uses: cloudflare/pages-action@v1
+              with:
+                apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+                projectName: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
+                directory: dist/client/browser
+                # Optional: Enable this if you want to have GitHub Deployments triggered
+                gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+                # Optional: Switch what branch you are publishing to.
+                # By default this will be the branch which triggered this workflow
+                branch: main
+                # Optional: Change the working directory
+                workingDirectory: my-site
+                # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
+                wranglerVersion: '3'
