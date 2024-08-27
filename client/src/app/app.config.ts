@@ -1,8 +1,9 @@
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
-import { ApplicationConfig, provideExperimentalZonelessChangeDetection } from "@angular/core";
+import { ApplicationConfig, isDevMode, provideExperimentalZonelessChangeDetection } from "@angular/core";
 import { MAT_TOOLTIP_DEFAULT_OPTIONS } from "@angular/material/tooltip";
 import { provideAnimations } from "@angular/platform-browser/animations";
 import { provideRouter } from "@angular/router";
+import { provideServiceWorker } from "@angular/service-worker";
 import { authHttpInterceptorFn, provideAuth0 } from "@auth0/auth0-angular";
 
 import { environment } from "../environments/environment";
@@ -34,6 +35,10 @@ export const appConfig: ApplicationConfig = {
             useValue: {
                 showDelay: 450
             }
-        }
+        },
+        provideServiceWorker("ngsw-worker.js", {
+            enabled: !isDevMode(),
+            registrationStrategy: "registerWhenStable:30000"
+        })
     ]
 };
