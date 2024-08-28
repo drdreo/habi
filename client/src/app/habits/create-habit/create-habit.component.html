@@ -19,7 +19,7 @@
                 <mat-button-toggle value="finite">Finite</mat-button-toggle>
             </mat-button-toggle-group>
 
-            <p class="form-hint">Frequency of the habit is: {{ habitForm.controls.frequency.value }}</p>
+            <p class="form-hint">Frequency of the habit</p>
         </div>
 
         <div class="habit-target-metric" formGroupName="targetMetric">
@@ -34,15 +34,15 @@
 
             <div class="habit-target-metric__value">
                 @if (habitForm.controls.targetMetric.controls.type.value === "date") {
-                    <mat-form-field>
+                    <mat-form-field appearance="outline">
                         <mat-label>Value</mat-label>
-                        <input matInput [matDatepicker]="picker" formControlName="value"/>
-                        <mat-hint>{{ habitForm.controls.targetMetric.controls.value.value }}</mat-hint>
+                        <input matInput [matDatepicker]="picker" [matDatepickerFilter]="dateFilter"
+                               formControlName="value"/>
                         <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </mat-form-field>
                 } @else {
-                    <mat-form-field appearance="outline" aria-label="Target Metric Value">
+                    <mat-form-field aria-label="Target Metric Value" appearance="outline">
                         <mat-label>Value</mat-label>
 
                         @if (habitForm.controls.targetMetric.controls.type.value === "duration") {
@@ -50,7 +50,6 @@
                         } @else {
                             <input matInput formControlName="value"/>
                         }
-                        <mat-hint>{{ habitForm.controls.targetMetric.controls.value.value }}</mat-hint>
                     </mat-form-field>
                 }
 
@@ -70,8 +69,7 @@
             <p class="form-hint">If a habit should be created to start or stop doing a thing</p>
         </div>
 
-        <button mat-flat-button type="submit">Create</button>
+        <button [disabled]="!habitForm.valid" mat-flat-button type="submit">Create</button>
     </form>
-    <p class="form-hint">Form Status: {{ habitForm.value |json }}</p>
-
+    <p class="form-hint">Form Status: {{ habitForm.value | json }}</p>
 </section>

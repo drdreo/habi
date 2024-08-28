@@ -11,6 +11,20 @@ import (
     "api/internal/authenticator"
 )
 
+type HabitTargetMetric struct {
+	 Type  string
+	 Value string
+}
+
+type Habit struct {
+    Name string
+    Description string
+    Frequency  string
+    Type  string
+    TargetMetric HabitTargetMetric
+}
+
+
 func (s *Server) RegisterRoutes() http.Handler {
     auth, err := authenticator.New()
     if err != nil {
@@ -21,11 +35,13 @@ func (s *Server) RegisterRoutes() http.Handler {
     mux.HandleFunc("/", http.HandlerFunc(s.rootHandler))
     mux.HandleFunc("/health", s.healthHandler)
     mux.Handle("GET /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.getHabitsHandler)))
+    mux.Handle("POST /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.createHabitHandler)))
 
     c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowCredentials: true,
-        AllowedHeaders:   []string{"Authorization"},
+        AllowedHeaders:   []string{"Authorization", "Content-Type", "Origin", "Accept", "X-Requested-With"},
+        Debug: true,
 	})
     
     return c.Handler(mux)
@@ -58,3 +74,17 @@ func (s *Server) getHabitsHandler(w http.ResponseWriter, r *http.Request) {
     id := r.PathValue("id")
     fmt.Fprintf(w, "Retrieving post with ID: %s", id)
 }
+
+func (s *Server) createHabitHandler(w http.ResponseWriter, r *http.Request) {
+    log.Printf("Creating habit")
+    var h Habit
+
+    err := json.NewDecoder(r.Body).Decode(&h)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    json.NewEncoder(w).Encode(h)
+}
+

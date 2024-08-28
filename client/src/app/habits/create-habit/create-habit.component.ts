@@ -1,5 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
@@ -8,6 +9,7 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
+import { firstValueFrom } from "rxjs";
 
 @Component({
     selector: "create-habit",
@@ -32,7 +34,7 @@ export class CreateHabitComponent {
     habitForm = new FormGroup({
         name: new FormControl("", Validators.required),
         description: new FormControl(""),
-        frequency: new FormControl("daily", Validators.required),
+        frequency: new FormControl(null, Validators.required),
         targetMetric: new FormGroup({
             type: new FormControl<TargetMetricType>("quantity"),
             value: new FormControl(null, Validators.required),
@@ -41,9 +43,19 @@ export class CreateHabitComponent {
         type: new FormControl("good", Validators.required)
     });
 
-    createHabit() {
+    private http = inject(HttpClient);
+
+    async createHabit() {
         console.log(this.habitForm);
+        await firstValueFrom(this.http.post("http://localhost:3333/api/habits", this.habitForm.value));
     }
+
+    dateFilter = (d: Date | null): boolean => {
+        if (!d) {
+            return false;
+        }
+        return d > new Date();
+    };
 }
 
 type TargetMetricType = "quantity" | "duration" | "date" | null;
