@@ -6,7 +6,6 @@ $theme: m3-theme.$light-theme;
     $theme: m3-theme.$dark-theme;
 }
 
-
 .sidenav-container {
     height: 100%;
 }
@@ -27,9 +26,11 @@ $theme: m3-theme.$light-theme;
 
     button {
         @include mat.fab-color($theme, $color-variant: tertiary);
-        @include mat.fab-overrides($tokens: (
-            container-elevation-shadow: 0
-        ));
+        @include mat.fab-overrides(
+            $tokens: (
+                container-elevation-shadow: 0
+            )
+        );
     }
 }
 
@@ -40,11 +41,11 @@ mat-sidenav {
             container-width: 88px
         )
     );
-    
+
     .logo {
         @include mat.toolbar-overrides(
             $tokens: (
-                container-background-color: transparent,
+                container-background-color: transparent
             )
         );
     }
@@ -53,21 +54,8 @@ mat-sidenav {
 mat-sidenav-container {
     @include mat.sidenav-overrides(
         $tokens: (
-            content-background-color: #fefbff, // TODO dark
+            content-background-color: #fefbff,
+            // TODO dark
         )
     );
 }
-
-.nav-buttons {
-
-}
-
-//.sidenav .mat-toolbar {
-//  background: inherit;
-//}
-//
-//.mat-toolbar.mat-primary {
-//  position: sticky;
-//  top: 0;
-//  z-index: 1;
-//}

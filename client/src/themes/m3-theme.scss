@@ -3,6 +3,7 @@
 // https://material.angular.io/guide/theming
 @use "sass:map";
 @use "@angular/material" as mat;
+@use "../utils";
 
 // Note: Color palettes are generated from primary: #769CDF, secondary: #8991A2, tertiary: #A288A6, neutral: #919093
 $_palettes: (
@@ -161,3 +162,4 @@ $dark-theme: mat.define-theme(
             typography: $typography
         )
 );
+

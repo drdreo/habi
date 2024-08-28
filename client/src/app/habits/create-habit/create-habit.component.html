@@ -1,73 +1,77 @@
 <section class="habit-form-section">
     <h3>New Habit</h3>
-    <mat-form-field appearance="outline">
-        <mat-label>Name</mat-label>
-        <input [formControl]="nameControl" matInput placeholder="Name"/>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-        <mat-label>Description (optional)</mat-label>
-        <input [formControl]="descriptionControl" matInput placeholder="Description"/>
-    </mat-form-field>
-
-    <div class="habit-frequency">
-        <h4>Habit Frequency</h4>
-
-        <mat-button-toggle-group [formControl]="frequencyControl" aria-label="Frequency">
-            <mat-button-toggle value="daily">Daily</mat-button-toggle>
-            <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
-            <mat-button-toggle value="monthly">Monthly</mat-button-toggle>
-            <mat-button-toggle value="finite">Finite</mat-button-toggle>
-        </mat-button-toggle-group>
-        <p>If a habit should be created to start or stop doing a thing</p>
-
-        <p>Chosen value is {{ frequencyControl.value }}</p>
-    </div>
-
-    <div class="habit-target-metric">
-        <h4>Target</h4>
-        <mat-button-toggle-group [formControl]="targetMetricTypeControl" aria-label="Target Metric Type">
-            <mat-button-toggle value="quantity">Quantity</mat-button-toggle>
-            <mat-button-toggle value="duration">Duration</mat-button-toggle>
-            <mat-button-toggle value="date">Date</mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
-
-    @if (targetMetricTypeControl.value === "date") {
-        <mat-form-field>
-            <mat-label>Value</mat-label>
-            <input matInput [matDatepicker]="picker" [formControl]="targetMetricValueControl"/>
-            <mat-hint>{{ targetMetricValueControl.value }}</mat-hint>
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
+    <form (ngSubmit)="createHabit()" [formGroup]="habitForm">
+        <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input autocomplete="off" data-form-type="other" formControlName="name" matInput/>
         </mat-form-field>
-    } @else {
-        <mat-form-field appearance="outline" aria-label="Target Metric Value">
-            <mat-label>Value</mat-label>
 
-            @if (targetMetricTypeControl.value === "duration") {
-                <input matInput type="number" [formControl]="targetMetricValueControl"/>
-            } @else {
-                <input matInput placeholder="Target Value" [formControl]="targetMetricValueControl"/>
-            }
-            <mat-hint>{{ targetMetricValueControl.value }}</mat-hint>
+        <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <input autocomplete="off" formControlName="description" matInput/>
         </mat-form-field>
-    }
 
-    <mat-form-field appearance="outline" aria-label="Target Metric Unit">
-        <mat-label>Target Unit (optional)</mat-label>
-        <input [formControl]="unitControl" matInput placeholder="Habit Unit"/>
-        <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
-        <mat-hint>A unit like 8 <b>glasses</b> of water</mat-hint>
-    </mat-form-field>
+        <div class="habit-frequency">
+            <mat-button-toggle-group aria-label="Frequency" formControlName="frequency">
+                <mat-button-toggle value="daily">Daily</mat-button-toggle>
+                <mat-button-toggle value="weekly">Weekly</mat-button-toggle>
+                <mat-button-toggle value="monthly">Monthly</mat-button-toggle>
+                <mat-button-toggle value="finite">Finite</mat-button-toggle>
+            </mat-button-toggle-group>
 
-    <div class="habit-type">
-        <h4>Habit Type</h4>
-        <mat-button-toggle-group [formControl]="typeControl" aria-label="Type">
-            <mat-button-toggle value="good">Good</mat-button-toggle>
-            <mat-button-toggle value="bad">Bad</mat-button-toggle>
-        </mat-button-toggle-group>
-    </div>
+            <p class="form-hint">Frequency of the habit is: {{ habitForm.controls.frequency.value }}</p>
+        </div>
 
-    <button mat-flat-button>Create</button>
+        <div class="habit-target-metric" formGroupName="targetMetric">
+            <div class="habit-target-metric__type">
+                <mat-button-toggle-group aria-label="Target Metric Type" formControlName="type">
+                    <mat-button-toggle value="quantity">Quantity</mat-button-toggle>
+                    <mat-button-toggle value="duration">Duration</mat-button-toggle>
+                    <mat-button-toggle value="date">Date</mat-button-toggle>
+                </mat-button-toggle-group>
+                <p class="form-hint">The target of your habit</p>
+            </div>
+
+            <div class="habit-target-metric__value">
+                @if (habitForm.controls.targetMetric.controls.type.value === "date") {
+                    <mat-form-field>
+                        <mat-label>Value</mat-label>
+                        <input matInput [matDatepicker]="picker" formControlName="value"/>
+                        <mat-hint>{{ habitForm.controls.targetMetric.controls.value.value }}</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                } @else {
+                    <mat-form-field appearance="outline" aria-label="Target Metric Value">
+                        <mat-label>Value</mat-label>
+
+                        @if (habitForm.controls.targetMetric.controls.type.value === "duration") {
+                            <input matInput type="number" formControlName="value"/>
+                        } @else {
+                            <input matInput formControlName="value"/>
+                        }
+                        <mat-hint>{{ habitForm.controls.targetMetric.controls.value.value }}</mat-hint>
+                    </mat-form-field>
+                }
+
+                <mat-form-field appearance="outline" aria-label="Target Metric Unit">
+                    <mat-label>Unit</mat-label>
+                    <input autocomplete="off" data-form-type="other" formControlName="unit" matInput/>
+                    <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+                    <mat-hint>A unit like 8 <b>glasses</b> of water</mat-hint>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="habit-type">
+            <mat-button-toggle-group aria-label="Type" formControlName="type">
+                <mat-button-toggle value="good">Good</mat-button-toggle>
+                <mat-button-toggle value="bad">Bad</mat-button-toggle>
+            </mat-button-toggle-group>
+            <p class="form-hint">If a habit should be created to start or stop doing a thing</p>
+        </div>
+
+        <button mat-flat-button type="submit">Create</button>
+    </form>
+    <p class="form-hint">Form Status: {{ habitForm.value |json }}</p>
+
 </section>

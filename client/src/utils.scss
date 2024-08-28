@@ -1,0 +1,41 @@
+@function generate-color-scale($base-color) {
+    @return (
+        0: #000000,
+        10: darken($base-color, 50%),
+        20: darken($base-color, 40%),
+        25: darken($base-color, 35%),
+        30: darken($base-color, 30%),
+        35: darken($base-color, 25%),
+        40: darken($base-color, 20%),
+        50: $base-color,
+        60: lighten($base-color, 20%),
+        70: lighten($base-color, 30%),
+        80: lighten($base-color, 40%),
+        90: lighten($base-color, 50%),
+        95: lighten($base-color, 60%),
+        98: lighten($base-color, 70%),
+        99: lighten($base-color, 75%),
+        100: #ffffff
+    );
+}
+
+@function test () {
+    @return (
+        0: #000000,
+        10: #27142c,
+        20: #3d2942,
+        25: #49344e,
+        30: #553f5a,
+        35: #614b66,
+        40: #6e5772,
+        50: #876f8c,
+        60: #a288a6,
+        70: #bea2c1,
+        80: #dabddd,
+        90: #f7d9fa,
+        95: #ffebff,
+        98: #fff7fb,
+        99: #fffbff,
+        100: #ffffff
+    )
+}

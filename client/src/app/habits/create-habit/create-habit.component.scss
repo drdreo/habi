@@ -1,9 +1,52 @@
+@use "@angular/material" as mat;
+@use "../../../themes/m3-theme";
+
+$gap: 16px;
+
+h3 {
+    margin: $gap;
+    //margin-bottom: 0;
+}
+
 .habit-form-section {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 16px;
+    //gap: $gap;
+    padding: $gap;
     
+    .form-hint {
+        font-size: var(--mat-form-field-subscript-text-size, var(--mat-app-body-small-size));
+        -webkit-font-smoothing: antialiased;
+        font-weight: var(--mat-form-field-subscript-text-weight, var(--mat-app-body-small-weight));
+        letter-spacing: var(--mat-form-field-subscript-text-tracking, var(--mat-app-body-small-tracking));
+        line-height: var(--mat-form-field-subscript-text-line-height, var(--mat-app-body-small-line-height));
+        margin-top: 8px;
+        padding: 0 $gap;
+    }
+    
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: $gap;
+        padding: $gap;
+        
+        .habit-target-metric {
+            display: flex;
+            flex-direction: column;
+            gap: $gap;
+            
+            &__type {
+                align-self: flex-start;
+            }
+            
+            &__value {
+                display: flex;
+                gap: $gap;
+            }
+        }
+        
+    }
+
     .full-width {
         width: 100%;
     }
@@ -14,13 +57,4 @@
         //gap: 8px;
     }
     
-    h4 {
-        margin: 0 0 20px 0;
-    }
-    
-    p {
-        color: rgba(0, 0, 0, 0.6);
-        font-size: 14px;
-        margin-top: 8px;
-    }
 }
