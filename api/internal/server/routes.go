@@ -28,7 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"Authorization", "Content-Type", "Origin", "Accept", "X-Requested-With"},
-		Debug:            true,
+		Debug:            false,
 	})
 
 	return c.Handler(mux)

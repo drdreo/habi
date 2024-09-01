@@ -3,6 +3,7 @@ package habits
 import (
 	"context"
 	"errors"
+	"os"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,8 +22,12 @@ type habitRepository struct {
 }
 
 func NewHabitRepository(db *mongo.Client) Repository {
+	var collection = "habits"
+	if os.Getenv("MODE") == "development" {
+		collection = "dev_habits"
+	}
 	return &habitRepository{
-		collection: db.Database("habits").Collection("habits"),
+		collection: db.Database("habits").Collection(collection),
 	}
 }
 
