@@ -3,17 +3,44 @@
     <!--    <mat-divider></mat-divider>-->
     <!--    <habit-entry></habit-entry>-->
 
-    <h3 mat-subheader>Your Habits</h3>
+    <div class="wip_topbar">
+        <!-- Main Filters Chip -->
+        <mat-chip (click)="filtersOpen.set(true)">
+            Filters
+        </mat-chip>
 
-    <mat-grid-list [cols]="numCols()" gutterSize="16" style="margin: 16px">
-        @for (habit of habits; track habit.id) {
-            <mat-grid-tile>
-                <mat-grid-tile-header>lol</mat-grid-tile-header>
-                <habit-card [title]="habit.title"></habit-card>
-            </mat-grid-tile>
-        }
-    </mat-grid-list>
 
+        <!-- Hidden Filter Section -->
+        <div *ngIf="filtersOpen()" class="filter-chips-container">
+            <h4>Frequency</h4>
+            <mat-chip-listbox aria-label="Select frequency" multiple>
+                <mat-chip-option>Daily</mat-chip-option>
+                <mat-chip-option>Weekly</mat-chip-option>
+                <mat-chip-option>Monthly</mat-chip-option>
+                <mat-chip-option>Finite</mat-chip-option>
+            </mat-chip-listbox>
+        </div>
+    </div>
+
+    <div class="habit-group">
+        <h3 mat-subheader>Daily</h3>
+
+        <mat-grid-list [cols]="numCols()" gutterSize="16" rowHeight="2:1" style="margin: 16px">
+            @for (habit of habitGroups().daily; track habit.id) {
+                <mat-grid-tile>
+                    <habit-card [id]="habit.id" [title]="habit.name"></habit-card>
+                </mat-grid-tile>
+            }
+        </mat-grid-list>
+    </div>
+
+    <!--        <mat-grid-list [cols]="numCols()" gutterSize="16" style="margin: 16px" rowHeight="2:1">-->
+    <!--            @for (habit of habits(); track habit.id) {-->
+    <!--                <mat-grid-tile>-->
+    <!--                    <habit-card [title]="habit.name"></habit-card>-->
+    <!--                </mat-grid-tile>-->
+    <!--            }-->
+    <!--        </mat-grid-list>-->
 
     <mat-list>
         <habit-entry></habit-entry>

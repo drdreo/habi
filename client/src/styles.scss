@@ -50,6 +50,7 @@ html {
     @include mat.progress-spinner-theme($theme);
     @include mat.form-field-theme($theme);
     @include mat.datepicker-theme($theme);
+    @include mat.expansion-theme($theme);
     
     // maybe override menu colors
     //$color: mat.get-theme-color(m3-theme.$light-theme, surface);

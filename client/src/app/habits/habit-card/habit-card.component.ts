@@ -31,7 +31,6 @@ import { MatTooltip } from "@angular/material/tooltip";
     animations: [
         trigger("fadeIn", [
             transition(":enter", [style({ opacity: 0 }), animate("300ms ease-in", style({ opacity: 1 }))])
-            // transition(":leave", [animate("300ms ease-out", style({ opacity: 0 }))])
         ]),
         trigger("checkmarkAnimation", [
             transition(":enter", [
@@ -49,7 +48,7 @@ import { MatTooltip } from "@angular/material/tooltip";
 })
 export class HabitCardComponent {
     title = input.required();
-    id = 1;
+    id = input.required();
 
     completeState: WritableSignal<"start" | "loading" | "success" | "reset"> = signal("start");
 

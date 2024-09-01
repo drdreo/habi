@@ -1,6 +1,6 @@
 {
-  "name": "client",
-  "short_name": "client",
+  "name": "Habi - Habit Tracker",
+  "short_name": "Habi",
   "theme_color": "#1976d2",
   "background_color": "#fafafa",
   "display": "standalone",

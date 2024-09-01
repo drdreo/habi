@@ -1,5 +1,4 @@
 import { CommonModule } from "@angular/common";
-import { HttpClient } from "@angular/common/http";
 import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
@@ -9,8 +8,8 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
-import { firstValueFrom } from "rxjs";
-import { environment } from "../../../environments/environment";
+import { HabitFrequency, HabitInput, TargetMetricType } from "../habit.model";
+import { HabitService } from "../habit.service";
 
 @Component({
     selector: "create-habit",
@@ -35,20 +34,20 @@ export class CreateHabitComponent {
     habitForm = new FormGroup({
         name: new FormControl("", Validators.required),
         description: new FormControl(""),
-        frequency: new FormControl(null, Validators.required),
+        frequency: new FormControl<HabitFrequency | null>(null, Validators.required),
         targetMetric: new FormGroup({
             type: new FormControl<TargetMetricType>("quantity"),
-            value: new FormControl(null, Validators.required),
+            value: new FormControl<any>(null, Validators.required),
             unit: new FormControl("")
         }),
         type: new FormControl("good", Validators.required)
     });
 
-    private http = inject(HttpClient);
+    private habitService = inject(HabitService);
 
     async createHabit() {
         console.log(this.habitForm);
-        await firstValueFrom(this.http.post(`${environment.origins.api}/api/habits`, this.habitForm.value));
+        return await this.habitService.createHabit(this.habitForm.value as HabitInput);
     }
 
     dateFilter = (d: Date | null): boolean => {
@@ -58,5 +57,3 @@ export class CreateHabitComponent {
         return d > new Date();
     };
 }
-
-type TargetMetricType = "quantity" | "duration" | "date" | null;
