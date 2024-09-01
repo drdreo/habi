@@ -10,6 +10,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
 import { firstValueFrom } from "rxjs";
+import { environment } from "../../../environments/environment";
 
 @Component({
     selector: "create-habit",
@@ -47,7 +48,7 @@ export class CreateHabitComponent {
 
     async createHabit() {
         console.log(this.habitForm);
-        await firstValueFrom(this.http.post("http://localhost:3333/api/habits", this.habitForm.value));
+        await firstValueFrom(this.http.post(`${environment.origins.api}/api/habits`, this.habitForm.value));
     }
 
     dateFilter = (d: Date | null): boolean => {

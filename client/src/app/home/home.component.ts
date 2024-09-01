@@ -7,6 +7,7 @@ import { MatGridListModule } from "@angular/material/grid-list";
 import { MatIcon } from "@angular/material/icon";
 import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
 import { firstValueFrom } from "rxjs";
+import { environment } from "../../environments/environment";
 import { HabitCardComponent } from "../habits/habit-card/habit-card.component";
 import { HabitEntryComponent } from "../habits/habit-entry/habit-entry.component";
 
@@ -33,8 +34,8 @@ export class HomeComponent {
 
     constructor() {
         setTimeout(async () => {
-            const res = await firstValueFrom(this.http.get("http://localhost:3333/api/habits"));
+            const res = await firstValueFrom(this.http.get(`${environment.origins.api}/api/habits`));
             console.log(res);
-        }, 2000);
+        }, 1000);
     }
 }
