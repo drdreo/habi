@@ -3,9 +3,9 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, inject, Signal, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MatIconButton } from "@angular/material/button";
-import { MatChipsModule } from "@angular/material/chips";
+import { MatChipListboxChange, MatChipsModule } from "@angular/material/chips";
 import { MatDivider } from "@angular/material/divider";
-import { MatExpansionModule } from "@angular/material/expansion";
+import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatIcon } from "@angular/material/icon";
 import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
@@ -30,7 +30,7 @@ import { HabitService } from "../habits/habit.service";
         MatGridListModule,
         LayoutModule,
         MatChipsModule,
-        MatExpansionModule
+        MatFormFieldModule
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
@@ -55,6 +55,14 @@ export class HomeComponent {
             }
             console.log(result);
         });
+    }
+
+    toggleFilters() {
+        this.filtersOpen.update((prev) => !prev);
+    }
+
+    filterChange($event: MatChipListboxChange) {
+        console.log($event);
     }
 }
 

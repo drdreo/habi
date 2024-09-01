@@ -3,23 +3,22 @@
     <!--    <mat-divider></mat-divider>-->
     <!--    <habit-entry></habit-entry>-->
 
-    <div class="wip_topbar">
+    <div class="filter-bar">
         <!-- Main Filters Chip -->
-        <mat-chip (click)="filtersOpen.set(true)">
-            Filters
-        </mat-chip>
-
+        <mat-chip (click)="toggleFilters()"> Filters</mat-chip>
 
         <!-- Hidden Filter Section -->
-        <div *ngIf="filtersOpen()" class="filter-chips-container">
-            <h4>Frequency</h4>
-            <mat-chip-listbox aria-label="Select frequency" multiple>
-                <mat-chip-option>Daily</mat-chip-option>
-                <mat-chip-option>Weekly</mat-chip-option>
-                <mat-chip-option>Monthly</mat-chip-option>
-                <mat-chip-option>Finite</mat-chip-option>
-            </mat-chip-listbox>
-        </div>
+        @if (filtersOpen()) {
+            <div class="filter-chips-container">
+                <h4>Frequency</h4>
+                <mat-chip-listbox aria-label="Select frequency" multiple (change)="filterChange($event)">
+                    <mat-chip-option value="daily">Daily</mat-chip-option>
+                    <mat-chip-option value="weekly">Weekly</mat-chip-option>
+                    <mat-chip-option value="monthly">Monthly</mat-chip-option>
+                    <mat-chip-option value="finite">Finite</mat-chip-option>
+                </mat-chip-listbox>
+            </div>
+        }
     </div>
 
     <div class="habit-group">
