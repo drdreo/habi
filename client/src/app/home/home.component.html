@@ -5,17 +5,15 @@
 
     <h3 mat-subheader>Your Habits</h3>
 
-    <mat-grid-list cols="5" gutterSize="16" style="margin:16px;">
-        <mat-grid-tile>
-            <habit-card title="Exercise for 30 Minutes"></habit-card>
-        </mat-grid-tile>
-        <mat-grid-tile>
-            <habit-card title="Drink 8 Glasses of Water"></habit-card>
-        </mat-grid-tile>
-        <mat-grid-tile>
-            <habit-card title="Meditate"></habit-card>
-        </mat-grid-tile>
+    <mat-grid-list [cols]="numCols()" gutterSize="16" style="margin: 16px">
+        @for (habit of habits; track habit.id) {
+            <mat-grid-tile>
+                <mat-grid-tile-header>lol</mat-grid-tile-header>
+                <habit-card [title]="habit.title"></habit-card>
+            </mat-grid-tile>
+        }
     </mat-grid-list>
+
 
     <mat-list>
         <habit-entry></habit-entry>
