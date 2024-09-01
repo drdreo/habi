@@ -71,7 +71,7 @@ jobs:
                 gitHubToken: ${{ secrets.GITHUB_TOKEN }}
                 # Optional: Switch what branch you are publishing to.
                 # By default this will be the branch which triggered this workflow
-                branch: master
+                branch: main
                 # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
                 wranglerVersion: '3'
 
@@ -90,7 +90,6 @@ jobs:
                 tags: |
                   # set latest tag for default branch
                   type=raw,value=latest,enable={{is_default_branch}}
-
 
             - name: "Docker: build and push"
               id: push
