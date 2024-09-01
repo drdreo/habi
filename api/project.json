@@ -29,6 +29,18 @@
         },
         "tidy": {
             "executor": "@nx-go/nx-go:tidy"
+        },
+        "docker": {
+            "dependsOn": [
+                "build"
+            ],
+            "command": "docker build api -t habitapi:latest"
+        },
+        "deploy": {
+            "dependsOn": [
+                "docker"
+            ],
+            "command": "railway up"
         }
     }
 }
