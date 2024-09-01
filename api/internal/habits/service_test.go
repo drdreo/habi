@@ -1,36 +1,17 @@
 package habits_test
 
 import (
+	"api/internal/habits"
 	"bytes"
 	"context"
 	"encoding/json"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"testing"
-	"time"
-
-	"api/internal/habits"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateHabit(t *testing.T) {
-	mockRepo := &habits.MockRepository{
-		CreateFunc: func(ctx context.Context, habit habits.HabitInput) (habits.Habit, error) {
-			return habits.Habit{
-				Id:          primitive.NewObjectID(),
-				UserId:      habit.UserId,
-				Name:        habit.Name,
-				Description: habit.Description,
-				Frequency:   habit.Frequency,
-				Type:        habit.Type,
-				TargetMetric: habits.HabitTargetMetric{
-					Type:  habit.TargetMetric.Type,
-					Value: habit.TargetMetric.Value,
-				},
-				CreatedAt: time.Now(),
-			}, nil
-		},
-	}
+	mockRepo := habits.CreateHabitRepositoryMock()
 
 	service := habits.NewService(mockRepo)
 
