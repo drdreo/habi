@@ -1,17 +1,19 @@
 package main
 
 import (
-	"fmt"
-    
 	"api/internal/server"
+	"fmt"
+	"log/slog"
 )
 
 func main() {
-	srvr := server.NewServer()
+	slog.SetLogLoggerLevel(slog.LevelDebug)
 
-    fmt.Printf("starting API at http://localhost%s\n", srvr.Addr)
-	err := srvr.ListenAndServe()
+	srv := server.NewServer()
+
+	fmt.Printf("starting API at http://localhost%s\n", srv.Addr)
+	err := srv.ListenAndServe()
 	if err != nil {
-        fmt.Printf("failed to start API: %s", err)
+		fmt.Printf("failed to start API: %s", err)
 	}
 }

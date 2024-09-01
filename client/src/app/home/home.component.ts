@@ -33,9 +33,7 @@ export class HomeComponent {
 
     constructor() {
         setTimeout(async () => {
-            const res = await firstValueFrom(
-                this.http.get("http://localhost:3333/api/habits/123", { responseType: "text" })
-            );
+            const res = await firstValueFrom(this.http.get("http://localhost:3333/api/habits"));
             console.log(res);
         }, 2000);
     }

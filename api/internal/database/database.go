@@ -1,19 +1,20 @@
 package database
 
 import (
-    "context"
-    "fmt"
-    "log"
-    "os"
-    "time"
+	"context"
+	"log"
+	"log/slog"
+	"os"
+	"time"
 
-    _ "github.com/joho/godotenv/autoload"
-    "go.mongodb.org/mongo-driver/mongo"
-    "go.mongodb.org/mongo-driver/mongo/options"
+	_ "github.com/joho/godotenv/autoload"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Service interface {
 	Health() map[string]string
+	GetDB() *mongo.Client
 }
 
 type service struct {
@@ -21,15 +22,15 @@ type service struct {
 }
 
 var (
-	host     = os.Getenv("DB_HOST")
-	port     = os.Getenv("DB_PORT")
-	connectionString     = os.Getenv("MONGODB_CONNECTION_STRING")
+	host             = os.Getenv("DB_HOST")
+	port             = os.Getenv("DB_PORT")
+	connectionString = os.Getenv("MONGODB_CONNECTION_STRING")
 )
 
 func New() Service {
-    client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectionString))
-
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(connectionString))
 	if err != nil {
+
 		log.Fatal(err)
 
 	}
@@ -44,10 +45,14 @@ func (s *service) Health() map[string]string {
 
 	err := s.db.Ping(ctx, nil)
 	if err != nil {
-		log.Fatalf(fmt.Sprintf("db down: %v", err))
+		slog.Error("db down", "err", err)
 	}
 
 	return map[string]string{
 		"message": "It's healthy",
 	}
+}
+
+func (s *service) GetDB() *mongo.Client {
+	return s.db
 }

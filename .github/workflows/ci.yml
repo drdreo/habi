@@ -43,6 +43,11 @@ jobs:
             - name: "pnpm: install"
               run: pnpm install
 
+
+          # Install Railway CLI for service deploy
+            - name: "Railway: install"
+              run: npm i -g @railway/cli
+
             - uses: nrwl/nx-set-shas@v4
               with:
                 main-branch-name: "master"
@@ -53,7 +58,7 @@ jobs:
           # --no-agents disables remote task execution
             - run: npx nx affected -t lint test build
 
-            - name: Publish to Cloudflare Pages
+            - name: "Cloudflare: publish"
               uses: cloudflare/pages-action@v1
               with:
                 apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -64,6 +69,11 @@ jobs:
                 gitHubToken: ${{ secrets.GITHUB_TOKEN }}
                 # Optional: Switch what branch you are publishing to.
                 # By default this will be the branch which triggered this workflow
-                branch: main
+                branch: master
                 # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
                 wranglerVersion: '3'
+
+            - name: "Railway: deploy API"
+              run: railway up
+              env:
+                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
