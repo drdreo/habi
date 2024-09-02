@@ -7,7 +7,7 @@ import (
 
 type HabitTargetMetricInput struct {
 	Type  string
-	Value string
+	Value interface{}
 }
 
 type HabitInput struct {
@@ -19,8 +19,8 @@ type HabitInput struct {
 }
 
 type HabitTargetMetric struct {
-	Type  string `bson:"metric"`
-	Value string `bson:"value"`
+	Type  string      `json:"metric" bson:"metric"`
+	Value interface{} `json:"value" bson:"value"`
 }
 
 type Habit struct {
@@ -30,14 +30,18 @@ type Habit struct {
 	Type         string            `json:"type" bson:"type"`
 	TargetMetric HabitTargetMetric `json:"target_metric" bson:"target_metric"`
 	Archived     *bool             `json:"archived" bson:"archived"` // optional
+	UserId       string            `json:"-" bson:"user_id"`
 	// Mongo related stuff
-	Id         primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	CreatedAt  time.Time          `json:"created_at" bson:"created_at"`
-	ModifiedAt time.Time          `json:"modified_at" bson:"modified_at"`
-	UserId     string             `json:"-" bson:"user_id"`
+	Id        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
 type HabitCompletion struct {
 	HabitId string `json:"habitId" bson:"habit_id"`
 	UserId  string `json:"-" bson:"user_id"`
+	// Mongo related stuff
+	Id        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
 }

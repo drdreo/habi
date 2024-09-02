@@ -5,6 +5,7 @@ import { MatButton } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { provideNativeDateAdapter } from "@angular/material/core";
 import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDialogRef } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
@@ -44,10 +45,12 @@ export class CreateHabitComponent {
     });
 
     private habitService = inject(HabitService);
+    private dialogRef = inject(MatDialogRef<CreateHabitComponent>);
 
     async createHabit() {
         console.log(this.habitForm);
-        return await this.habitService.createHabit(this.habitForm.value as HabitInput);
+        await this.habitService.createHabit(this.habitForm.value as HabitInput);
+        this.dialogRef.close();
     }
 
     dateFilter = (d: Date | null): boolean => {

@@ -1,6 +1,6 @@
 import { animate, keyframes, style, transition, trigger } from "@angular/animations";
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, computed, input, signal, WritableSignal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject, input, signal, WritableSignal } from "@angular/core";
 import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatChipsModule } from "@angular/material/chips";
@@ -9,6 +9,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatTooltip } from "@angular/material/tooltip";
+import { HabitService } from "../habit.service";
 
 @Component({
     selector: "habit-card",
@@ -47,8 +48,8 @@ import { MatTooltip } from "@angular/material/tooltip";
     ]
 })
 export class HabitCardComponent {
-    title = input.required();
-    id = input.required();
+    title = input.required<string>();
+    id = input.required<string>();
 
     completeState: WritableSignal<"start" | "loading" | "success" | "reset"> = signal("start");
 
@@ -56,16 +57,22 @@ export class HabitCardComponent {
         return this.completeState() === "start" || this.completeState() === "reset";
     });
 
-    completeHabit() {
-        console.count("completeHabit");
+    private habitService = inject(HabitService);
+
+    async completeHabit() {
         this.completeState.set("loading");
 
-        setTimeout(() => {
+        try {
+            await this.habitService.completeHabit(this.id());
             this.completeState.set("success");
-
+        } finally {
             setTimeout(() => {
                 this.completeState.set("reset");
             }, 1350);
-        }, 2000);
+        }
+    }
+
+    async archiveHabit() {
+        await this.habitService.archiveHabit(this.id());
     }
 }

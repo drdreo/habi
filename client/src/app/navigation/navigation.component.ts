@@ -43,7 +43,6 @@ export class NavigationComponent {
         shareReplay()
     );
     private readonly dialog = inject(MatDialog);
-
     constructor() {
         console.log("NavigationComponent created");
     }

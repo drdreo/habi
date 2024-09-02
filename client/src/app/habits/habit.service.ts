@@ -51,4 +51,16 @@ export class HabitService {
     async createHabit(habitInput: HabitInput) {
         return await firstValueFrom(this.http.post(`${environment.origins.api}/api/habits`, habitInput));
     }
+
+    async completeHabit(habitId: string) {
+        return await firstValueFrom(
+            this.http.post(`${environment.origins.api}/api/habits/${habitId}/complete`, undefined)
+        );
+    }
+
+    async archiveHabit(habitId: string) {
+        return await firstValueFrom(
+            this.http.post(`${environment.origins.api}/api/habits/${habitId}/archive`, undefined)
+        );
+    }
 }

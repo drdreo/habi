@@ -70,6 +70,7 @@ func (s *Server) getHabitsHandler(w http.ResponseWriter, r *http.Request) {
 
 	habits, err := s.habitService.GetAllHabits(r.Context(), userId)
 	if err != nil {
+		slog.Error("failed to get all habits", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -90,6 +91,7 @@ func (s *Server) getHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	habit, err := s.habitService.GetHabitById(r.Context(), userId, habitId)
 	if err != nil {
+		slog.Error("failed to get habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -109,6 +111,7 @@ func (s *Server) createHabitHandler(w http.ResponseWriter, r *http.Request) {
 
 	habit, err := s.habitService.CreateHabit(r.Context(), userId, r.Body)
 	if err != nil {
+		slog.Error("failed to create habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -130,6 +133,7 @@ func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) 
 
 	habit, err := s.habitService.GetHabitById(r.Context(), userId, habitId)
 	if err != nil {
+		slog.Error("failed to update habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -150,6 +154,7 @@ func (s *Server) completeHabitByIdHandler(w http.ResponseWriter, r *http.Request
 
 	habitCompletion, err := s.habitService.CompleteHabitById(r.Context(), userId, habitId)
 	if err != nil {
+		slog.Error("failed to complete habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -170,6 +175,7 @@ func (s *Server) archiveHabitByIdHandler(w http.ResponseWriter, r *http.Request)
 
 	habit, err := s.habitService.ArchiveHabitById(r.Context(), userId, habitId)
 	if err != nil {
+		slog.Error("failed to archive habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

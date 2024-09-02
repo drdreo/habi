@@ -48,7 +48,6 @@ func (s *service) GetHabitById(ctx context.Context, userId string, habitId strin
 
 func (s *service) CreateHabit(ctx context.Context, userId string, body io.ReadCloser) (Habit, error) {
 	slog.Debug("Creating habit")
-	var habitInput HabitInput
 
 	defer func(body io.ReadCloser) {
 		err := body.Close()
@@ -57,9 +56,10 @@ func (s *service) CreateHabit(ctx context.Context, userId string, body io.ReadCl
 		}
 	}(body)
 
+	var habitInput HabitInput
 	err := json.NewDecoder(body).Decode(&habitInput)
 	if err != nil {
-		return Habit{}, errors.New("failed to parse habit data")
+		return Habit{}, err
 	}
 
 	err = validateHabit(habitInput)

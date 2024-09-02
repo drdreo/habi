@@ -21,16 +21,22 @@ type Repository interface {
 }
 
 type habitRepository struct {
-	collection *mongo.Collection
+	habitCollection           *mongo.Collection
+	habitCompletionCollection *mongo.Collection
 }
 
 func NewHabitRepository(db *mongo.Client) Repository {
-	var collection = "habits"
+	var habitCollection = "habits"
 	if os.Getenv("MODE") == "development" {
-		collection = "dev_habits"
+		habitCollection = "dev_habits"
+	}
+	var habitCompletionCollection = "habit_completions"
+	if os.Getenv("MODE") == "development" {
+		habitCompletionCollection = "dev_habit_completions"
 	}
 	return &habitRepository{
-		collection: db.Database("habits").Collection(collection),
+		habitCollection:           db.Database("habits").Collection(habitCollection),
+		habitCompletionCollection: db.Database("habits").Collection(habitCompletionCollection),
 	}
 }
 
@@ -39,7 +45,7 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	res, err := r.collection.Find(ctx, bson.M{"user_id": userId})
+	res, err := r.habitCollection.Find(ctx, bson.M{"user_id": userId})
 	if err != nil {
 		slog.Warn("failed to insert habit", "err", err)
 		return nil, err
@@ -60,10 +66,11 @@ func (r *habitRepository) GetById(ctx context.Context, userId string, habitId st
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	filter := bson.M{"user_id": userId, "_id": habitId}
+	id, _ := primitive.ObjectIDFromHex(habitId)
+	filter := bson.M{"user_id": userId, "_id": id}
 
 	var habit Habit
-	err := r.collection.FindOne(ctx, filter).Decode(&habit)
+	err := r.habitCollection.FindOne(ctx, filter).Decode(&habit)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
@@ -94,9 +101,10 @@ func (r *habitRepository) Create(ctx context.Context, userId string, habitInput 
 			Value: habitInput.TargetMetric.Value,
 		},
 		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
-	res, err := r.collection.InsertOne(ctx, habit)
+	res, err := r.habitCollection.InsertOne(ctx, habit)
 	if err != nil {
 		slog.Warn("failed to insert habit", "err", err)
 		return Habit{}, err
@@ -115,17 +123,19 @@ func (r *habitRepository) CompleteById(ctx context.Context, userId string, habit
 
 	// Create a Habit struct and populate it with data from HabitInput
 	habitCompletion := HabitCompletion{
-		HabitId:      habitId,
-		UserId:      userId,
+		HabitId:   habitId,
+		UserId:    userId,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
-	_, err := r.collection.InsertOne(ctx, habitCompletion)
+	_, err := r.habitCompletionCollection.InsertOne(ctx, habitCompletion)
 	if err != nil {
-		slog.Warn("failed to insert habit", "err", err)
+		slog.Warn("failed to insert habit completion", "err", err)
 		return HabitCompletion{}, err
 	}
 
-	slog.Info("Successfully inserted habit into MongoDB")
+	slog.Info("Successfully inserted habit completion")
 	return habitCompletion, nil
 }
 
@@ -134,11 +144,12 @@ func (r *habitRepository) ArchiveById(ctx context.Context, userId string, habitI
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	filter := bson.M{"user_id": userId, "_id": habitId}
+	id, _ := primitive.ObjectIDFromHex(habitId)
+	filter := bson.M{"user_id": userId, "_id": id}
 	update := bson.D{{"$set", bson.D{{"archived", true}}}}
 
 	var updatedHabit Habit
-	err := r.collection.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&updatedHabit)
+	err := r.habitCollection.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&updatedHabit)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
