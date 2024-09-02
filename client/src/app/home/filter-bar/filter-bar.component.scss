@@ -1,0 +1,22 @@
+:host {
+    align-items: center;
+    display: flex;
+    height: 40px; // align with chips listbox
+    
+    justify-content: flex-start;
+}
+
+.filters-button {
+    margin-right: 16px;
+    z-index: 10;
+}
+
+.filter {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    
+    &__description {
+        padding-right: 8px;
+    }
+}

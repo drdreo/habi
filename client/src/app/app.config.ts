@@ -1,7 +1,7 @@
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
 import { ApplicationConfig, isDevMode, provideExperimentalZonelessChangeDetection } from "@angular/core";
 import { MAT_TOOLTIP_DEFAULT_OPTIONS } from "@angular/material/tooltip";
-import { provideAnimations } from "@angular/platform-browser/animations";
+import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideRouter } from "@angular/router";
 import { provideServiceWorker } from "@angular/service-worker";
 import { authHttpInterceptorFn, provideAuth0 } from "@auth0/auth0-angular";
@@ -29,7 +29,7 @@ export const appConfig: ApplicationConfig = {
                 ]
             }
         }),
-        provideAnimations(),
+        provideAnimationsAsync(),
         {
             provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
             useValue: {

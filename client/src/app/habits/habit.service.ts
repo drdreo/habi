@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { firstValueFrom, Observable, of } from "rxjs";
+import { firstValueFrom, Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { Habit, HabitFrequency, HabitInput } from "./habit.model";
 
@@ -44,8 +44,8 @@ export class HabitService {
     }
 
     getAllHabits(): Observable<Habit[]> {
-        return of(habitsMock);
-        // return await firstValueFrom(this.http.get<Habit[]>(`${environment.origins.api}/api/habits`));
+        // return of(habitsMock);
+        return this.http.get<Habit[]>(`${environment.origins.api}/api/habits`);
     }
 
     async createHabit(habitInput: HabitInput) {

@@ -1,7 +1,9 @@
 @use "@angular/material" as mat;
 
+$gap: 16px;
+
 mat-divider {
-    margin-left: 16px;
+    margin-left: $gap;
     @include mat.divider-overrides(
         $tokens: (
             color: grey
@@ -9,27 +11,15 @@ mat-divider {
     );
 }
 
-.filter-bar {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: column;
-    padding: 16px;
-    
-    .filter-chips-container {
-        width: 100%;
-    }
-}
-
 mat-chip {
     cursor: pointer;
-    margin-right: 16px;
+    margin-right: $gap;
 }
 
-.filter-panel {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 8px;
-    padding: 16px;
+filter-bar {
+    padding: $gap;
+}
+
+.empty-state {
+    align-self: center;
 }

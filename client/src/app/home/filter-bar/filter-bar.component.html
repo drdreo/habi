@@ -1,0 +1,14 @@
+<!-- Main Filters Chip -->
+<mat-chip (click)="toggleFilters()" class="filters-button">Filters</mat-chip>
+
+<!-- Hidden Filter Section -->
+<div [@openClose]="filtersOpen() ? 'open' : 'closed'" class="filter">
+    <span class="filter__description">Frequency</span>
+    <mat-chip-listbox (change)="filterChange($event)" aria-label="Select habit frequency" multiple>
+        <mat-chip-option value="daily">Daily</mat-chip-option>
+        <mat-chip-option value="weekly">Weekly</mat-chip-option>
+        <mat-chip-option value="monthly">Monthly</mat-chip-option>
+        <mat-chip-option value="finite">Finite</mat-chip-option>
+    </mat-chip-listbox>
+</div>
+

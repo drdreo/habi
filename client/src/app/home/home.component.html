@@ -3,35 +3,26 @@
     <!--    <mat-divider></mat-divider>-->
     <!--    <habit-entry></habit-entry>-->
 
-    <div class="filter-bar">
-        <!-- Main Filters Chip -->
-        <mat-chip (click)="toggleFilters()"> Filters</mat-chip>
+    <filter-bar></filter-bar>
 
-        <!-- Hidden Filter Section -->
-        @if (filtersOpen()) {
-            <div class="filter-chips-container">
-                <h4>Frequency</h4>
-                <mat-chip-listbox aria-label="Select frequency" multiple (change)="filterChange($event)">
-                    <mat-chip-option value="daily">Daily</mat-chip-option>
-                    <mat-chip-option value="weekly">Weekly</mat-chip-option>
-                    <mat-chip-option value="monthly">Monthly</mat-chip-option>
-                    <mat-chip-option value="finite">Finite</mat-chip-option>
-                </mat-chip-listbox>
-            </div>
-        }
-    </div>
+    @for (habitGroup of filteredHabits() | groupBy: "frequency"; track $index) {
+        <div class="habit-group">
+            <h3 mat-subheader>{{ habitGroup.key }}</h3>
 
-    <div class="habit-group">
-        <h3 mat-subheader>Daily</h3>
-
-        <mat-grid-list [cols]="numCols()" gutterSize="16" rowHeight="2:1" style="margin: 16px">
-            @for (habit of habitGroups().daily; track habit.id) {
-                <mat-grid-tile>
-                    <habit-card [id]="habit.id" [title]="habit.name"></habit-card>
-                </mat-grid-tile>
-            }
-        </mat-grid-list>
-    </div>
+            <mat-grid-list [cols]="numCols()" gutterSize="16" rowHeight="2:1" style="margin: 16px">
+                @for (habit of habitGroup.value; track habit.id) {
+                    <mat-grid-tile>
+                        <habit-card [id]="habit.id" [title]="habit.name"></habit-card>
+                    </mat-grid-tile>
+                }
+            </mat-grid-list>
+        </div>
+    } @empty {
+        <div class="empty-state">
+            <h4>No habits found</h4>
+            <p>Add a new habit to get started</p>
+        </div>
+    }
 
     <!--        <mat-grid-list [cols]="numCols()" gutterSize="16" style="margin: 16px" rowHeight="2:1">-->
     <!--            @for (habit of habits(); track habit.id) {-->
@@ -41,21 +32,22 @@
     <!--            }-->
     <!--        </mat-grid-list>-->
 
-    <mat-list>
-        <habit-entry></habit-entry>
-        <mat-divider></mat-divider>
-        <habit-entry></habit-entry>
-        <mat-divider></mat-divider>
+    <!--    LIST View-->
+    <!--    <mat-list>-->
+    <!--        <habit-entry></habit-entry>-->
+    <!--        <mat-divider></mat-divider>-->
+    <!--        <habit-entry></habit-entry>-->
+    <!--        <mat-divider></mat-divider>-->
 
-        <mat-list-item [lines]="3">
-            <div class="title" matListItemTitle>Title</div>
-            <div class="description" matListItemLine>asdasdas</div>
-            <div matListItemLine>12.12.22023 32.13.223</div>
-            <span matListItemMeta>
-                <button mat-icon-button>
-                    <mat-icon>info</mat-icon>
-                </button>
-            </span>
-        </mat-list-item>
-    </mat-list>
+    <!--        <mat-list-item [lines]="3">-->
+    <!--            <div class="title" matListItemTitle>Title</div>-->
+    <!--            <div class="description" matListItemLine>asdasdas</div>-->
+    <!--            <div matListItemLine>12.12.22023 32.13.223</div>-->
+    <!--            <span matListItemMeta>-->
+    <!--                <button mat-icon-button>-->
+    <!--                    <mat-icon>info</mat-icon>-->
+    <!--                </button>-->
+    <!--            </span>-->
+    <!--        </mat-list-item>-->
+    <!--    </mat-list>-->
 </div>

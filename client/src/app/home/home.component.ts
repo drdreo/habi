@@ -1,19 +1,21 @@
 import { BreakpointObserver, Breakpoints, LayoutModule } from "@angular/cdk/layout";
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject, Signal, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { MatIconButton } from "@angular/material/button";
-import { MatChipListboxChange, MatChipsModule } from "@angular/material/chips";
+import { MatChipsModule } from "@angular/material/chips";
 import { MatDivider } from "@angular/material/divider";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatIcon } from "@angular/material/icon";
 import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
-import { map } from "rxjs/operators";
 import { HabitCardComponent } from "../habits/habit-card/habit-card.component";
 import { HabitEntryComponent } from "../habits/habit-entry/habit-entry.component";
-import { Habit, HabitGroup } from "../habits/habit.model";
+import { Habit } from "../habits/habit.model";
 import { HabitService } from "../habits/habit.service";
+import { GroupByPipe } from "../utils/group-by.pipe";
+import { FilterBarComponent } from "./filter-bar/filter-bar.component";
+import { FiltersService } from "./filter-bar/filters.service";
 
 @Component({
     selector: "app-home",
@@ -30,7 +32,9 @@ import { HabitService } from "../habits/habit.service";
         MatGridListModule,
         LayoutModule,
         MatChipsModule,
-        MatFormFieldModule
+        MatFormFieldModule,
+        FilterBarComponent,
+        GroupByPipe
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
@@ -38,15 +42,20 @@ import { HabitService } from "../habits/habit.service";
 })
 export class HomeComponent {
     numCols = signal(5);
-    habitGroups: Signal<HabitGroup>;
-    filtersOpen = signal(false);
+    habits: Signal<Habit[]>;
+    filteredHabits: Signal<Habit[]>;
 
     private habitService = inject(HabitService);
+    private filtersService = inject(FiltersService);
     private breakpointObserver = inject(BreakpointObserver);
 
     constructor() {
-        this.habitGroups = toSignal(this.habitService.getAllHabits().pipe(map(groupHabitsByCategory)), {
-            initialValue: INITIAL_GROUPS
+        this.habits = toSignal(this.habitService.getAllHabits(), { initialValue: [] });
+
+        this.filteredHabits = computed(() => {
+            const habits = [...this.habits()];
+            const filterState = this.filtersService.filterState();
+            return habits.filter((habit) => filterState.frequency.includes(habit.frequency));
         });
 
         this.breakpointObserver.observe([Breakpoints.HandsetLandscape]).subscribe((result) => {
@@ -56,27 +65,4 @@ export class HomeComponent {
             console.log(result);
         });
     }
-
-    toggleFilters() {
-        this.filtersOpen.update((prev) => !prev);
-    }
-
-    filterChange($event: MatChipListboxChange) {
-        console.log($event);
-    }
-}
-
-const INITIAL_GROUPS = {
-    daily: [],
-    weekly: [],
-    monthly: [],
-    finite: []
-};
-
-function groupHabitsByCategory(habits: Habit[]): HabitGroup {
-    return habits.reduce((groups: HabitGroup, habit: Habit) => {
-        const frequency = habit.frequency;
-        groups[frequency].push(habit);
-        return groups;
-    }, INITIAL_GROUPS);
 }

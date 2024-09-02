@@ -25,5 +25,3 @@ export type Habit = {
 
 export type TargetMetricType = "quantity" | "duration" | "date";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "finite";
-
-export type HabitGroup = { [key in HabitFrequency]: Habit[] };
