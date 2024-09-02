@@ -6,7 +6,7 @@ import { Habit, HabitFrequency, HabitInput } from "./habit.model";
 
 let MOCK_COUNTER = 0;
 
-let frequencies: Exclude<HabitFrequency, null>[] = ["daily", "monthly", "weekly", "finite"];
+const frequencies: HabitFrequency[] = ["daily", "monthly", "weekly", "finite"];
 
 function getHabitMock(name: string): Habit {
     const randomIndex = Math.floor(Math.random() * frequencies.length);

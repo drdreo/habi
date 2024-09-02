@@ -5,7 +5,7 @@ export type HabitInput = {
     type: string;
     targetMetric: {
         type: TargetMetricType | null;
-        value: string;
+        value: TargetMetricValue | null;
     };
 };
 
@@ -23,5 +23,6 @@ export type Habit = {
     createdAt: number;
 };
 
+export type TargetMetricValue = number | Date;
 export type TargetMetricType = "quantity" | "duration" | "date";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "finite";

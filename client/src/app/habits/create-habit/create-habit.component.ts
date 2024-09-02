@@ -9,7 +9,7 @@ import { MatDialogRef } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
-import { HabitFrequency, HabitInput, TargetMetricType } from "../habit.model";
+import { HabitFrequency, HabitInput, TargetMetricType, TargetMetricValue } from "../habit.model";
 import { HabitService } from "../habit.service";
 
 @Component({
@@ -38,7 +38,7 @@ export class CreateHabitComponent {
         frequency: new FormControl<HabitFrequency | null>(null, Validators.required),
         targetMetric: new FormGroup({
             type: new FormControl<TargetMetricType>("quantity"),
-            value: new FormControl<any>(null, Validators.required),
+            value: new FormControl<TargetMetricValue | null>(null, Validators.required),
             unit: new FormControl("")
         }),
         type: new FormControl("good", Validators.required)
@@ -48,7 +48,6 @@ export class CreateHabitComponent {
     private dialogRef = inject(MatDialogRef<CreateHabitComponent>);
 
     async createHabit() {
-        console.log(this.habitForm);
         await this.habitService.createHabit(this.habitForm.value as HabitInput);
         this.dialogRef.close();
     }
