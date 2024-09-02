@@ -3,18 +3,21 @@ package habits
 import (
 	"context"
 	"errors"
-	"os"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log/slog"
+	"os"
 	"time"
 )
 
 type Repository interface {
-	Create(ctx context.Context, habit HabitInput) (Habit, error)
+	Create(ctx context.Context, userId string, habit HabitInput) (Habit, error)
 	GetAll(ctx context.Context, userId string) ([]Habit, error)
 	GetById(ctx context.Context, userId string, habitId string) (Habit, error)
+	ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error)
+	CompleteById(ctx context.Context, userId string, habitId string) (HabitCompletion, error)
 }
 
 type habitRepository struct {
@@ -74,14 +77,14 @@ func (r *habitRepository) GetById(ctx context.Context, userId string, habitId st
 	return habit, nil
 }
 
-func (r *habitRepository) Create(ctx context.Context, habitInput HabitInput) (Habit, error) {
+func (r *habitRepository) Create(ctx context.Context, userId string, habitInput HabitInput) (Habit, error) {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	// Create a Habit struct and populate it with data from HabitInput
 	habit := Habit{
-		UserId:      habitInput.UserId,
+		UserId:      userId,
 		Name:        habitInput.Name,
 		Description: habitInput.Description,
 		Frequency:   habitInput.Frequency,
@@ -103,4 +106,48 @@ func (r *habitRepository) Create(ctx context.Context, habitInput HabitInput) (Ha
 
 	slog.Info("Successfully inserted habit into MongoDB")
 	return habit, nil
+}
+
+func (r *habitRepository) CompleteById(ctx context.Context, userId string, habitId string) (HabitCompletion, error) {
+	// timeout for the database operation
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	// Create a Habit struct and populate it with data from HabitInput
+	habitCompletion := HabitCompletion{
+		HabitId:      habitId,
+		UserId:      userId,
+	}
+
+	_, err := r.collection.InsertOne(ctx, habitCompletion)
+	if err != nil {
+		slog.Warn("failed to insert habit", "err", err)
+		return HabitCompletion{}, err
+	}
+
+	slog.Info("Successfully inserted habit into MongoDB")
+	return habitCompletion, nil
+}
+
+func (r *habitRepository) ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error) {
+	// timeout for the database operation
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"user_id": userId, "_id": habitId}
+	update := bson.D{{"$set", bson.D{{"archived", true}}}}
+
+	var updatedHabit Habit
+	err := r.collection.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&updatedHabit)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
+			return Habit{}, errors.New("habit not found")
+		}
+		slog.Warn("failed to update habit", "err", err)
+		return Habit{}, err
+	}
+
+	slog.Info("Successfully archived habit")
+	return updatedHabit, nil
 }

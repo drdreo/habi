@@ -23,6 +23,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("GET /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.getHabitsHandler)))
 	mux.Handle("GET /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.getHabitByIdHandler)))
 	mux.Handle("POST /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.createHabitHandler)))
+	mux.Handle("POST /api/habits/{id}/complete", auth.AuthMiddleware(http.HandlerFunc(s.completeHabitByIdHandler)))
+	mux.Handle("POST /api/habits/{id}/archive", auth.AuthMiddleware(http.HandlerFunc(s.archiveHabitByIdHandler)))
+	mux.Handle("PUT /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.updateHabitByIdHandler)))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -112,5 +115,65 @@ func (s *Server) createHabitHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(habit)
+}
+
+func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling UpdateHabit request")
+	habitId := r.PathValue("id")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+
+	habit, err := s.habitService.GetHabitById(r.Context(), userId, habitId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(habit)
+}
+
+func (s *Server) completeHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling CompleteHabit request")
+	habitId := r.PathValue("id")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+
+	habitCompletion, err := s.habitService.CompleteHabitById(r.Context(), userId, habitId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(habitCompletion)
+}
+
+func (s *Server) archiveHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling ArchiveHabit request")
+	habitId := r.PathValue("id")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+
+	habit, err := s.habitService.ArchiveHabitById(r.Context(), userId, habitId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(habit)
 }

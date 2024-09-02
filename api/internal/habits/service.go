@@ -12,6 +12,8 @@ type Service interface {
 	GetAllHabits(ctx context.Context, userId string) ([]Habit, error)
 	GetHabitById(ctx context.Context, userId string, habitId string) (Habit, error)
 	CreateHabit(ctx context.Context, userId string, body io.ReadCloser) (Habit, error)
+	CompleteHabitById(ctx context.Context, userId string, habitId string) (HabitCompletion, error)
+	ArchiveHabitById(ctx context.Context, userId string, habitId string) (Habit, error)
 }
 
 type service struct {
@@ -46,7 +48,7 @@ func (s *service) GetHabitById(ctx context.Context, userId string, habitId strin
 
 func (s *service) CreateHabit(ctx context.Context, userId string, body io.ReadCloser) (Habit, error) {
 	slog.Debug("Creating habit")
-	var hI HabitInput
+	var habitInput HabitInput
 
 	defer func(body io.ReadCloser) {
 		err := body.Close()
@@ -55,18 +57,39 @@ func (s *service) CreateHabit(ctx context.Context, userId string, body io.ReadCl
 		}
 	}(body)
 
-	err := json.NewDecoder(body).Decode(&hI)
+	err := json.NewDecoder(body).Decode(&habitInput)
 	if err != nil {
 		return Habit{}, errors.New("failed to parse habit data")
 	}
 
-	err = validateHabit(hI)
+	err = validateHabit(habitInput)
 	if err != nil {
 		return Habit{}, err
 	}
 
-	hI.UserId = userId
-	habit, err := s.repo.Create(ctx, hI)
+	habit, err := s.repo.Create(ctx, userId, habitInput)
+	if err != nil {
+		return Habit{}, err
+	}
+
+	return habit, nil
+}
+
+func (s *service) CompleteHabitById(ctx context.Context, userId string, habitId string) (HabitCompletion, error) {
+	slog.Debug("Complete habit by id")
+
+	habitCompletion, err := s.repo.CompleteById(ctx, userId, habitId)
+	if err != nil {
+		return HabitCompletion{}, err
+	}
+
+	return habitCompletion, nil
+}
+
+func (s *service) ArchiveHabitById(ctx context.Context, userId string, habitId string) (Habit, error) {
+	slog.Debug("Archive habit by id")
+
+	habit, err := s.repo.ArchiveById(ctx, userId, habitId)
 	if err != nil {
 		return Habit{}, err
 	}
