@@ -4,3 +4,6 @@
 /.nx/cache
 /.nx/workspace-data
 .angular
+
+# Ignore go project
+/api

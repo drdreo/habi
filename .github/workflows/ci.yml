@@ -50,6 +50,9 @@ jobs:
             - name: "pnpm: install"
               run: pnpm install
 
+            - name: "railway: install"
+              run: npm i -g @railway/cli
+
             - uses: nrwl/nx-set-shas@v4
               with:
                 main-branch-name: "master"
@@ -107,3 +110,8 @@ jobs:
                 subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
                 subject-digest: ${{ steps.push.outputs.digest }}
                 push-to-registry: true
+
+            - name: "railway: re-deploy"
+              run: railway redeploy
+              env:
+                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
