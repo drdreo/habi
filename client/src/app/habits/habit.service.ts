@@ -1,10 +1,8 @@
-import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { firstValueFrom, Observable } from "rxjs";
-import { environment } from "../../environments/environment";
 import { SnackBarCelebrationComponent } from "../snack-bar/snack-bar-celebration/snack-bar-celebration.component";
+import { HabitTrackingService } from "./habit-tracking.service";
+import { HabitDataService } from "./habit.data.service";
 import { Habit, HabitFrequency, HabitInput } from "./habit.model";
 
 let MOCK_COUNTER = 0;
@@ -22,7 +20,7 @@ function getHabitMock(name: string): Habit {
         frequency,
         type: "Health",
         targetMetric: {
-            type: "quantity",
+            type: "duration",
             goal: 10,
             completions: 3
         },
@@ -44,30 +42,21 @@ export class HabitService {
     // Store all habits in a signal
     habits = signal<Habit[]>([]);
 
-    private readonly http = inject(HttpClient);
     private readonly snackBar = inject(MatSnackBar);
+    private readonly habitDataService = inject(HabitDataService);
+    private readonly habitTrackingService = inject(HabitTrackingService);
 
     constructor() {
-        this.getAllHabits()
-            .pipe(takeUntilDestroyed())
-            .subscribe((habits) => {
-                this.habits.set(habits);
-            });
-    }
+        this.habitDataService.getAllHabits().then((habits) => {
+            this.habits.set(habits);
 
-    async getHabitById(habitId: string): Promise<Habit> {
-        return await firstValueFrom(this.http.get<Habit>(`${environment.origins.api}/api/habits/${habitId}`));
-    }
-
-    getAllHabits(): Observable<Habit[]> {
-        // return of(habitsMock);
-        return this.http.get<Habit[]>(`${environment.origins.api}/api/habits`);
+            this.checkTrackingState(habits);
+        });
+        // this.habits.set(habitsMock);
     }
 
     async createHabit(habitInput: HabitInput) {
-        const createdHabit = await firstValueFrom(
-            this.http.post<Habit>(`${environment.origins.api}/api/habits`, habitInput)
-        );
+        const createdHabit = await this.habitDataService.createHabit(habitInput);
 
         this.habits.update((habits) => [...habits, createdHabit]);
 
@@ -75,13 +64,12 @@ export class HabitService {
     }
 
     async deleteHabit(habitId: string) {
-        await firstValueFrom(this.http.delete(`${environment.origins.api}/api/habits/${habitId}`));
-
+        await this.habitDataService.deleteHabit(habitId);
         this.habits.update((habits) => habits.filter((habit) => habit.id !== habitId));
     }
 
     async completeHabit(habitId: string) {
-        await firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/complete`, undefined));
+        await this.habitDataService.completeHabit(habitId);
 
         let habitCompleted = false;
         this.habits.update((habits) => {
@@ -106,12 +94,65 @@ export class HabitService {
     }
 
     archiveHabit(habitId: string) {
-        return firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/archive`, undefined));
+        return this.habitDataService.archiveHabit(habitId);
     }
 
     openCelebrationSnackBar() {
         this.snackBar.openFromComponent(SnackBarCelebrationComponent, {
             duration: 5 * 1000
+        });
+    }
+
+    async startHabit(habitId: string) {
+        const habit = this.habits().find((habit) => habit.id === habitId);
+        if (!habit) {
+            console.error("Habit not found");
+            return;
+        }
+        await this.habitTrackingService.startTrackingHabit(habitId, habit.targetMetric.goal);
+        this.updateHabitTrackingState(habitId, true);
+    }
+
+    async finishHabit(habitId: string) {
+        const timeLeft = await this.habitTrackingService.stopTrackingHabit(habitId);
+        this.updateHabitTrackingState(habitId, false);
+
+        if (timeLeft > 0) {
+            console.log("Habit was not completed, time left: ", timeLeft);
+            return;
+        }
+
+        console.log("Habit was completed");
+        return this.completeHabit(habitId);
+    }
+
+    private async checkTrackingState(habits: Habit[]) {
+        await this.habitTrackingService.databaseInitialized.promise;
+        const allTrackingHabits = await this.habitTrackingService.getAllHabitTrackingEntries();
+        const trackingHabitIds = new Set(allTrackingHabits.map((habit) => habit.id));
+
+        this.habits.update((habits) => {
+            return habits.map((habit) => {
+                const isTracking = trackingHabitIds.has(habit.id);
+                return {
+                    ...habit,
+                    isTracking
+                };
+            });
+        });
+    }
+
+    private updateHabitTrackingState(habitId: string, isTracking: boolean) {
+        this.habits.update((habits) => {
+            return habits.map((habit) => {
+                if (habit.id !== habitId) {
+                    return habit;
+                }
+                return {
+                    ...habit,
+                    isTracking
+                };
+            });
         });
     }
 }

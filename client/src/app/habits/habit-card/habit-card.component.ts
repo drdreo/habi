@@ -64,6 +64,10 @@ export class HabitCardComponent {
 
     progressTooltip = computed(() => {
         const { targetMetric } = this.habit();
+        // TODO: figure out how to handle duration habits
+        if (targetMetric.type === "duration") {
+            return `${targetMetric.completions} of 1`;
+        }
         return `${targetMetric.completions} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
 
@@ -88,5 +92,13 @@ export class HabitCardComponent {
 
     deleteHabit() {
         return this.habitService.deleteHabit(this.habit().id);
+    }
+
+    startHabit() {
+        this.habitService.startHabit(this.habit().id);
+    }
+
+    async finishHabit() {
+        await this.habitService.finishHabit(this.habit().id);
     }
 }

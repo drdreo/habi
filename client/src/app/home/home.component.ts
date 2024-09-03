@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints, LayoutModule } from "@angular/cdk/layout";
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, computed, effect, inject, Signal, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from "@angular/core";
 import { MatIconButton } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatDivider } from "@angular/material/divider";
@@ -50,11 +50,6 @@ export class HomeComponent {
 
     constructor() {
         // this.habits = this.habitService.habits;
-
-        effect(() => {
-            const newHabits = this.habitService.habits();
-            console.log(newHabits);
-        });
 
         this.filteredHabits = computed(() => {
             const habits = [...this.habitService.habits()];

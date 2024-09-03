@@ -23,6 +23,7 @@ export type Habit = {
         completions: number;
         unit?: string;
     };
+    isTracking?: boolean;
     createdAt: number;
 };
 

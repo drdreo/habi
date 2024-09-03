@@ -42,9 +42,6 @@ export class FilterBarComponent {
     }
 
     filterChange($event: MatChipListboxChange) {
-        console.log($event);
-
-        $event.value;
         this.filtersService.updateFrequency($event.value);
     }
 }

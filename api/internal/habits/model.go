@@ -20,7 +20,7 @@ type HabitInput struct {
 }
 
 type HabitTargetMetric struct {
-	Type        string `json:"metric" bson:"metric"`
+	Type        string `json:"type" bson:"type"`
 	Goal        int    `json:"goal" bson:"goal"`
 	Unit        string `json:"unit" bson:"unit"`
 	Completions int    `json:"completions" bson:"completions"` // completions are gathered dynamically
