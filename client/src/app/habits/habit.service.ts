@@ -1,8 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { firstValueFrom, Observable } from "rxjs";
 import { environment } from "../../environments/environment";
+import { SnackBarCelebrationComponent } from "../snack-bar/snack-bar-celebration/snack-bar-celebration.component";
 import { Habit, HabitFrequency, HabitInput } from "./habit.model";
 
 let MOCK_COUNTER = 0;
@@ -41,7 +43,9 @@ for (let i = 0; i < 10; i++) {
 export class HabitService {
     // Store all habits in a signal
     habits = signal<Habit[]>([]);
+
     private readonly http = inject(HttpClient);
+    private readonly snackBar = inject(MatSnackBar);
 
     constructor() {
         this.getAllHabits()
@@ -77,14 +81,15 @@ export class HabitService {
     }
 
     async completeHabit(habitId: string) {
-        const res = await firstValueFrom(
-            this.http.post(`${environment.origins.api}/api/habits/${habitId}/complete`, undefined)
-        );
+        await firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/complete`, undefined));
+
+        let habitCompleted = false;
         this.habits.update((habits) => {
             return habits.map((habit) => {
                 if (habit.id !== habitId) {
                     return habit;
                 }
+                habitCompleted = habit.targetMetric.completions + 1 === habit.targetMetric.goal;
                 return {
                     ...habit,
                     targetMetric: {
@@ -94,9 +99,19 @@ export class HabitService {
                 };
             });
         });
+
+        if (habitCompleted) {
+            this.openCelebrationSnackBar();
+        }
     }
 
     archiveHabit(habitId: string) {
         return firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/archive`, undefined));
+    }
+
+    openCelebrationSnackBar() {
+        this.snackBar.openFromComponent(SnackBarCelebrationComponent, {
+            duration: 5 * 1000
+        });
     }
 }
