@@ -112,6 +112,6 @@ jobs:
                 push-to-registry: true
 
             - name: "railway: re-deploy"
-              run: railway redeploy --service 'Habit Api'
+              run: railway redeploy --service 'Habit Api' --yes
               env:
                 RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
