@@ -21,8 +21,8 @@ func TestCreateHabit(t *testing.T) {
 		Frequency:   "Daily",
 		Type:        "Health",
 		TargetMetric: habits.HabitTargetMetricInput{
-			Type:  "Count",
-			Value: "10",
+			Type: "Count",
+			Goal: 10,
 		},
 	}
 
