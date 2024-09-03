@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { firstValueFrom, Observable } from "rxjs";
 import { environment } from "../../environments/environment";
 import { Habit, HabitFrequency, HabitInput } from "./habit.model";
@@ -20,7 +21,8 @@ function getHabitMock(name: string): Habit {
         type: "Health",
         targetMetric: {
             type: "quantity",
-            value: "10"
+            goal: 10,
+            completions: 3
         },
         createdAt: Date.now()
     };
@@ -37,7 +39,17 @@ for (let i = 0; i < 10; i++) {
     providedIn: "root"
 })
 export class HabitService {
+    // Store all habits in a signal
+    habits = signal<Habit[]>([]);
     private readonly http = inject(HttpClient);
+
+    constructor() {
+        this.getAllHabits()
+            .pipe(takeUntilDestroyed())
+            .subscribe((habits) => {
+                this.habits.set(habits);
+            });
+    }
 
     async getHabitById(habitId: string): Promise<Habit> {
         return await firstValueFrom(this.http.get<Habit>(`${environment.origins.api}/api/habits/${habitId}`));
@@ -49,18 +61,42 @@ export class HabitService {
     }
 
     async createHabit(habitInput: HabitInput) {
-        return await firstValueFrom(this.http.post(`${environment.origins.api}/api/habits`, habitInput));
+        const createdHabit = await firstValueFrom(
+            this.http.post<Habit>(`${environment.origins.api}/api/habits`, habitInput)
+        );
+
+        this.habits.update((habits) => [...habits, createdHabit]);
+
+        return createdHabit;
+    }
+
+    async deleteHabit(habitId: string) {
+        await firstValueFrom(this.http.delete(`${environment.origins.api}/api/habits/${habitId}`));
+
+        this.habits.update((habits) => habits.filter((habit) => habit.id !== habitId));
     }
 
     async completeHabit(habitId: string) {
-        return await firstValueFrom(
+        const res = await firstValueFrom(
             this.http.post(`${environment.origins.api}/api/habits/${habitId}/complete`, undefined)
         );
+        this.habits.update((habits) => {
+            return habits.map((habit) => {
+                if (habit.id !== habitId) {
+                    return habit;
+                }
+                return {
+                    ...habit,
+                    targetMetric: {
+                        ...habit.targetMetric,
+                        completions: habit.targetMetric.completions + 1
+                    }
+                };
+            });
+        });
     }
 
-    async archiveHabit(habitId: string) {
-        return await firstValueFrom(
-            this.http.post(`${environment.origins.api}/api/habits/${habitId}/archive`, undefined)
-        );
+    archiveHabit(habitId: string) {
+        return firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/archive`, undefined));
     }
 }

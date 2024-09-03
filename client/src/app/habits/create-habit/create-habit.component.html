@@ -27,26 +27,15 @@
                 <mat-button-toggle-group aria-label="Target Metric Type" formControlName="type">
                     <mat-button-toggle value="quantity">Quantity</mat-button-toggle>
                     <mat-button-toggle value="duration">Duration</mat-button-toggle>
-                    <mat-button-toggle value="date">Date</mat-button-toggle>
                 </mat-button-toggle-group>
                 <p class="form-hint">The target of your habit</p>
             </div>
 
-            <div class="habit-target-metric__value">
-                @if (habitForm.controls.targetMetric.controls.type.value === "date") {
-                    <mat-form-field appearance="outline">
-                        <mat-label>Value</mat-label>
-                        <input matInput [matDatepicker]="picker" [matDatepickerFilter]="dateFilter"
-                               formControlName="value"/>
-                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
-                    </mat-form-field>
-                } @else {
-                    <mat-form-field aria-label="Target Metric Value" appearance="outline">
-                        <mat-label>Value</mat-label>
-                        <input matInput type="number" formControlName="value"/>
-                    </mat-form-field>
-                }
+            <div class="habit-target-metric__goal">
+                <mat-form-field appearance="outline" aria-label="Target Metric Goal">
+                    <mat-label>Goal</mat-label>
+                    <input formControlName="goal" matInput type="number"/>
+                </mat-form-field>
 
                 <mat-form-field appearance="outline" aria-label="Target Metric Unit">
                     <mat-label>Unit</mat-label>

@@ -21,14 +21,15 @@ var habitMock = Habit{
 	Frequency:   "Daily",
 	Type:        "Health",
 	TargetMetric: HabitTargetMetric{
-		Type:  "Count",
-		Value: "10",
+		Type: "Count",
+		Goal: 10,
+		Completions: 0,
 	},
 	CreatedAt: time.Now(),
 }
 
 var habitCompletionMock = HabitCompletion{
-	HabitId: habitMock.Id.Hex(),
+	HabitId: habitMock.Id,
 	UserId:  "testUserId",
 }
 
@@ -41,8 +42,9 @@ func (m *RepositoryMock) Create(ctx context.Context, userId string, habit HabitI
 		Frequency:   habit.Frequency,
 		Type:        habit.Type,
 		TargetMetric: HabitTargetMetric{
-			Type:  habit.TargetMetric.Type,
-			Value: habit.TargetMetric.Value,
+			Type: habit.TargetMetric.Type,
+			Goal: habit.TargetMetric.Goal,
+			Completions: 0,
 		},
 		CreatedAt: time.Now(),
 	}, nil

@@ -12,7 +12,8 @@ type Service interface {
 	GetAllHabits(ctx context.Context, userId string) ([]Habit, error)
 	GetHabitById(ctx context.Context, userId string, habitId string) (Habit, error)
 	CreateHabit(ctx context.Context, userId string, body io.ReadCloser) (Habit, error)
-	CompleteHabitById(ctx context.Context, userId string, habitId string) (HabitCompletion, error)
+	DeleteHabitById(ctx context.Context, userId string, habitId string) error
+	CompleteHabitById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error)
 	ArchiveHabitById(ctx context.Context, userId string, habitId string) (Habit, error)
 }
 
@@ -75,15 +76,14 @@ func (s *service) CreateHabit(ctx context.Context, userId string, body io.ReadCl
 	return habit, nil
 }
 
-func (s *service) CompleteHabitById(ctx context.Context, userId string, habitId string) (HabitCompletion, error) {
+func (s *service) DeleteHabitById(ctx context.Context, userId string, habitId string) error {
+	slog.Debug("Delete habit by id")
+	return s.repo.DeleteById(ctx, userId, habitId)
+}
+
+func (s *service) CompleteHabitById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error) {
 	slog.Debug("Complete habit by id")
-
-	habitCompletion, err := s.repo.CompleteById(ctx, userId, habitId)
-	if err != nil {
-		return HabitCompletion{}, err
-	}
-
-	return habitCompletion, nil
+	return s.repo.CompleteById(ctx, userId, habitId)
 }
 
 func (s *service) ArchiveHabitById(ctx context.Context, userId string, habitId string) (Habit, error) {

@@ -26,10 +26,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("POST /api/habits/{id}/complete", auth.AuthMiddleware(http.HandlerFunc(s.completeHabitByIdHandler)))
 	mux.Handle("POST /api/habits/{id}/archive", auth.AuthMiddleware(http.HandlerFunc(s.archiveHabitByIdHandler)))
 	mux.Handle("PUT /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.updateHabitByIdHandler)))
+	mux.Handle("DELETE /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.deleteHabitByIdHandler)))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "DELETE"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type", "Origin", "Accept", "X-Requested-With"},
 		Debug:            false,
 	})
@@ -141,6 +143,28 @@ func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(habit)
 }
+
+
+func (s *Server) deleteHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling DeleteHabit request")
+	habitId := r.PathValue("id")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+
+	err := s.habitService.DeleteHabitById(r.Context(), userId, habitId)
+	if err != nil {
+		slog.Error("failed to delete habit", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 
 func (s *Server) completeHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Handling CompleteHabit request")

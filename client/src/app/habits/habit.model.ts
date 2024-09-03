@@ -1,11 +1,12 @@
 export type HabitInput = {
     name: string;
-    description: string;
+    description?: string;
     frequency: HabitFrequency | null;
     type: string;
     targetMetric: {
         type: TargetMetricType | null;
-        value: TargetMetricValue | null;
+        goal: TargetMetricGoal | null;
+        unit?: string;
     };
 };
 
@@ -13,16 +14,18 @@ export type Habit = {
     id: string;
     userId: string;
     name: string;
-    description: string;
+    description?: string;
     frequency: HabitFrequency;
     type: string;
     targetMetric: {
         type: TargetMetricType;
-        value: string;
+        goal: TargetMetricGoal;
+        completions: number;
+        unit?: string;
     };
     createdAt: number;
 };
 
-export type TargetMetricValue = number | Date;
-export type TargetMetricType = "quantity" | "duration" | "date";
+export type TargetMetricGoal = number;
+export type TargetMetricType = "quantity" | "duration";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "finite";

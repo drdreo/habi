@@ -49,7 +49,6 @@ html {
     @include mat.progress-bar-theme($theme);
     @include mat.progress-spinner-theme($theme);
     @include mat.form-field-theme($theme);
-    @include mat.datepicker-theme($theme);
     @include mat.expansion-theme($theme);
     
     // maybe override menu colors

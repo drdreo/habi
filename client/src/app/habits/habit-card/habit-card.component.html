@@ -2,7 +2,7 @@
     <mat-card-header>
         <!--        <div mat-card-avatar class="example-header-image"></div>-->
         <mat-card-title-group>
-            <mat-card-title>{{ title() }}</mat-card-title>
+            <mat-card-title>{{ habit().name }}</mat-card-title>
 
             <mat-card-subtitle matTooltip="Current Streak 3 days">
                 <mat-icon size="8">mode_heat</mat-icon>
@@ -41,7 +41,11 @@
     </mat-card-actions>
 
     <mat-card-footer>
-        <mat-progress-bar matTooltip="40/100" mode="determinate" value="40"></mat-progress-bar>
+        <mat-progress-bar
+                [matTooltip]="progressTooltip()"
+                [value]="habitProgress()"
+                mode="determinate"
+        ></mat-progress-bar>
     </mat-card-footer>
 </mat-card>
 
@@ -57,5 +61,9 @@
     <button (click)="archiveHabit()" mat-menu-item>
         <mat-icon>archive</mat-icon>
         <span>Archive</span>
+    </button>
+    <button (click)="deleteHabit()" mat-menu-item>
+        <mat-icon>delete</mat-icon>
+        <span>Delete</span>
     </button>
 </mat-menu>

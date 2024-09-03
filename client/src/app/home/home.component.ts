@@ -1,7 +1,6 @@
 import { BreakpointObserver, Breakpoints, LayoutModule } from "@angular/cdk/layout";
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
+import { ChangeDetectionStrategy, Component, computed, effect, inject, Signal, signal } from "@angular/core";
 import { MatIconButton } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatDivider } from "@angular/material/divider";
@@ -42,7 +41,7 @@ import { FiltersService } from "./filter-bar/filters.service";
 })
 export class HomeComponent {
     numCols = signal(5);
-    habits: Signal<Habit[]>;
+    // habits: Signal<Habit[]>;
     filteredHabits: Signal<Habit[]>;
 
     private habitService = inject(HabitService);
@@ -50,10 +49,15 @@ export class HomeComponent {
     private breakpointObserver = inject(BreakpointObserver);
 
     constructor() {
-        this.habits = toSignal(this.habitService.getAllHabits(), { initialValue: [] });
+        // this.habits = this.habitService.habits;
+
+        effect(() => {
+            const newHabits = this.habitService.habits();
+            console.log(newHabits);
+        });
 
         this.filteredHabits = computed(() => {
-            const habits = [...this.habits()];
+            const habits = [...this.habitService.habits()];
             const filterState = this.filtersService.filterState();
             return habits.filter((habit) => filterState.frequency.includes(habit.frequency));
         });

@@ -16,13 +16,15 @@ type Repository interface {
 	Create(ctx context.Context, userId string, habit HabitInput) (Habit, error)
 	GetAll(ctx context.Context, userId string) ([]Habit, error)
 	GetById(ctx context.Context, userId string, habitId string) (Habit, error)
+	DeleteById(ctx context.Context, userId string, habitId string) error
 	ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error)
-	CompleteById(ctx context.Context, userId string, habitId string) (HabitCompletion, error)
+	CompleteById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error)
 }
 
 type habitRepository struct {
-	habitCollection           *mongo.Collection
-	habitCompletionCollection *mongo.Collection
+	habitCollection               *mongo.Collection
+	habitCompletionCollection     *mongo.Collection
+	habitCompletionCollectionName string
 }
 
 func NewHabitRepository(db *mongo.Client) Repository {
@@ -30,13 +32,14 @@ func NewHabitRepository(db *mongo.Client) Repository {
 	if os.Getenv("MODE") == "development" {
 		habitCollection = "dev_habits"
 	}
-	var habitCompletionCollection = "habit_completions"
+	var habitCompletionCollectionName = "habit_completions"
 	if os.Getenv("MODE") == "development" {
-		habitCompletionCollection = "dev_habit_completions"
+		habitCompletionCollectionName = "dev_habit_completions"
 	}
 	return &habitRepository{
-		habitCollection:           db.Database("habits").Collection(habitCollection),
-		habitCompletionCollection: db.Database("habits").Collection(habitCompletionCollection),
+		habitCollection:               db.Database("habits").Collection(habitCollection),
+		habitCompletionCollection:     db.Database("habits").Collection(habitCompletionCollectionName),
+		habitCompletionCollectionName: habitCompletionCollectionName,
 	}
 }
 
@@ -45,15 +48,136 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	res, err := r.habitCollection.Find(ctx, bson.M{"user_id": userId})
+	// NOTE: Maybe re-write to create this aggregation pipeline via code
+	pipeline := mongo.Pipeline{
+		bson.D{{"$match", bson.D{{"user_id", userId}}}},
+		bson.D{
+			{"$lookup",
+				bson.D{
+					{"from", "dev_habit_completions"},
+					{"localField", "_id"},
+					{"foreignField", "habit_id"},
+					{"as", "completions"},
+					{"let", bson.D{{"frequency", "$frequency"}}},
+					{"pipeline",
+						bson.A{
+							bson.D{
+								{"$addFields",
+									bson.D{
+										{"startOfDay",
+											bson.D{
+												{"$dateTrunc",
+													bson.D{
+														{"date", "$$NOW"},
+														{"unit", "day"},
+													},
+												},
+											},
+										},
+										{"startOfWeek",
+											bson.D{
+												{"$dateTrunc",
+													bson.D{
+														{"date", "$$NOW"},
+														{"unit", "week"},
+														{"startOfWeek", "monday"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+							bson.D{
+								{"$match",
+									bson.D{
+										{"$expr",
+											bson.D{
+												{"$switch",
+													bson.D{
+														{"branches",
+															bson.A{
+																bson.D{
+																	{"case",
+																		bson.D{
+																			{"$eq",
+																				bson.A{
+																					"$$frequency",
+																					"daily",
+																				},
+																			},
+																		},
+																	},
+																	{"then",
+																		bson.D{
+																			{"$and",
+																				bson.A{
+																					bson.D{
+																						{"$gte",
+																							bson.A{
+																								"$created_at",
+																								"$startOfDay",
+																							},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+																bson.D{
+																	{"case",
+																		bson.D{
+																			{"$eq",
+																				bson.A{
+																					"$$frequency",
+																					"weekly",
+																				},
+																			},
+																		},
+																	},
+																	{"then",
+																		bson.D{
+																			{"$and",
+																				bson.A{
+																					bson.D{
+																						{"$gte",
+																							bson.A{
+																								"$created_at",
+																								"$startOfWeek",
+																							},
+																						},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+														{"default", false},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		bson.D{{"$addFields", bson.D{{"target_metric.completions", bson.D{{"$size", "$completions"}}}}}},
+	}
+
+	cursor, err := r.habitCollection.Aggregate(ctx, pipeline)
 	if err != nil {
-		slog.Warn("failed to insert habit", "err", err)
 		return nil, err
 	}
-	// get all habits for the user as slice
+
 	var habits []Habit
-	if err = res.All(ctx, &habits); err != nil {
-		slog.Warn("failed to get all", "err", err)
+	if err = cursor.All(ctx, &habits); err != nil {
 		return nil, err
 	}
 
@@ -66,11 +190,15 @@ func (r *habitRepository) GetById(ctx context.Context, userId string, habitId st
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	id, _ := primitive.ObjectIDFromHex(habitId)
+	id, err := primitive.ObjectIDFromHex(habitId)
+	if err != nil {
+		slog.Warn("failed to convert habit Id", "habitId", habitId, "err", err)
+		return Habit{}, err
+	}
 	filter := bson.M{"user_id": userId, "_id": id}
 
 	var habit Habit
-	err := r.habitCollection.FindOne(ctx, filter).Decode(&habit)
+	err = r.habitCollection.FindOne(ctx, filter).Decode(&habit)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
@@ -97,8 +225,10 @@ func (r *habitRepository) Create(ctx context.Context, userId string, habitInput 
 		Frequency:   habitInput.Frequency,
 		Type:        habitInput.Type,
 		TargetMetric: HabitTargetMetric{
-			Type:  habitInput.TargetMetric.Type,
-			Value: habitInput.TargetMetric.Value,
+			Type:        habitInput.TargetMetric.Type,
+			Goal:        habitInput.TargetMetric.Goal,
+			Unit:        habitInput.TargetMetric.Unit,
+			Completions: 0,
 		},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -116,27 +246,61 @@ func (r *habitRepository) Create(ctx context.Context, userId string, habitInput 
 	return habit, nil
 }
 
-func (r *habitRepository) CompleteById(ctx context.Context, userId string, habitId string) (HabitCompletion, error) {
+func (r *habitRepository) DeleteById(ctx context.Context, userId string, habitId string) error {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
+	habitOId, _ := primitive.ObjectIDFromHex(habitId)
+	_,err := r.habitCollection.DeleteOne(ctx, bson.M{"_id": habitOId, "user_id": userId})
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
+			return errors.New("habit not found")
+		}
+		slog.Warn("failed to delete habit", "err", err)
+		return err
+	}
+
+	slog.Info("Successfully deleted habit")
+	return nil
+}
+
+func (r *habitRepository) CompleteById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error) {
+	// timeout for the database operation
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	// Get current habit target value
+	var habit Habit
+	habitOId, _ := primitive.ObjectIDFromHex(habitId)
+	err := r.habitCollection.FindOne(ctx, bson.M{"_id": habitOId, "user_id": userId}).Decode(&habit)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
+			return nil, errors.New("habit not found")
+		}
+		slog.Warn("failed to retrieve habit", "err", err)
+		return nil, err
+	}
+
 	// Create a Habit struct and populate it with data from HabitInput
 	habitCompletion := HabitCompletion{
-		HabitId:   habitId,
+		HabitId:   habitOId,
 		UserId:    userId,
+		Goal:      habit.TargetMetric.Goal,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
 
-	_, err := r.habitCompletionCollection.InsertOne(ctx, habitCompletion)
+	_, err = r.habitCompletionCollection.InsertOne(ctx, habitCompletion)
 	if err != nil {
 		slog.Warn("failed to insert habit completion", "err", err)
-		return HabitCompletion{}, err
+		return nil, err
 	}
 
 	slog.Info("Successfully inserted habit completion")
-	return habitCompletion, nil
+	return &habitCompletion, nil
 }
 
 func (r *habitRepository) ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error) {

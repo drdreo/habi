@@ -12,7 +12,7 @@
             <mat-grid-list [cols]="numCols()" gutterSize="16" rowHeight="2:1" style="margin: 16px">
                 @for (habit of habitGroup.value; track habit.id) {
                     <mat-grid-tile>
-                        <habit-card [id]="habit.id" [title]="habit.name"></habit-card>
+                        <habit-card [habit]="habit"></habit-card>
                     </mat-grid-tile>
                 }
             </mat-grid-list>

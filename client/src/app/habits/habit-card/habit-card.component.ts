@@ -9,6 +9,7 @@ import { MatMenuModule } from "@angular/material/menu";
 import { MatProgressBar } from "@angular/material/progress-bar";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatTooltip } from "@angular/material/tooltip";
+import { Habit } from "../habit.model";
 import { HabitService } from "../habit.service";
 
 @Component({
@@ -48,13 +49,22 @@ import { HabitService } from "../habit.service";
     ]
 })
 export class HabitCardComponent {
-    title = input.required<string>();
-    id = input.required<string>();
+    habit = input.required<Habit>();
 
     completeState: WritableSignal<"start" | "loading" | "success" | "reset"> = signal("start");
 
     showCompleteButton = computed(() => {
         return this.completeState() === "start" || this.completeState() === "reset";
+    });
+
+    habitProgress = computed(() => {
+        const habit = this.habit();
+        return (habit.targetMetric.completions * 100) / habit.targetMetric.goal;
+    });
+
+    progressTooltip = computed(() => {
+        const { targetMetric } = this.habit();
+        return `${targetMetric.completions} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
 
     private habitService = inject(HabitService);
@@ -63,7 +73,7 @@ export class HabitCardComponent {
         this.completeState.set("loading");
 
         try {
-            await this.habitService.completeHabit(this.id());
+            await this.habitService.completeHabit(this.habit().id);
             this.completeState.set("success");
         } finally {
             setTimeout(() => {
@@ -72,7 +82,11 @@ export class HabitCardComponent {
         }
     }
 
-    async archiveHabit() {
-        await this.habitService.archiveHabit(this.id());
+    archiveHabit() {
+        return this.habitService.archiveHabit(this.habit().id);
+    }
+
+    deleteHabit() {
+        return this.habitService.deleteHabit(this.habit().id);
     }
 }

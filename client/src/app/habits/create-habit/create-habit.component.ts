@@ -4,12 +4,11 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatButton } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { provideNativeDateAdapter } from "@angular/material/core";
-import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatDialogRef } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
-import { HabitFrequency, HabitInput, TargetMetricType, TargetMetricValue } from "../habit.model";
+import { HabitFrequency, HabitInput, TargetMetricGoal, TargetMetricType } from "../habit.model";
 import { HabitService } from "../habit.service";
 
 @Component({
@@ -23,7 +22,6 @@ import { HabitService } from "../habit.service";
         MatIcon,
         MatInput,
         MatButton,
-        MatDatepickerModule,
         FormsModule
     ],
     providers: [provideNativeDateAdapter()],
@@ -38,7 +36,7 @@ export class CreateHabitComponent {
         frequency: new FormControl<HabitFrequency | null>(null, Validators.required),
         targetMetric: new FormGroup({
             type: new FormControl<TargetMetricType>("quantity"),
-            value: new FormControl<TargetMetricValue | null>(null, Validators.required),
+            goal: new FormControl<TargetMetricGoal | null>(null, Validators.required),
             unit: new FormControl("")
         }),
         type: new FormControl("good", Validators.required)
