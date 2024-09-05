@@ -20,11 +20,7 @@
             <navigation-button icon="rule" label="Missed" link="/app/missed"/>
             <navigation-button icon="calendar_today" label="Calendar" link="/app/calendar"/>
             <navigation-button icon="settings" label="Settings" link="/app/settings"/>
-            <navigation-button
-                    (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })"
-                    icon="logout"
-                    label="Logout"
-            />
+            <navigation-button (click)="logout()" icon="logout" label="Logout"/>
         </div>
     </mat-sidenav>
 

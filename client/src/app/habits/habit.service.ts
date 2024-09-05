@@ -50,7 +50,7 @@ export class HabitService {
         this.habitDataService.getAllHabits().then((habits) => {
             this.habits.set(habits);
 
-            this.checkTrackingState(habits);
+            this.checkTrackingState();
         });
         // this.habits.set(habitsMock);
     }
@@ -71,13 +71,17 @@ export class HabitService {
     async completeHabit(habitId: string) {
         await this.habitDataService.completeHabit(habitId);
 
-        let habitCompleted = false;
+        let goalReached = false;
         this.habits.update((habits) => {
             return habits.map((habit) => {
                 if (habit.id !== habitId) {
                     return habit;
                 }
-                habitCompleted = habit.targetMetric.completions + 1 === habit.targetMetric.goal;
+                if (habit.targetMetric.type === "duration") {
+                    goalReached = (habit.timeTracked ?? 0) >= habit.targetMetric.goal;
+                } else {
+                    goalReached = habit.targetMetric.completions + 1 === habit.targetMetric.goal;
+                }
                 return {
                     ...habit,
                     targetMetric: {
@@ -88,7 +92,7 @@ export class HabitService {
             });
         });
 
-        if (habitCompleted) {
+        if (goalReached) {
             this.openCelebrationSnackBar();
         }
     }
@@ -113,11 +117,10 @@ export class HabitService {
         this.updateHabitTrackingState(habitId, true, timeTracked);
     }
 
-    async finishHabit(habitId: string) {
+    async finishHabit(habitId: string): Promise<boolean> {
         const habit = this.habits().find((habit) => habit.id === habitId);
         if (!habit) {
-            console.error("Habit not found");
-            return;
+            throw new Error("Habit not found");
         }
 
         const timeTracked = await this.habitTrackingService.stopTrackingHabit(habitId);
@@ -125,14 +128,19 @@ export class HabitService {
 
         if (timeTracked < habit.targetMetric.goal) {
             console.log("Habit was not completed, time tracked: ", timeTracked);
-            return;
+            return false;
         }
 
+        if (habit.targetMetric.completions > 0) {
+            console.log("Habit was already completed");
+            return false;
+        }
         console.log("Habit was completed");
-        return this.completeHabit(habitId);
+        await this.completeHabit(habitId);
+        return true;
     }
 
-    private async checkTrackingState(habits: Habit[]) {
+    private async checkTrackingState() {
         await this.habitTrackingService.databaseInitialized.promise;
         const allTrackingHabits = await this.habitTrackingService.getAllHabitTrackingEntries();
 

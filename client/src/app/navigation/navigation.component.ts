@@ -43,6 +43,7 @@ export class NavigationComponent {
         shareReplay()
     );
     private readonly dialog = inject(MatDialog);
+
     constructor() {
         console.log("NavigationComponent created");
     }
@@ -52,5 +53,9 @@ export class NavigationComponent {
             height: "800px",
             width: "600px"
         });
+    }
+
+    logout() {
+        this.auth.logout({ logoutParams: { returnTo: this.document.location.origin } });
     }
 }
