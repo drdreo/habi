@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from "@angular/core";
 
-type GroupedCollection<T, K extends keyof T> = {
+export type GroupedCollection<T, K extends keyof T> = {
     key: T[K];
     value: T[];
 };
@@ -10,7 +10,7 @@ type GroupedCollection<T, K extends keyof T> = {
     standalone: true
 })
 export class GroupByPipe implements PipeTransform {
-    transform<T, K extends keyof T>(collection: ReadonlyArray<T>, property: K): ReadonlyArray<GroupedCollection<T, K>> {
+    transform<T, K extends keyof T>(collection: ReadonlyArray<T>, property: K): Array<GroupedCollection<T, K>> {
         // prevents the application from breaking if the array of objects doesn't exist yet
         if (!collection) {
             return [];

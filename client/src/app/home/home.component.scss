@@ -23,3 +23,13 @@ filter-bar {
 .empty-state {
     align-self: center;
 }
+
+.habit-group {
+    margin: $gap;
+    
+    &__grid {
+        display: grid;
+        gap: $gap;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}

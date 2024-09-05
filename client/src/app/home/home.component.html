@@ -5,17 +5,15 @@
 
     <filter-bar></filter-bar>
 
-    @for (habitGroup of filteredHabits() | groupBy: "frequency"; track $index) {
+    @for (habitGroup of filteredHabits() | groupBy: "frequency" | sortByFrequency; track $index) {
         <div class="habit-group">
             <h3 mat-subheader>{{ habitGroup.key }}</h3>
 
-            <mat-grid-list [cols]="numCols()" gutterSize="16" rowHeight="2:1" style="margin: 16px">
+            <div class="habit-group__grid">
                 @for (habit of habitGroup.value; track habit.id) {
-                    <mat-grid-tile>
-                        <habit-card [habit]="habit"></habit-card>
-                    </mat-grid-tile>
+                    <habit-card [habit]="habit"></habit-card>
                 }
-            </mat-grid-list>
+            </div>
         </div>
     } @empty {
         <div class="empty-state">

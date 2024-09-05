@@ -47,12 +47,12 @@ export class HabitService {
     private readonly habitTrackingService = inject(HabitTrackingService);
 
     constructor() {
-        this.habitDataService.getAllHabits().then((habits) => {
-            this.habits.set(habits);
-
-            this.checkTrackingState(habits);
-        });
-        // this.habits.set(habitsMock);
+        // this.habitDataService.getAllHabits().then((habits) => {
+        //     this.habits.set(habits);
+        //
+        //     this.checkTrackingState(habits);
+        // });
+        this.habits.set(habitsMock);
     }
 
     async createHabit(habitInput: HabitInput) {

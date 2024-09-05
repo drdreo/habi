@@ -13,6 +13,7 @@ import { HabitEntryComponent } from "../habits/habit-entry/habit-entry.component
 import { Habit } from "../habits/habit.model";
 import { HabitService } from "../habits/habit.service";
 import { GroupByPipe } from "../utils/group-by.pipe";
+import { SortFrequencyPipe } from "../utils/sort-frequency.pipe";
 import { FilterBarComponent } from "./filter-bar/filter-bar.component";
 import { FiltersService } from "./filter-bar/filters.service";
 
@@ -33,7 +34,8 @@ import { FiltersService } from "./filter-bar/filters.service";
         MatChipsModule,
         MatFormFieldModule,
         FilterBarComponent,
-        GroupByPipe
+        GroupByPipe,
+        SortFrequencyPipe
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
