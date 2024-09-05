@@ -77,6 +77,11 @@ export class HabitTrackingService {
         return this.transactionPromise<HabitEntry[]>("readonly", (store) => store.getAll());
     }
 
+    deleteHabitTrackingEntry(habitEntryId: string) {
+        console.log(`deleting habit entry ${habitEntryId}`);
+        return this.transactionPromise<undefined>("readwrite", (store) => store.delete(habitEntryId));
+    }
+
     private async addHabitTrackingEntry(habitId: string) {
         const habitEntry: HabitEntry = {
             id: habitId,
@@ -103,10 +108,6 @@ export class HabitTrackingService {
             console.error("Error updating habit entry: ", error);
         }
         return habitEntry;
-    }
-
-    private deleteHabitTrackingEntry(habitEntryId: string) {
-        return this.transactionPromise<undefined>("readwrite", (store) => store.delete(habitEntryId));
     }
 
     private initDB() {

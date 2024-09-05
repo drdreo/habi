@@ -147,9 +147,16 @@ export class HabitService {
         this.habits.update((habits) => {
             return habits.map((habit) => {
                 const trackingEntry = allTrackingHabits.find((entry) => entry.id === habit.id);
+                const trackingExpiryDate = getHabitExpiryDate(habit);
+                const isTrackingEntryExpired =
+                    trackingEntry && trackingEntry.startTime + trackingExpiryDate < Date.now();
                 let isTracking;
                 let timeTracked;
-                if (trackingEntry) {
+                if (isTrackingEntryExpired) {
+                    console.log("Tracking entry expired");
+                    this.habitTrackingService.deleteHabitTrackingEntry(trackingEntry.id);
+                }
+                if (trackingEntry && !isTrackingEntryExpired) {
                     isTracking = trackingEntry.isTracking;
                     timeTracked = trackingEntry.timeTracked;
                 }
@@ -176,4 +183,39 @@ export class HabitService {
             });
         });
     }
+}
+
+function getHabitExpiryDate(habit: Habit): number {
+    switch (habit.frequency) {
+        case "daily":
+            return timeTillEndOfDay();
+        case "weekly":
+            return timeTillEndOfWeek();
+        case "monthly":
+            return timeTillEndOfMonth();
+        case "finite":
+            return Infinity;
+        default:
+            throw new Error("Invalid frequency");
+    }
+}
+
+function timeTillEndOfDay(): number {
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+    return endOfDay.getTime() - Date.now();
+}
+
+function timeTillEndOfWeek(): number {
+    const endOfWeek = new Date();
+    endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()));
+    endOfWeek.setHours(23, 59, 59, 999);
+    return endOfWeek.getTime() - Date.now();
+}
+
+function timeTillEndOfMonth(): number {
+    const endOfMonth = new Date();
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1, 1); // First day of next month
+    endOfMonth.setHours(0, 0, 0, -1); // Last millisecond of the current month
+    return endOfMonth.getTime() - Date.now();
 }

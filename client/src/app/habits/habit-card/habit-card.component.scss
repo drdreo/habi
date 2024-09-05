@@ -8,6 +8,13 @@
 .habit-card {
     overflow: hidden;
     
+    &__title {
+        max-width: 230px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     &__footer {
         padding: 16px;
     }
