@@ -6,9 +6,13 @@ Habit creator web app.
 
 ### NEXT
 
-- [ ] CRUD habit
-- [ ] data structure
-- [ ] Habits Overview design
+- [ ] habit location tracking PWA
+- [ ] habit details
+
+
+- [x] CRUD habit
+- [x] data structure
+- [x] Habits Overview design
 
 ## 26.8.2024
 
