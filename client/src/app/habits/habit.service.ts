@@ -117,7 +117,7 @@ export class HabitService {
         this.updateHabitTrackingState(habitId, true, timeTracked);
     }
 
-    async finishHabit(habitId: string): Promise<boolean> {
+    async stopHabit(habitId: string): Promise<boolean> {
         const habit = this.habits().find((habit) => habit.id === habitId);
         if (!habit) {
             throw new Error("Habit not found");
@@ -147,10 +147,10 @@ export class HabitService {
         this.habits.update((habits) => {
             return habits.map((habit) => {
                 const trackingEntry = allTrackingHabits.find((entry) => entry.id === habit.id);
-                let isTracking = false;
+                let isTracking;
                 let timeTracked;
                 if (trackingEntry) {
-                    isTracking = true;
+                    isTracking = trackingEntry.isTracking;
                     timeTracked = trackingEntry.timeTracked;
                 }
                 return {

@@ -100,8 +100,8 @@ export class HabitCardComponent {
         this.habitService.startHabit(this.habit().id);
     }
 
-    async finishHabit() {
-        await this.habitService.finishHabit(this.habit().id);
+    async stopHabit() {
+        await this.habitService.stopHabit(this.habit().id);
     }
 }
 
