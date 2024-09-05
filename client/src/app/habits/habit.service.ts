@@ -109,13 +109,13 @@ export class HabitService {
             console.error("Habit not found");
             return;
         }
-        await this.habitTrackingService.startTrackingHabit(habitId, habit.targetMetric.goal);
-        this.updateHabitTrackingState(habitId, true);
+        const timeLeft = await this.habitTrackingService.startTrackingHabit(habitId, habit.targetMetric.goal);
+        this.updateHabitTrackingState(habitId, true, timeLeft);
     }
 
     async finishHabit(habitId: string) {
         const timeLeft = await this.habitTrackingService.stopTrackingHabit(habitId);
-        this.updateHabitTrackingState(habitId, false);
+        this.updateHabitTrackingState(habitId, false, timeLeft);
 
         if (timeLeft > 0) {
             console.log("Habit was not completed, time left: ", timeLeft);
@@ -142,7 +142,7 @@ export class HabitService {
         });
     }
 
-    private updateHabitTrackingState(habitId: string, isTracking: boolean) {
+    private updateHabitTrackingState(habitId: string, isTracking: boolean, timeLeft: number) {
         this.habits.update((habits) => {
             return habits.map((habit) => {
                 if (habit.id !== habitId) {
@@ -150,7 +150,8 @@ export class HabitService {
                 }
                 return {
                     ...habit,
-                    isTracking
+                    isTracking,
+                    timeLeft
                 };
             });
         });

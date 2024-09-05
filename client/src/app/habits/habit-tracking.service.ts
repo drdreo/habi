@@ -39,16 +39,18 @@ export class HabitTrackingService {
         this.initDB();
     }
 
-    async startTrackingHabit(habitId: string, goalInMinutes: number) {
+    async startTrackingHabit(habitId: string, goalInMinutes: number): Promise<number> {
         const habitEntry = await this.getHabitTrackingEntry(habitId);
         if (habitEntry) {
             console.log("resuming tracking");
             habitEntry.startTime = Date.now();
             habitEntry.isTracking = true;
             await this.updateHabitTrackingEntry(habitEntry);
+            return habitEntry.timeLeft;
         } else {
             console.log("start new tracking");
             await this.addHabitTrackingEntry(habitId, goalInMinutes);
+            return goalInMinutes;
         }
     }
 
@@ -89,10 +91,18 @@ export class HabitTrackingService {
         } catch (error) {
             console.error("Error tracking habit: ", error);
         }
+        return habitEntry;
     }
 
-    private updateHabitTrackingEntry(habitEntry: HabitEntry) {
-        return this.transactionPromise<IDBValidKey>("readwrite", (store) => store.put(habitEntry));
+    private async updateHabitTrackingEntry(habitEntry: HabitEntry) {
+        // return this.transactionPromise<IDBValidKey>("readwrite", (store) => store.put(habitEntry));
+        try {
+            await this.transactionPromise<IDBValidKey>("readwrite", (store) => store.put(habitEntry));
+            console.log("Habit entry updated successfully");
+        } catch (error) {
+            console.error("Error updating habit entry: ", error);
+        }
+        return habitEntry;
     }
 
     private deleteHabitTrackingEntry(habitEntryId: string) {

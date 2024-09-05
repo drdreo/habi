@@ -58,15 +58,17 @@ export class HabitCardComponent {
     });
 
     habitProgress = computed(() => {
-        const habit = this.habit();
-        return (habit.targetMetric.completions * 100) / habit.targetMetric.goal;
+        const { targetMetric, timeLeft } = this.habit();
+        if (targetMetric.type === "duration" && typeof timeLeft !== "undefined") {
+            return 100 - (timeLeft * 100) / targetMetric.goal;
+        }
+        return (targetMetric.completions * 100) / targetMetric.goal;
     });
 
     progressTooltip = computed(() => {
-        const { targetMetric } = this.habit();
-        // TODO: figure out how to handle duration habits
+        const { timeLeft, targetMetric } = this.habit();
         if (targetMetric.type === "duration") {
-            return `${targetMetric.completions} of 1`;
+            return `${convertTime(timeLeft ?? 0)} of ${targetMetric.goal}min`;
         }
         return `${targetMetric.completions} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
@@ -101,4 +103,10 @@ export class HabitCardComponent {
     async finishHabit() {
         await this.habitService.finishHabit(this.habit().id);
     }
+}
+
+function convertTime(totalMinutes: number): string {
+    const minutes = Math.floor(totalMinutes);
+    const seconds = Math.round((totalMinutes - minutes) * 60);
+    return `${minutes}:${seconds}s`;
 }
