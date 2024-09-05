@@ -6,7 +6,7 @@ const STORE_NAME = "habit_tracking";
 type HabitEntry = {
     id: string;
     startTime: number;
-    timeLeft: number;
+    timeTracked: number;
     isTracking: boolean;
 };
 
@@ -39,18 +39,18 @@ export class HabitTrackingService {
         this.initDB();
     }
 
-    async startTrackingHabit(habitId: string, goalInMinutes: number): Promise<number> {
+    async startTrackingHabit(habitId: string): Promise<number> {
         const habitEntry = await this.getHabitTrackingEntry(habitId);
         if (habitEntry) {
             console.log("resuming tracking");
             habitEntry.startTime = Date.now();
             habitEntry.isTracking = true;
             await this.updateHabitTrackingEntry(habitEntry);
-            return habitEntry.timeLeft;
+            return habitEntry.timeTracked;
         } else {
             console.log("start new tracking");
-            await this.addHabitTrackingEntry(habitId, goalInMinutes);
-            return goalInMinutes;
+            await this.addHabitTrackingEntry(habitId);
+            return 0;
         }
     }
 
@@ -62,11 +62,11 @@ export class HabitTrackingService {
         }
         if (habitEntry.isTracking) {
             const timeTracked = (Date.now() - habitEntry.startTime) / 60000;
-            habitEntry.timeLeft -= timeTracked;
+            habitEntry.timeTracked += timeTracked;
             habitEntry.isTracking = false;
             await this.updateHabitTrackingEntry(habitEntry);
         }
-        return habitEntry.timeLeft;
+        return habitEntry.timeTracked;
     }
 
     getHabitTrackingEntry(habitId: string) {
@@ -77,11 +77,11 @@ export class HabitTrackingService {
         return this.transactionPromise<HabitEntry[]>("readonly", (store) => store.getAll());
     }
 
-    private async addHabitTrackingEntry(habitId: string, goalInMinutes: number) {
+    private async addHabitTrackingEntry(habitId: string) {
         const habitEntry: HabitEntry = {
             id: habitId,
             startTime: Date.now(),
-            timeLeft: goalInMinutes,
+            timeTracked: 0,
             isTracking: true
         };
 

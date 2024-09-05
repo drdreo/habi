@@ -24,7 +24,7 @@ export type Habit = {
         unit?: string;
     };
     isTracking?: boolean;
-    timeLeft?: number;
+    timeTracked?: number;
     createdAt: number;
 };
 

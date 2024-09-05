@@ -47,12 +47,12 @@ export class HabitService {
     private readonly habitTrackingService = inject(HabitTrackingService);
 
     constructor() {
-        // this.habitDataService.getAllHabits().then((habits) => {
-        //     this.habits.set(habits);
-        //
-        //     this.checkTrackingState(habits);
-        // });
-        this.habits.set(habitsMock);
+        this.habitDataService.getAllHabits().then((habits) => {
+            this.habits.set(habits);
+
+            this.checkTrackingState(habits);
+        });
+        // this.habits.set(habitsMock);
     }
 
     async createHabit(habitInput: HabitInput) {
@@ -109,16 +109,22 @@ export class HabitService {
             console.error("Habit not found");
             return;
         }
-        const timeLeft = await this.habitTrackingService.startTrackingHabit(habitId, habit.targetMetric.goal);
-        this.updateHabitTrackingState(habitId, true, timeLeft);
+        const timeTracked = await this.habitTrackingService.startTrackingHabit(habitId);
+        this.updateHabitTrackingState(habitId, true, timeTracked);
     }
 
     async finishHabit(habitId: string) {
-        const timeLeft = await this.habitTrackingService.stopTrackingHabit(habitId);
-        this.updateHabitTrackingState(habitId, false, timeLeft);
+        const habit = this.habits().find((habit) => habit.id === habitId);
+        if (!habit) {
+            console.error("Habit not found");
+            return;
+        }
 
-        if (timeLeft > 0) {
-            console.log("Habit was not completed, time left: ", timeLeft);
+        const timeTracked = await this.habitTrackingService.stopTrackingHabit(habitId);
+        this.updateHabitTrackingState(habitId, false, timeTracked);
+
+        if (timeTracked < habit.targetMetric.goal) {
+            console.log("Habit was not completed, time tracked: ", timeTracked);
             return;
         }
 
@@ -129,29 +135,35 @@ export class HabitService {
     private async checkTrackingState(habits: Habit[]) {
         await this.habitTrackingService.databaseInitialized.promise;
         const allTrackingHabits = await this.habitTrackingService.getAllHabitTrackingEntries();
-        const trackingHabitIds = new Set(allTrackingHabits.map((habit) => habit.id));
 
         this.habits.update((habits) => {
             return habits.map((habit) => {
-                const isTracking = trackingHabitIds.has(habit.id);
+                const trackingEntry = allTrackingHabits.find((entry) => entry.id === habit.id);
+                let isTracking = false;
+                let timeTracked;
+                if (trackingEntry) {
+                    isTracking = true;
+                    timeTracked = trackingEntry.timeTracked;
+                }
                 return {
                     ...habit,
-                    isTracking
+                    isTracking,
+                    timeTracked
                 };
             });
         });
     }
 
-    private updateHabitTrackingState(habitId: string, isTracking: boolean, timeLeft: number) {
+    private updateHabitTrackingState(habitId: string, isTracking: boolean, timeTracked: number) {
         this.habits.update((habits) => {
-            return habits.map((habit) => {
+            return habits.map((habit: Habit) => {
                 if (habit.id !== habitId) {
                     return habit;
                 }
                 return {
                     ...habit,
                     isTracking,
-                    timeLeft
+                    timeTracked
                 };
             });
         });

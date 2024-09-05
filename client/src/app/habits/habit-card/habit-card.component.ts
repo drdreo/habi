@@ -58,17 +58,17 @@ export class HabitCardComponent {
     });
 
     habitProgress = computed(() => {
-        const { targetMetric, timeLeft } = this.habit();
-        if (targetMetric.type === "duration" && typeof timeLeft !== "undefined") {
-            return 100 - (timeLeft * 100) / targetMetric.goal;
+        const { targetMetric, timeTracked } = this.habit();
+        if (targetMetric.type === "duration" && typeof timeTracked !== "undefined") {
+            return (timeTracked * 100) / targetMetric.goal;
         }
         return (targetMetric.completions * 100) / targetMetric.goal;
     });
 
     progressTooltip = computed(() => {
-        const { timeLeft, targetMetric } = this.habit();
+        const { timeTracked, targetMetric } = this.habit();
         if (targetMetric.type === "duration") {
-            return `${convertTime(timeLeft ?? 0)} of ${targetMetric.goal}min`;
+            return `${convertTime(timeTracked ?? 0)} of ${targetMetric.goal}min`;
         }
         return `${targetMetric.completions} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
