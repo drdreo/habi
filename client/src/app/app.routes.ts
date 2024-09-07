@@ -14,6 +14,10 @@ export const appRoutes: Route[] = [
                 loadComponent: () => import("./home/home.component").then((m) => m.HomeComponent)
             },
             {
+                path: "calendar",
+                loadComponent: () => import("./calendar/calendar.component").then((m) => m.CalendarComponent)
+            },
+            {
                 path: "settings",
                 loadComponent: () => import("./settings/settings.component").then((m) => m.SettingsComponent)
             }
