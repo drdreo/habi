@@ -8,12 +8,13 @@ import { authHttpInterceptorFn, provideAuth0 } from "@auth0/auth0-angular";
 
 import { environment } from "../environments/environment";
 import { appRoutes } from "./app.routes";
+import { swBypassInterceptor } from "./sw-bypasst.interceptor";
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideExperimentalZonelessChangeDetection(),
         provideRouter(appRoutes),
-        provideHttpClient(withInterceptors([authHttpInterceptorFn])),
+        provideHttpClient(withInterceptors([authHttpInterceptorFn, swBypassInterceptor])),
         provideAuth0({
             domain: environment.auth0.domain,
             clientId: environment.auth0.clientId,
