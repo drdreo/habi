@@ -55,6 +55,10 @@ export class HabitService {
         // this.habits.set(habitsMock);
     }
 
+    getHabit(habitId: string): Habit | undefined {
+        return this.habits().find((habit) => habit.id === habitId);
+    }
+
     async createHabit(habitInput: HabitInput) {
         const createdHabit = await this.habitDataService.createHabit(habitInput);
 

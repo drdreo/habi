@@ -1,5 +1,6 @@
 import { Route } from "@angular/router";
 import { AuthGuard } from "@auth0/auth0-angular";
+import { PageNotFoundComponent } from "./errors/not-found/not-found.component";
 import { LandingComponent } from "./landing/landing.component";
 
 export const appRoutes: Route[] = [
@@ -20,7 +21,13 @@ export const appRoutes: Route[] = [
             {
                 path: "settings",
                 loadComponent: () => import("./settings/settings.component").then((m) => m.SettingsComponent)
+            },
+            {
+                path: "habit/:id",
+                loadComponent: () =>
+                    import("./habits/habit-details/habit-details.component").then((m) => m.HabitDetailsComponent)
             }
         ]
-    }
+    },
+    { path: "**", component: PageNotFoundComponent }
 ];

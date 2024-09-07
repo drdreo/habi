@@ -30,6 +30,8 @@
     </mat-card-content>
 
     <mat-card-actions align="end">
+        <button [routerLink]="['/app/habit', habit().id]" mat-button>Details</button>
+
         @if (habit().targetMetric.type === "duration") {
             @if (habit().isTracking) {
                 <button mat-button (click)="stopHabit()">Stop</button>

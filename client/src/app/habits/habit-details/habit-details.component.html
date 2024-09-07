@@ -1,0 +1,12 @@
+@let h = habit();
+@if (h) {
+    <p>habit-details works! {{ h.id }}</p>
+
+
+    <button mat-button (click)="startLocationTracking()">
+        <mat-icon>location_on</mat-icon>
+        Start Tracking
+    </button>
+} @else {
+    no habit
+}

@@ -5,7 +5,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { RouterModule } from "@angular/router";
 import { AuthService } from "@auth0/auth0-angular";
-import { LoginComponent } from "../login/login.component";
+import { LoginComponent } from "./login/login.component";
 
 @Component({
     selector: "app-landing",

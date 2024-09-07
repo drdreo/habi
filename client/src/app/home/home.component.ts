@@ -8,6 +8,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatIcon } from "@angular/material/icon";
 import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
+import { RouterLink } from "@angular/router";
 import { HabitCardComponent } from "../habits/habit-card/habit-card.component";
 import { HabitEntryComponent } from "../habits/habit-entry/habit-entry.component";
 import { Habit } from "../habits/habit.model";
@@ -35,7 +36,8 @@ import { FiltersService } from "./filter-bar/filters.service";
         MatFormFieldModule,
         FilterBarComponent,
         GroupByPipe,
-        SortFrequencyPipe
+        SortFrequencyPipe,
+        RouterLink
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
