@@ -138,8 +138,8 @@ $_tertiary: map.merge(map.get($_palettes, tertiary), $_rest);
 
 $typography: (
     brand-family: "Abel",
+    plain-family: "Roboto Flex",
     bold-weight: 400,
-    plain-family: "Roboto Flex"
 );
 
 $light-theme: mat.define-theme(

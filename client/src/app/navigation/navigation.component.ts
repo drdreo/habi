@@ -50,8 +50,8 @@ export class NavigationComponent {
 
     openCreateHabitDialog() {
         this.dialog.open(CreateHabitComponent, {
-            height: "800px",
-            width: "600px"
+            // height: "800px",
+            width: "500px"
         });
     }
 

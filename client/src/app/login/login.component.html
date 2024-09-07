@@ -1,1 +1,11 @@
-<button (click)="login()">Log in</button>
+@if (auth.isAuthenticated$ | async) {
+    <button mat-stroked-button (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })">
+        <mat-icon>logout</mat-icon>
+        Log out
+    </button>
+} @else {
+    <button mat-stroked-button (click)="login()">
+        <mat-icon>login</mat-icon>
+        Log in
+    </button>
+}

@@ -1,13 +1,43 @@
-<p>landing works!</p>
+<mat-toolbar class="header">
+    @let isAuthenticated = auth.isAuthenticated$ | async;
+    @if (!isAuthenticated) {
+        <app-login></app-login>
+    } @else {
+        <button mat-button routerLink="/app/home" aria-label="Got to app button">
+            <mat-icon>home</mat-icon>
+            Go To App
+        </button>
+    }
+</mat-toolbar>
 
-@let isAuthenticated = auth.isAuthenticated$ | async;
-@if (!isAuthenticated) {
-    <app-login></app-login>
-} @else {
-    <button (click)="auth.logout({ logoutParams: { returnTo: document.location.origin } })">
-        Log out
-    </button>
+<div class="content">
+    <main class="main-content">
+        <div class="primary-container">
+            <h1 class="headline">Build Better <b>Habi</b>ts</h1>
 
-    <button routerLink="/app/home">App</button>
-}
+            <p class="text">
+                Set clear goals, track your progress, and stay motivated as you turn small actions into meaningful
+                routines. <br>
+                Start building a better you today.
+            </p>
 
+            <div class="cta">
+                <button aria-label="Got to app button" mat-flat-button routerLink="/app/home">Get started</button>
+            </div>
+        </div>
+
+        <div class="secondary-container">
+            <img src="images/main_hero_demo.svg"/>
+        </div>
+    </main>
+
+    <img class="divider" src="images/divider.svg" style="margin-top: 80px"/>
+
+    <div class="container" style="background: #d6e3ff; height: 600px; width: 100%"></div>
+
+    <h1 class="title">Resources</h1>
+
+    <div class="card">
+        Get started with habits
+    </div>
+</div>
