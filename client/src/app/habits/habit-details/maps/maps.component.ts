@@ -1,8 +1,6 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { ChangeDetectionStrategy, Component, OnInit } from "@angular/core";
 import { GoogleMapsModule } from "@angular/google-maps";
-
-interface Oninit {}
 
 @Component({
     selector: "tracking-map",
@@ -12,14 +10,17 @@ interface Oninit {}
     styleUrl: "./maps.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MapComponent implements Oninit {
+export class MapComponent implements OnInit {
     center = { lat: 0, lng: 0 };
     zoom = 14;
-    path: any[] = [];
+    path: { lat: number; lng: number }[] = [];
     polylineOptions = {
-        strokeColor: "#FF0000",
+        strokeColor: "#C42847",
         strokeOpacity: 1.0,
-        strokeWeight: 3
+        strokeWeight: 5
+    };
+    options: google.maps.MapOptions = {
+        mapTypeId: "hybrid"
     };
 
     ngOnInit() {

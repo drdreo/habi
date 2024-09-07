@@ -72,7 +72,7 @@ export class LocationService {
         });
     }
 
-    private handleError(error: any) {
+    private handleError(error: GeolocationPositionError) {
         console.error("Error: ", error);
     }
 }
