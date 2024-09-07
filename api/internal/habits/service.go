@@ -58,6 +58,7 @@ func (s *service) CreateHabit(ctx context.Context, userId string, body io.ReadCl
 	}(body)
 
 	var habitInput HabitInput
+	// TODO: refactor body out here
 	err := json.NewDecoder(body).Decode(&habitInput)
 	if err != nil {
 		return Habit{}, err

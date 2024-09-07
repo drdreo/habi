@@ -27,7 +27,7 @@ type habitRepository struct {
 	habitCompletionCollectionName string
 }
 
-func NewHabitRepository(db *mongo.Client) Repository {
+func NewRepository(db *mongo.Client) Repository {
 	var habitCollection = "habits"
 	if os.Getenv("MODE") == "development" {
 		habitCollection = "dev_habits"
@@ -252,7 +252,7 @@ func (r *habitRepository) DeleteById(ctx context.Context, userId string, habitId
 	defer cancel()
 
 	habitOId, _ := primitive.ObjectIDFromHex(habitId)
-	_,err := r.habitCollection.DeleteOne(ctx, bson.M{"_id": habitOId, "user_id": userId})
+	_, err := r.habitCollection.DeleteOne(ctx, bson.M{"_id": habitOId, "user_id": userId})
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
@@ -310,7 +310,13 @@ func (r *habitRepository) ArchiveById(ctx context.Context, userId string, habitI
 
 	id, _ := primitive.ObjectIDFromHex(habitId)
 	filter := bson.M{"user_id": userId, "_id": id}
-	update := bson.D{{"$set", bson.D{{"archived", true}}}}
+	update := bson.D{
+		{"$set", bson.D{
+			{"archived", true}}},
+		{"$set", bson.D{
+			{"updated_at", time.Now()},
+		}},
+	}
 
 	var updatedHabit Habit
 	err := r.habitCollection.FindOneAndUpdate(ctx, filter, update, options.FindOneAndUpdate().SetReturnDocument(options.After)).Decode(&updatedHabit)

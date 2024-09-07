@@ -31,3 +31,15 @@ export type Habit = {
 export type TargetMetricGoal = number;
 export type TargetMetricType = "quantity" | "duration";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "finite";
+
+export type CoordinateUpdate = {
+    lat: number;
+    lng: number;
+    accuracy?: number;
+    altitude?: number | null;
+};
+
+export type LocationUpdate = {
+    timestamp: Date;
+    coordinates: CoordinateUpdate[];
+};

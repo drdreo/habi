@@ -13,6 +13,7 @@
         "@angular-eslint/template-parser": "^18.0.1",
         "@angular/cli": "~18.2.0",
         "@angular/compiler-cli": "18.2.3",
+        "@angular/google-maps": "^18.2.3",
         "@angular/language-service": "18.2.3",
         "@angular/material": "18.2.3",
         "@angular/pwa": "^18.2.3",

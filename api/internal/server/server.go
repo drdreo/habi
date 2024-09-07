@@ -2,6 +2,7 @@ package server
 
 import (
 	"api/internal/habits"
+	"api/internal/tracking"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,21 +14,25 @@ import (
 )
 
 type Server struct {
-	port         int
-	db           database.Service
-	habitService habits.Service
+	port            int
+	db              database.Service
+	habitService    habits.Service
+	trackingService tracking.Service
 }
 
 func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	dbService := database.New()
-	habitRepo := habits.NewHabitRepository(dbService.GetDB())
+	habitRepo := habits.NewRepository(dbService.GetDB())
 	habitService := habits.NewService(habitRepo)
+	trackingRepo := tracking.NewRepository(dbService.GetDB())
+	trackingService := tracking.NewService(trackingRepo)
 
 	NewServer := &Server{
-		port:         port,
-		db:           dbService,
-		habitService: habitService,
+		port:            port,
+		db:              dbService,
+		habitService:    habitService,
+		trackingService: trackingService,
 	}
 
 	// Declare Server config

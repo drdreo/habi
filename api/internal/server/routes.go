@@ -1,6 +1,7 @@
 package server
 
 import (
+	"api/internal/tracking"
 	"encoding/json"
 	"log"
 	"log/slog"
@@ -28,10 +29,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("PUT /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.updateHabitByIdHandler)))
 	mux.Handle("DELETE /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.deleteHabitByIdHandler)))
 
+	// Tracking routes
+	mux.Handle("POST /api/habits/{habitId}/tracking", auth.AuthMiddleware(http.HandlerFunc(s.createTrackingSessionHandler)))
+	mux.Handle("PUT /api/habits/{habitId}/tracking", auth.AuthMiddleware(http.HandlerFunc(s.updateTrackingLocationHandler)))
+
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "DELETE"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type", "Origin", "Accept", "X-Requested-With"},
 		Debug:            false,
 	})
@@ -133,6 +138,7 @@ func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// TODO: Implement update habit
 	habit, err := s.habitService.GetHabitById(r.Context(), userId, habitId)
 	if err != nil {
 		slog.Error("failed to update habit", "err", err)
@@ -164,7 +170,6 @@ func (s *Server) deleteHabitByIdHandler(w http.ResponseWriter, r *http.Request) 
 
 	w.WriteHeader(http.StatusNoContent)
 }
-
 
 func (s *Server) completeHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Handling CompleteHabit request")
@@ -206,4 +211,54 @@ func (s *Server) archiveHabitByIdHandler(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(habit)
+}
+
+func (s *Server) createTrackingSessionHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling CreateTrackingSession request")
+	habitId := r.PathValue("habitId")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+
+	trackingSession, err := s.trackingService.Create(r.Context(), userId, habitId)
+	if err != nil {
+		slog.Error("failed to create tracking sessions", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(trackingSession)
+}
+
+
+func (s *Server) updateTrackingLocationHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling TrackingLocationUpdate request")
+	habitId := r.PathValue("habitId")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+
+	var locationUpdate tracking.LocationUpdate
+	err := json.NewDecoder(r.Body).Decode(&locationUpdate)
+	if err != nil {
+		slog.Error("failed to parse location update", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = s.trackingService.UpdateLocation(r.Context(), userId, habitId, locationUpdate)
+	if err != nil {
+		slog.Error("failed to update tracking location", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

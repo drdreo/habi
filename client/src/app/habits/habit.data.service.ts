@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { environment } from "../../environments/environment";
-import { Habit, HabitInput } from "./habit.model";
+import { Habit, HabitInput, LocationUpdate } from "./habit.model";
 
 @Injectable({
     providedIn: "root"
@@ -32,5 +32,17 @@ export class HabitDataService {
 
     archiveHabit(habitId: string) {
         return firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/archive`, undefined));
+    }
+
+    createTrackingSession(habitId: string) {
+        return firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/tracking`, undefined));
+    }
+
+    updateTrackingLocation(habitId: string, locationUpdate: LocationUpdate) {
+        return firstValueFrom(
+            this.http.put(`${environment.origins.api}/api/habits/${habitId}/tracking`, {
+                ...locationUpdate
+            })
+        );
     }
 }
