@@ -58,6 +58,10 @@ function getCompletionColor(completions: number, goal: number): string {
         return "#ffdea2";
     }
 
+    if (completions === 0) {
+        return "#f2f2f2";
+    }
+
     const baseRGB = { r: 54, g: 94, b: 157 };
     const ratio = Math.min(1, completions / goal);
     const newColor = {

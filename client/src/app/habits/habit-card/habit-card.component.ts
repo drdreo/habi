@@ -54,13 +54,6 @@ import { HabitService } from "../habit.service";
 })
 export class HabitCardComponent {
     habit = input.required<Habit>();
-
-    completeState: WritableSignal<"start" | "loading" | "success" | "reset"> = signal("start");
-
-    showCompleteButton = computed(() => {
-        return this.completeState() === "start" || this.completeState() === "reset";
-    });
-
     habitProgress = computed(() => {
         const { targetMetric, timeTracked } = this.habit();
         if (targetMetric.type === "duration" && typeof timeTracked !== "undefined") {
@@ -68,16 +61,26 @@ export class HabitCardComponent {
         }
         return (targetMetric.completions * 100) / targetMetric.goal;
     });
+    habitTimer = signal(0);
+    completeState: WritableSignal<"start" | "loading" | "success" | "reset"> = signal("start");
+    showCompleteButton = computed(() => {
+        return this.completeState() === "start" || this.completeState() === "reset";
+    });
+
+    private habitService = inject(HabitService);
+    private intervalId: number | undefined;
 
     progressTooltip = computed(() => {
         const { timeTracked, targetMetric } = this.habit();
         if (targetMetric.type === "duration") {
-            return `${convertTime(timeTracked ?? 0)} of ${targetMetric.goal}min`;
+            const habitTimer = this.habitTimer();
+            if (this.intervalId) {
+                return `${convertSecondsToTime(habitTimer)} of ${targetMetric.goal}min`;
+            }
+            return `${convertMinutesToTime(timeTracked ?? 0)} of ${targetMetric.goal}min`;
         }
         return `${targetMetric.completions} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
-
-    private habitService = inject(HabitService);
 
     async completeHabit() {
         this.completeState.set("loading");
@@ -102,15 +105,38 @@ export class HabitCardComponent {
 
     startHabit() {
         this.habitService.startHabit(this.habit().id);
+        this.startHabitTimer(this.habit().timeTracked);
     }
 
     async stopHabit() {
-        await this.habitService.stopHabit(this.habit().id);
+        this.habitService.stopHabit(this.habit().id);
+        this.stopHabitTimer();
+    }
+
+    private startHabitTimer(timeTracked?: number) {
+        this.habitTimer.set(timeTracked ? Math.round(timeTracked * 60) : 0);
+        this.intervalId = window.setInterval(() => {
+            this.habitTimer.update((time) => time + 1);
+        }, 1000);
+    }
+
+    private stopHabitTimer() {
+        clearInterval(this.intervalId);
+        this.intervalId = undefined;
+        this.habitTimer.set(0);
     }
 }
 
-function convertTime(totalMinutes: number): string {
+function convertMinutesToTime(totalMinutes: number): string {
     const minutes = Math.floor(totalMinutes);
-    const seconds = Math.round((totalMinutes - minutes) * 60);
+    let seconds = Math.round((totalMinutes - minutes) * 60).toString();
+    seconds = seconds.padStart(2, "0");
+    return `${minutes}:${seconds}s`;
+}
+
+function convertSecondsToTime(totalSeconds: number): string {
+    const minutes = Math.floor(totalSeconds / 60);
+    let seconds = (totalSeconds % 60).toString();
+    seconds = seconds.padStart(2, "0");
     return `${minutes}:${seconds}s`;
 }

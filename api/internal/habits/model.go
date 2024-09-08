@@ -57,12 +57,12 @@ type HistoricCompletionGroupKey struct {
 }
 
 type HistoricCompletion struct {
-	Date time.Time `json:"date" bson:"date"`
+	Date  time.Time `json:"date" bson:"date"`
 }
 
 type HistoricCompletionGroup struct {
 	GroupKey    HistoricCompletionGroupKey `json:"groupKey" bson:"_id"`
-	Completions []HistoricCompletion       `json:"completions" bson:"completions"`
+	Completions []HistoricCompletion `json:"completions" bson:"completions"`
 }
 
 type HabitDetails struct {

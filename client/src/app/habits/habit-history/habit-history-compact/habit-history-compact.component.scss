@@ -1,7 +1,7 @@
-
 .history-wrapper {
     display: inline-flex;
-    
+    flex-direction: row-reverse;
+
     .completion {
         border-radius: 10px / 5px; /* Creates an ellipse-like shape */
         display: inline-block;

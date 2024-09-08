@@ -72,6 +72,11 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 		return nil, err
 	}
 
+	// For each habit, fill in missing historic completions
+	for i, habit := range habits {
+		habits[i].HistoricCompletions = fillMissingDates(habit.Id, habit.HistoricCompletions, habit.Frequency)
+	}
+
 	slog.Info("Successfully got all habits")
 	for i, habit := range habits {
 		slog.Info("Habit "+strconv.Itoa(i), "habitId", habit.Id, "created_at", habit.CreatedAt, "completions", habit.TargetMetric.Completions, "name", habit.Name)
@@ -361,7 +366,7 @@ func getHistoryPipeline(habitCompletionCollectionName string) bson.D {
 																			bson.D{
 																				{"$dateToString",
 																					bson.D{
-																						{"format", "%Y-%U"},
+																						{"format", "%Y-W%V"},
 																						{"date", "$created_at"},
 																					},
 																				},
