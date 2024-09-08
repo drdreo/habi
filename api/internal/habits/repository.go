@@ -22,24 +22,22 @@ type Repository interface {
 }
 
 type habitRepository struct {
-	habitCollection               *mongo.Collection
-	habitCompletionCollection     *mongo.Collection
-	habitCompletionCollectionName string
+	habitCollection           *mongo.Collection
+	habitCompletionCollection *mongo.Collection
 }
 
 func NewRepository(db *mongo.Client) Repository {
 	var habitCollection = "habits"
+	var habitCompletionCollectionName = "habit_completions"
+
 	if os.Getenv("MODE") == "development" {
 		habitCollection = "dev_habits"
-	}
-	var habitCompletionCollectionName = "habit_completions"
-	if os.Getenv("MODE") == "development" {
 		habitCompletionCollectionName = "dev_habit_completions"
 	}
+
 	return &habitRepository{
-		habitCollection:               db.Database("habits").Collection(habitCollection),
-		habitCompletionCollection:     db.Database("habits").Collection(habitCompletionCollectionName),
-		habitCompletionCollectionName: habitCompletionCollectionName,
+		habitCollection:           db.Database("habits").Collection(habitCollection),
+		habitCompletionCollection: db.Database("habits").Collection(habitCompletionCollectionName),
 	}
 }
 
@@ -173,6 +171,7 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 
 	cursor, err := r.habitCollection.Aggregate(ctx, pipeline)
 	if err != nil {
+		slog.Warn("failed to aggregate habit and completions", "err", err)
 		return nil, err
 	}
 
@@ -182,6 +181,9 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 	}
 
 	slog.Info("Successfully got all habits")
+	for _, habit := range habits {
+		slog.Info("", "habitId", habit.Id, "completions", habit.TargetMetric.Completions)
+	}
 	return habits, nil
 }
 
@@ -204,7 +206,7 @@ func (r *habitRepository) GetById(ctx context.Context, userId string, habitId st
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
 			return Habit{}, errors.New("habit not found")
 		}
-		slog.Warn("failed to get habit", "err", err)
+		slog.Warn("failed to get habit", "habitId", habitId, "err", err)
 		return Habit{}, err
 	}
 
@@ -236,13 +238,13 @@ func (r *habitRepository) Create(ctx context.Context, userId string, habitInput 
 
 	res, err := r.habitCollection.InsertOne(ctx, habit)
 	if err != nil {
-		slog.Warn("failed to insert habit", "err", err)
+		slog.Warn("failed to create habit", "err", err)
 		return Habit{}, err
 	}
 
 	habit.Id = res.InsertedID.(primitive.ObjectID)
 
-	slog.Info("Successfully inserted habit into MongoDB")
+	slog.Info("Successfully created habit", "habitId", habit.Id)
 	return habit, nil
 }
 
@@ -258,11 +260,11 @@ func (r *habitRepository) DeleteById(ctx context.Context, userId string, habitId
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
 			return errors.New("habit not found")
 		}
-		slog.Warn("failed to delete habit", "err", err)
+		slog.Warn("failed to delete habit", "habitId", habitId, "err", err)
 		return err
 	}
 
-	slog.Info("Successfully deleted habit")
+	slog.Info("Successfully deleted habit", "habitId", habitId)
 	return nil
 }
 
@@ -280,7 +282,7 @@ func (r *habitRepository) CompleteById(ctx context.Context, userId string, habit
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
 			return nil, errors.New("habit not found")
 		}
-		slog.Warn("failed to retrieve habit", "err", err)
+		slog.Warn("failed to find habit", "habitId", habitId, "err", err)
 		return nil, err
 	}
 
@@ -293,13 +295,13 @@ func (r *habitRepository) CompleteById(ctx context.Context, userId string, habit
 		UpdatedAt: time.Now(),
 	}
 
-	_, err = r.habitCompletionCollection.InsertOne(ctx, habitCompletion)
+	res, err := r.habitCompletionCollection.InsertOne(ctx, habitCompletion)
 	if err != nil {
-		slog.Warn("failed to insert habit completion", "err", err)
+		slog.Warn("failed to insert habit completion", "habitId", habitId, "err", err)
 		return nil, err
 	}
 
-	slog.Info("Successfully inserted habit completion")
+	slog.Info("Successfully inserted habit completion", "completionId", res.InsertedID)
 	return &habitCompletion, nil
 }
 
@@ -325,10 +327,10 @@ func (r *habitRepository) ArchiveById(ctx context.Context, userId string, habitI
 			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
 			return Habit{}, errors.New("habit not found")
 		}
-		slog.Warn("failed to update habit", "err", err)
+		slog.Warn("failed to update habit", "habitId", habitId, "err", err)
 		return Habit{}, err
 	}
 
-	slog.Info("Successfully archived habit")
+	slog.Info("Successfully archived habit", "habitId", habitId)
 	return updatedHabit, nil
 }
