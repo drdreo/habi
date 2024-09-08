@@ -52,3 +52,17 @@ export type LocationUpdate = {
     timestamp: Date;
     coordinates: CoordinateUpdate[];
 };
+
+export type TrackingSession = {
+    habitId: string;
+    startTime: string;
+    endTime: string;
+    totalDistance?: number;
+    totalDuration?: number;
+    location: {
+        type: "LineString";
+        coordinates: [number, number, number][];
+    };
+    update_at: string;
+    created_at: string;
+};

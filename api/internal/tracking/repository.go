@@ -15,6 +15,7 @@ import (
 type Repository interface {
 	Create(ctx context.Context, userId string, habitId string) (*Tracking, error)
 	UpdateLocation(ctx context.Context, userId string, habitId string, locationUpdate LocationUpdate) error
+	Get(ctx context.Context, userId string, habitId string) (*Tracking, error)
 }
 
 type trackingRepository struct {
@@ -32,6 +33,27 @@ func NewRepository(db *mongo.Client) Repository {
 	return &trackingRepository{
 		trackingCollection: db.Database("habits").Collection(trackingCollection),
 	}
+}
+
+
+func (r *trackingRepository) Get(ctx context.Context, userId string, habitId string) (*Tracking, error) {
+	// timeout for the database operation
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	habitOId, _ := primitive.ObjectIDFromHex(habitId)
+	filter := bson.M{"user_id": userId, "habit_id": habitOId}
+	opts:= options.FindOne().SetSort(bson.D{{"created_at", -1}})
+
+	var trackingSess Tracking
+	err := r.trackingCollection.FindOne(ctx, filter, opts).Decode(&trackingSess)
+	if err != nil {
+		slog.Warn("failed to get tracking session", "err", err)
+		return nil, err
+	}
+
+	slog.Info("Successfully got tracking session")
+	return &trackingSess, nil
 }
 
 func (r *trackingRepository) Create(ctx context.Context, userId string, habitId string) (*Tracking, error) {

@@ -31,6 +31,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("DELETE /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.deleteHabitByIdHandler)))
 
 	// Tracking routes
+	mux.Handle("GET /api/habits/{habitId}/tracking", auth.AuthMiddleware(http.HandlerFunc(s.getTrackingSessionByHabitIdHandler)))
 	mux.Handle("POST /api/habits/{habitId}/tracking", auth.AuthMiddleware(http.HandlerFunc(s.createTrackingSessionHandler)))
 	mux.Handle("PUT /api/habits/{habitId}/tracking", auth.AuthMiddleware(http.HandlerFunc(s.updateTrackingLocationHandler)))
 
@@ -220,6 +221,27 @@ func (s *Server) archiveHabitByIdHandler(w http.ResponseWriter, r *http.Request)
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(habit)
+}
+
+func (s *Server) getTrackingSessionByHabitIdHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling GetTrackingSession request")
+	habitId := r.PathValue("habitId")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+
+	trackingSession, err := s.trackingService.Get(r.Context(), userId, habitId)
+	if err != nil {
+		slog.Error("failed to get tracking sessions", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(trackingSession)
 }
 
 func (s *Server) createTrackingSessionHandler(w http.ResponseWriter, r *http.Request) {
