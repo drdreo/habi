@@ -14,7 +14,7 @@ import (
 )
 
 type Repository interface {
-	Create(ctx context.Context, userId string, habit HabitInput) (Habit, error)
+	Create(ctx context.Context, userId string, habit *HabitInput) (Habit, error)
 	GetAll(ctx context.Context, userId string) ([]Habit, error)
 	GetById(ctx context.Context, userId string, habitId string) (Habit, error)
 	DeleteById(ctx context.Context, userId string, habitId string) error
@@ -217,7 +217,7 @@ func (r *habitRepository) GetById(ctx context.Context, userId string, habitId st
 	return habit, nil
 }
 
-func (r *habitRepository) Create(ctx context.Context, userId string, habitInput HabitInput) (Habit, error) {
+func (r *habitRepository) Create(ctx context.Context, userId string, habitInput *HabitInput) (Habit, error) {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()

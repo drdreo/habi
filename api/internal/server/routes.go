@@ -1,7 +1,6 @@
 package server
 
 import (
-	"api/internal/tracking"
 	"encoding/json"
 	"log"
 	"log/slog"
@@ -10,6 +9,8 @@ import (
 	"github.com/rs/cors"
 
 	"api/internal/authenticator"
+	"api/internal/habits"
+	"api/internal/tracking"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -116,7 +117,15 @@ func (s *Server) createHabitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habit, err := s.habitService.CreateHabit(r.Context(), userId, r.Body)
+	var habitInput habits.HabitInput
+	err := json.NewDecoder(r.Body).Decode(&habitInput)
+	if err != nil {
+		slog.Error("failed to parse habit input", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	habit, err := s.habitService.CreateHabit(r.Context(), userId, &habitInput)
 	if err != nil {
 		slog.Error("failed to create habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)

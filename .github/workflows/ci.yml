@@ -57,13 +57,26 @@ jobs:
               with:
                 main-branch-name: "master"
 
-            # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
+            - name: "NX: check affected client"
+              id: nx_affected_client
+              uses: ./.github/actions/nx-affected
+              with:
+                projects: 'client'
+
+            - name: "NX: check affected api"
+              id: nx_affected_api
+              uses: ./.github/actions/nx-affected
+              with:
+                projects: 'api'
+
+          # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
             # - run: npx nx-cloud record -- echo Hello World
             # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
           # --no-agents disables remote task execution
             - run: npx nx affected -t lint test build
 
             - name: "Cloudflare: publish"
+              if: ${{steps.nx_affected_client.outputs.is_affected == 'true'}}
               uses: cloudflare/pages-action@v1
               with:
                 apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -79,6 +92,7 @@ jobs:
                 wranglerVersion: '3'
 
             - name: Log in to the Container registry
+              if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
               uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
               with:
                 registry: ${{ env.REGISTRY }}
@@ -86,6 +100,7 @@ jobs:
                 password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: "Docker: extract metadata (tags, labels)"
+              if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
               id: meta
               uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
               with:
@@ -95,6 +110,7 @@ jobs:
                   type=raw,value=latest,enable={{is_default_branch}}
 
             - name: "Docker: build and push"
+              if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
               id: push
               uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
               with:
@@ -105,6 +121,7 @@ jobs:
                 labels: ${{ steps.meta.outputs.labels }}
 
             - name: "Docker: generate artifact attestation"
+              if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
               uses: actions/attest-build-provenance@v1
               with:
                 subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
@@ -112,6 +129,7 @@ jobs:
                 push-to-registry: true
 
             - name: "railway: re-deploy"
+              if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
               run: railway redeploy --service 'Habit Api' --yes
               env:
                 RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

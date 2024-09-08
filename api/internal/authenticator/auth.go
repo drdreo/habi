@@ -3,7 +3,7 @@ package authenticator
 import (
 	"context"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -33,7 +33,7 @@ func New() (*Authenticator, error) {
 		Scopes:   []string{oidc.ScopeOpenID, "profile"},
 	}
 
-	log.Print("Authenticator created")
+	slog.Debug("Authenticator created")
 	return &Authenticator{
 		Provider: provider,
 		Config:   conf,
@@ -67,7 +67,7 @@ func (a *Authenticator) AuthMiddleware(next http.Handler) http.Handler {
 		var claims struct {
 			UserId string `json:"sub"`
 		}
-		if err := idToken.Claims(&claims); err != nil {
+		if err = idToken.Claims(&claims); err != nil {
 			http.Error(w, "Failed to parse claims: "+err.Error(), http.StatusUnauthorized)
 			return
 		}

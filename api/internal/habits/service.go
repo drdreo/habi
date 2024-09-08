@@ -2,16 +2,14 @@ package habits
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"io"
 	"log/slog"
 )
 
 type Service interface {
 	GetAllHabits(ctx context.Context, userId string) ([]Habit, error)
 	GetHabitById(ctx context.Context, userId string, habitId string) (Habit, error)
-	CreateHabit(ctx context.Context, userId string, body io.ReadCloser) (Habit, error)
+	CreateHabit(ctx context.Context, userId string, habitInput *HabitInput) (Habit, error)
 	DeleteHabitById(ctx context.Context, userId string, habitId string) error
 	CompleteHabitById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error)
 	ArchiveHabitById(ctx context.Context, userId string, habitId string) (Habit, error)
@@ -47,24 +45,10 @@ func (s *service) GetHabitById(ctx context.Context, userId string, habitId strin
 	return habit, nil
 }
 
-func (s *service) CreateHabit(ctx context.Context, userId string, body io.ReadCloser) (Habit, error) {
+func (s *service) CreateHabit(ctx context.Context, userId string, habitInput *HabitInput) (Habit, error) {
 	slog.Debug("Creating habit")
 
-	defer func(body io.ReadCloser) {
-		err := body.Close()
-		if err != nil {
-			slog.Warn("Failed to close body", "err", err)
-		}
-	}(body)
-
-	var habitInput HabitInput
-	// TODO: refactor body out here
-	err := json.NewDecoder(body).Decode(&habitInput)
-	if err != nil {
-		return Habit{}, err
-	}
-
-	err = validateHabit(habitInput)
+	err := validateHabit(habitInput)
 	if err != nil {
 		return Habit{}, err
 	}
@@ -98,7 +82,7 @@ func (s *service) ArchiveHabitById(ctx context.Context, userId string, habitId s
 	return habit, nil
 }
 
-func validateHabit(h HabitInput) error {
+func validateHabit(h *HabitInput) error {
 	if h.Name == "" {
 		return errors.New("habit name cannot be empty")
 	}

@@ -1,0 +1,53 @@
+name: 'Nx Affected'
+description: Outputs 'true' if the input project was affected on a PR. 'false' otherwise
+inputs:
+  projects:
+    description: Comma separated Nx project names we want to check if it was affected
+    required: true
+    default: 'ad'
+
+outputs:
+  is_affected:
+    description: Boolean value.
+    value: ${{ steps.check_affected.outputs.is_affected }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Nx prepare affected
+      uses: ./.github/actions/nx-prepare-affected
+
+    - name: 'Check affected projects'
+      id: check_affected
+      shell: bash
+      run: |
+        IFS=',' read -r -a projects <<< "${{ inputs.projects }}"
+        
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Workflow was triggered manually."
+            echo "is_affected=true" >> $GITHUB_OUTPUT
+            exit 0
+        fi
+        
+        affected_projects=$(npx nx show projects --affected)
+        
+        # Check if affected projects exist
+        if [ -z "$affected_projects" ]; then
+          echo "No affected projects."
+          exit 0
+        fi
+        
+        echo "Affected projects: $affected_projects"
+        
+        for projectName in "${projects[@]}"
+        do
+          echo "Testing $projectName"
+          if echo "$affected_projects" | grep -q "${projectName}$"; then
+            echo "is_affected=true" >> $GITHUB_OUTPUT
+            echo " - affected"
+            exit 0
+          else
+            echo "is_affected=false" >> $GITHUB_OUTPUT
+            echo " - NOT affected"
+          fi
+        done
