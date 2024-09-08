@@ -1,0 +1,8 @@
+<div class="history-wrapper">
+    @for (completion of completions(); track $index) {
+        <div class="completion"
+             [matTooltip]="completion.tooltip"
+             [style.background-color]="completion.color">
+        </div>
+    }
+</div>

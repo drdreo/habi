@@ -4,10 +4,10 @@
         <mat-card-title-group>
             <mat-card-title class="habit-card__title">{{ habit().name }}</mat-card-title>
 
-            <mat-card-subtitle matTooltip="Current Streak 3 days">
-                <mat-icon size="8">mode_heat</mat-icon>
-                3 days
-            </mat-card-subtitle>
+            <!--            <mat-card-subtitle matTooltip="Current Streak 3 days">-->
+            <!--                <mat-icon size="8">mode_heat</mat-icon>-->
+            <!--                3 days-->
+            <!--            </mat-card-subtitle>-->
         </mat-card-title-group>
         <button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" mat-icon-button>
             <mat-icon>more_vert</mat-icon>
@@ -28,6 +28,8 @@
     <mat-card-content>
         <span>{{ progressTooltip() }}</span>
     </mat-card-content>
+
+    <habit-history-compact></habit-history-compact>
 
     <mat-card-actions align="end">
         <button [routerLink]="['/app/habit', habit().id]" mat-button>Details</button>

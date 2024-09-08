@@ -10,6 +10,7 @@ import { MatProgressBar } from "@angular/material/progress-bar";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatTooltip } from "@angular/material/tooltip";
 import { RouterLink } from "@angular/router";
+import { HabitHistoryCompactComponent } from "../habit-history/habit-history-compact/habit-history-compact.component";
 import { Habit } from "../habit.model";
 import { HabitService } from "../habit.service";
 
@@ -27,7 +28,8 @@ import { HabitService } from "../habit.service";
         MatProgressBar,
         MatTooltip,
         MatProgressSpinner,
-        RouterLink
+        RouterLink,
+        HabitHistoryCompactComponent
     ],
     templateUrl: "./habit-card.component.html",
     styleUrl: "./habit-card.component.scss",

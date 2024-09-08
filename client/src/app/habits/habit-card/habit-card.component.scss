@@ -1,13 +1,15 @@
 @use "@angular/material" as mat;
 @use "../../../themes/m3-theme";
 
+$gap: 16px;
+
 :host {
     width: 100%;
 }
 
 .habit-card {
     overflow: hidden;
-    
+
     &__title {
         max-width: 230px;
         overflow: hidden;
@@ -16,10 +18,17 @@
     }
 
     &__footer {
-        padding: 16px;
+        padding: $gap;
     }
     
     .complete-checkmark {
         @include mat.icon-color(m3-theme.$light-theme, $color-variant: primary);
     }
+}
+
+habit-history-compact {
+    bottom: $gap;
+    display: block;
+    left: $gap;
+    position: absolute;
 }
