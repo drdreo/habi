@@ -75,20 +75,13 @@ jobs:
           # --no-agents disables remote task execution
             - run: npx nx affected -t lint test build
 
-            - name: "Cloudflare: publish"
+            - name: "Cloudflare: deploy"
               if: ${{steps.nx_affected_client.outputs.is_affected == 'true'}}
-              uses: cloudflare/pages-action@v1
+              uses: cloudflare/wrangler-action@v3
               with:
                 apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
                 accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-                projectName: ${{ vars.CLOUDFLARE_PROJECT_NAME }}
-                directory: dist/client/browser
-                # Optional: Enable this if you want to have GitHub Deployments triggered
-                gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-                # Optional: Switch what branch you are publishing to.
-                # By default this will be the branch which triggered this workflow
-                branch: main
-                # Optional: Change the Wrangler version, allows you to point to a specific version or a tag such as `beta`
+                command: pages deploy dist/client/browser --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME }}
                 wranglerVersion: '3'
 
             - name: Log in to the Container registry
