@@ -55,10 +55,35 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 	pipeline := mongo.Pipeline{
 		bson.D{{"$match", bson.D{{"user_id", userId}}}},
 
-		bson.D{
+		getCurrentCompletionsPipeline(r.habitCompletionCollectionName),
+		bson.D{{"$addFields", bson.D{{"target_metric.completions", bson.D{{"$size", "$completions"}}}}}},
+
+		getHistoryPipeline(r.habitCompletionCollectionName),
+	}
+
+	cursor, err := r.habitCollection.Aggregate(ctx, pipeline)
+	if err != nil {
+		slog.Warn("failed to aggregate habit and completions", "err", err)
+		return nil, err
+	}
+
+	var habits []Habit
+	if err = cursor.All(ctx, &habits); err != nil {
+		return nil, err
+	}
+
+	slog.Info("Successfully got all habits")
+	for i, habit := range habits {
+		slog.Info("Habit "+strconv.Itoa(i), "habitId", habit.Id, "created_at", habit.CreatedAt, "completions", habit.TargetMetric.Completions, "name", habit.Name)
+	}
+	return habits, nil
+}
+
+func getCurrentCompletionsPipeline(habitCompletionCollectionName string) bson.D {
+	return bson.D{
 			{"$lookup",
 				bson.D{
-					{"from", r.habitCompletionCollectionName},
+					{"from", habitCompletionCollectionName},
 					{"localField", "_id"},
 					{"foreignField", "habit_id"},
 					{"as", "completions"},
@@ -169,26 +194,230 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 					},
 				},
 			},
+		}
+}
+
+func getHistoryPipeline(habitCompletionCollectionName string) bson.D {
+	return bson.D{
+		{"$lookup",
+			bson.D{
+				{"from", habitCompletionCollectionName},
+				{"localField", "_id"},
+				{"foreignField", "habit_id"},
+				{"as", "historic_completions"},
+				{"let", bson.D{{"frequency", "$frequency"}}},
+				{"pipeline",
+					bson.A{
+						bson.D{
+							{"$addFields",
+								bson.D{
+									{"cutoffDate",
+										bson.D{
+											{"$switch",
+												bson.D{
+													{"branches",
+														bson.A{
+															bson.D{
+																{"case",
+																	bson.D{
+																		{"$eq",
+																			bson.A{
+																				"$$frequency",
+																				"daily",
+																			},
+																		},
+																	},
+																},
+																{"then",
+																	bson.D{
+																		{"$dateSubtract",
+																			bson.D{
+																				{"startDate", "$$NOW"},
+																				{"unit", "day"},
+																				{"amount", 5},
+																			},
+																		},
+																	},
+																},
+															},
+															bson.D{
+																{"case",
+																	bson.D{
+																		{"$eq",
+																			bson.A{
+																				"$$frequency",
+																				"weekly",
+																			},
+																		},
+																	},
+																},
+																{"then",
+																	bson.D{
+																		{"$dateSubtract",
+																			bson.D{
+																				{"startDate", "$$NOW"},
+																				{"unit", "week"},
+																				{"amount", 5},
+																			},
+																		},
+																	},
+																},
+															},
+															bson.D{
+																{"case",
+																	bson.D{
+																		{"$eq",
+																			bson.A{
+																				"$$frequency",
+																				"monthly",
+																			},
+																		},
+																	},
+																},
+																{"then",
+																	bson.D{
+																		{"$dateSubtract",
+																			bson.D{
+																				{"startDate", "$$NOW"},
+																				{"unit", "month"},
+																				{"amount", 5},
+																			},
+																		},
+																	},
+																},
+															},
+														},
+													},
+													{"default", "$$NOW"},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						bson.D{
+							{"$match",
+								bson.D{
+									{"$expr",
+										bson.D{
+											{"$gte",
+												bson.A{
+													"$created_at",
+													"$cutoffDate",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						bson.D{
+							{"$group",
+								bson.D{
+									{"_id",
+										bson.D{
+											{"habit_id", "$habit_id"},
+											{"date",
+												bson.D{
+													{"$switch",
+														bson.D{
+															{"branches",
+																bson.A{
+																	bson.D{
+																		{"case",
+																			bson.D{
+																				{"$eq",
+																					bson.A{
+																						"$$frequency",
+																						"daily",
+																					},
+																				},
+																			},
+																		},
+																		{"then",
+																			bson.D{
+																				{"$dateToString",
+																					bson.D{
+																						{"format", "%Y-%m-%d"},
+																						{"date", "$created_at"},
+																					},
+																				},
+																			},
+																		},
+																	},
+																	bson.D{
+																		{"case",
+																			bson.D{
+																				{"$eq",
+																					bson.A{
+																						"$$frequency",
+																						"weekly",
+																					},
+																				},
+																			},
+																		},
+																		{"then",
+																			bson.D{
+																				{"$dateToString",
+																					bson.D{
+																						{"format", "%Y-%U"},
+																						{"date", "$created_at"},
+																					},
+																				},
+																			},
+																		},
+																	},
+																	bson.D{
+																		{"case",
+																			bson.D{
+																				{"$eq",
+																					bson.A{
+																						"$$frequency",
+																						"monthly",
+																					},
+																				},
+																			},
+																		},
+																		{"then",
+																			bson.D{
+																				{"$dateToString",
+																					bson.D{
+																						{"format", "%Y-%m"},
+																						{"date", "$created_at"},
+																					},
+																				},
+																			},
+																		},
+																	},
+																},
+															},
+															{"default", "$created_at"},
+														},
+													},
+												},
+											},
+										},
+									},
+									{"completions",
+										bson.D{
+											{"$push",
+												bson.D{
+													{"date", "$created_at"},
+													{"value", "$value"},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+						bson.D{{"$sort", bson.D{{"_id.date", -1}}}},
+					},
+				},
+			},
 		},
-		bson.D{{"$addFields", bson.D{{"target_metric.completions", bson.D{{"$size", "$completions"}}}}}},
 	}
-
-	cursor, err := r.habitCollection.Aggregate(ctx, pipeline)
-	if err != nil {
-		slog.Warn("failed to aggregate habit and completions", "err", err)
-		return nil, err
-	}
-
-	var habits []Habit
-	if err = cursor.All(ctx, &habits); err != nil {
-		return nil, err
-	}
-
-	slog.Info("Successfully got all habits")
-	for i, habit := range habits {
-		slog.Info("Habit "+strconv.Itoa(i), "habitId", habit.Id, "created_at", habit.CreatedAt, "completions", habit.TargetMetric.Completions, "name", habit.Name)
-	}
-	return habits, nil
 }
 
 func (r *habitRepository) GetById(ctx context.Context, userId string, habitId string) (Habit, error) {

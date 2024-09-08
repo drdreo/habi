@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, input, Signal } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Habit } from "../../habit.model";
 
@@ -18,19 +18,38 @@ type HistoryCompletion = {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HabitHistoryCompactComponent {
-    completions = signal<HistoryCompletion[]>([]);
+    completions: Signal<HistoryCompletion[]>;
+    habit = input.required<Habit>();
 
     constructor() {
-        this.completions.set(Array.from({ length: 5 }, getCompletionMock));
+        // this.completions = signal(Array.from({ length: 5 }, getCompletionMock));
+
+        this.completions = computed(() => convertHabitToCompletion(this.habit()));
     }
 }
 
-function getCompletionMock(habit: Habit): HistoryCompletion {
-    const value = Math.floor(Math.random() * 10);
+function convertHabitToCompletion(habit: Habit): HistoryCompletion[] {
+    if (!habit.historicCompletions) {
+        return [];
+    }
+    return habit.historicCompletions.map((completion) => {
+        const completions = completion.completions.length;
+        return {
+            completions,
+            color: getCompletionColor(completions, habit.targetMetric.goal),
+            tooltip: `${completion.groupKey.date}: ${completions} / ${habit.targetMetric.goal}`
+        };
+    });
+}
+
+let mockValue = 0;
+
+function getCompletionMock(): HistoryCompletion {
+    const goal = 8;
     return {
-        completions: value,
-        tooltip: new Date().getDay().toString(),
-        color: getCompletionColor(value, 8)
+        completions: mockValue++,
+        tooltip: `${mockValue} / ${goal}`,
+        color: getCompletionColor(mockValue, goal)
     };
 }
 
@@ -42,9 +61,9 @@ function getCompletionColor(completions: number, goal: number): string {
     const baseRGB = { r: 54, g: 94, b: 157 };
     const ratio = Math.min(1, completions / goal);
     const newColor = {
-        r: Math.floor(baseRGB.r * (1 - ratio) + 255 * ratio),
-        g: Math.floor(baseRGB.g * (1 - ratio) + 255 * ratio),
-        b: Math.floor(baseRGB.b * (1 - ratio) + 255 * ratio)
+        r: Math.floor(255 * (1 - ratio) + baseRGB.r * ratio),
+        g: Math.floor(255 * (1 - ratio) + baseRGB.g * ratio),
+        b: Math.floor(255 * (1 - ratio) + baseRGB.b * ratio)
     };
 
     return `rgb(${newColor.r}, ${newColor.g}, ${newColor.b})`;

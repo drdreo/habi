@@ -29,7 +29,7 @@
         <span>{{ progressTooltip() }}</span>
     </mat-card-content>
 
-    <habit-history-compact></habit-history-compact>
+    <habit-history-compact [habit]="habit()"></habit-history-compact>
 
     <mat-card-actions align="end">
         <button [routerLink]="['/app/habit', habit().id]" mat-button>Details</button>

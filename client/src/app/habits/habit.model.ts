@@ -23,6 +23,7 @@ export type Habit = {
         completions: number;
         unit?: string;
     };
+    historicCompletions?: HistoricCompletion[];
     isTracking?: boolean;
     timeTracked?: number;
     createdAt: number;
@@ -31,6 +32,14 @@ export type Habit = {
 export type TargetMetricGoal = number;
 export type TargetMetricType = "quantity" | "duration";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "finite";
+
+export type HistoricCompletion = {
+    groupKey: {
+        date: string;
+        habitId: string;
+    };
+    completions: { date: string }[];
+};
 
 export type CoordinateUpdate = {
     lat: number;

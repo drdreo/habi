@@ -27,7 +27,7 @@ $gap: 16px;
 }
 
 habit-history-compact {
-    bottom: $gap;
+    bottom: calc($gap + 6px);
     display: block;
     left: $gap;
     position: absolute;
