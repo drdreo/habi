@@ -33,7 +33,7 @@ var habitCompletionMock = HabitCompletion{
 	UserId:  "testUserId",
 }
 
-func (m *RepositoryMock) Create(ctx context.Context, userId string, habit HabitInput) (Habit, error) {
+func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *HabitInput) (Habit, error) {
 	return Habit{
 		Id:          primitive.NewObjectID(),
 		UserId:      userId,

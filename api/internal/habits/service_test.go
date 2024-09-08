@@ -2,11 +2,8 @@ package habits_test
 
 import (
 	"api/internal/habits"
-	"bytes"
 	"context"
-	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"io"
 	"testing"
 )
 
@@ -26,10 +23,7 @@ func TestCreateHabit(t *testing.T) {
 		},
 	}
 
-	body, _ := json.Marshal(habitInput)
-	r := io.NopCloser(bytes.NewReader(body))
-
-	habit, err := service.CreateHabit(context.Background(), "testUserId", r)
+	habit, err := service.CreateHabit(context.Background(), "testUserId", &habitInput)
 	assert.NoError(t, err)
 	assert.Equal(t, "Test Habit", habit.Name)
 	assert.Equal(t, "testUserId", habit.UserId)
