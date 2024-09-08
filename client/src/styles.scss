@@ -27,6 +27,7 @@ html {
     //@media (prefers-color-scheme: dark) {
     //    $theme: m3-theme.$dark-theme;
     //}
+    
     // Apply the light theme by default
     // @include mat.all-component-themes($theme); // remove since this imports all styles
     // Optimized theme imports
@@ -51,6 +52,7 @@ html {
     @include mat.form-field-theme($theme);
     @include mat.expansion-theme($theme);
     @include mat.snack-bar-theme($theme);
+    @include mat.slide-toggle-theme($theme);
     
     // maybe override menu colors
     //$color: mat.get-theme-color(m3-theme.$light-theme, surface);
