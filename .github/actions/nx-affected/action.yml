@@ -14,8 +14,6 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Nx prepare affected
-      uses: ./.github/actions/nx-prepare-affected
 
     - name: 'Check affected projects'
       id: check_affected
