@@ -2,12 +2,14 @@ package main
 
 import (
 	"api/internal/server"
+	"api/internal/tools"
 	"fmt"
 	"log/slog"
 )
 
 func main() {
 	slog.SetLogLoggerLevel(slog.LevelDebug)
+	slog.SetDefault(slog.New(tools.NewHandler(nil)))
 
 	srv := server.NewServer()
 
