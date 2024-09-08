@@ -23,8 +23,9 @@ type Repository interface {
 }
 
 type habitRepository struct {
-	habitCollection           *mongo.Collection
-	habitCompletionCollection *mongo.Collection
+	habitCollection               *mongo.Collection
+	habitCompletionCollection     *mongo.Collection
+	habitCompletionCollectionName string
 }
 
 func NewRepository(db *mongo.Client) Repository {
@@ -39,8 +40,9 @@ func NewRepository(db *mongo.Client) Repository {
 	slog.Info("Using collections: ", "habitCollection", habitCollection, "habitCompletionCollectionName", habitCompletionCollectionName)
 
 	return &habitRepository{
-		habitCollection:           db.Database("habits").Collection(habitCollection),
-		habitCompletionCollection: db.Database("habits").Collection(habitCompletionCollectionName),
+		habitCollection:               db.Database("habits").Collection(habitCollection),
+		habitCompletionCollection:     db.Database("habits").Collection(habitCompletionCollectionName),
+		habitCompletionCollectionName: habitCompletionCollectionName,
 	}
 }
 
@@ -52,43 +54,42 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 	// NOTE: Maybe re-write to create this aggregation pipeline via code
 	pipeline := mongo.Pipeline{
 		bson.D{{"$match", bson.D{{"user_id", userId}}}},
+
 		bson.D{
 			{"$lookup",
 				bson.D{
-					{"from", "dev_habit_completions"},
+					{"from", r.habitCompletionCollectionName},
 					{"localField", "_id"},
 					{"foreignField", "habit_id"},
 					{"as", "completions"},
-					{"let", bson.D{{"frequency", "$frequency"}}},
-					{"pipeline",
-						bson.A{
-							bson.D{
-								{"$addFields",
-									bson.D{
-										{"startOfDay",
-											bson.D{
-												{"$dateTrunc",
-													bson.D{
-														{"date", "$$NOW"},
-														{"unit", "day"},
-													},
-												},
-											},
-										},
-										{"startOfWeek",
-											bson.D{
-												{"$dateTrunc",
-													bson.D{
-														{"date", "$$NOW"},
-														{"unit", "week"},
-														{"startOfWeek", "monday"},
-													},
-												},
-											},
+					{"let",
+						bson.D{
+							{"frequency", "$frequency"},
+							{"startOfDay",
+								bson.D{
+									{"$dateTrunc",
+										bson.D{
+											{"date", "$$NOW"},
+											{"unit", "day"},
 										},
 									},
 								},
 							},
+							{"startOfWeek",
+								bson.D{
+									{"$dateTrunc",
+										bson.D{
+											{"date", "$$NOW"},
+											{"unit", "week"},
+											{"startOfWeek", "monday"},
+										},
+									},
+								},
+							},
+						},
+					},
+					{"pipeline",
+						bson.A{
 							bson.D{
 								{"$match",
 									bson.D{
@@ -117,7 +118,7 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 																						{"$gte",
 																							bson.A{
 																								"$created_at",
-																								"$startOfDay",
+																								"$$startOfDay",
 																							},
 																						},
 																					},
@@ -145,7 +146,7 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 																						{"$gte",
 																							bson.A{
 																								"$created_at",
-																								"$startOfWeek",
+																								"$$startOfWeek",
 																							},
 																						},
 																					},
