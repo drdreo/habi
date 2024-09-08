@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log/slog"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -34,6 +35,8 @@ func NewRepository(db *mongo.Client) Repository {
 		habitCollection = "dev_habits"
 		habitCompletionCollectionName = "dev_habit_completions"
 	}
+
+	slog.Info("Using collections: ", "habitCollection", habitCollection, "habitCompletionCollectionName", habitCompletionCollectionName)
 
 	return &habitRepository{
 		habitCollection:           db.Database("habits").Collection(habitCollection),
@@ -181,8 +184,8 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 	}
 
 	slog.Info("Successfully got all habits")
-	for _, habit := range habits {
-		slog.Info("", "habitId", habit.Id, "completions", habit.TargetMetric.Completions)
+	for i, habit := range habits {
+		slog.Info("Habit "+strconv.Itoa(i), "habitId", habit.Id, "created_at", habit.CreatedAt, "completions", habit.TargetMetric.Completions, "name", habit.Name)
 	}
 	return habits, nil
 }

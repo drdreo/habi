@@ -27,6 +27,8 @@ func NewRepository(db *mongo.Client) Repository {
 		trackingCollection = "dev_tracking_sessions"
 	}
 
+	slog.Info("Using collection: ", "trackingCollection", trackingCollection)
+
 	return &trackingRepository{
 		trackingCollection: db.Database("habits").Collection(trackingCollection),
 	}
