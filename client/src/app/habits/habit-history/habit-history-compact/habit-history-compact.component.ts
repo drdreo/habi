@@ -43,11 +43,15 @@ function convertHabitToCompletion(habit: Habit): HistoryCompletion[] {
     const completionGroups = getCompletionGroups(habit);
     return completionGroups.map((completionGroup) => {
         const completions = completionGroup.completions;
+        let goal = habit.targetMetric.goal;
+        if (habit.targetMetric.type === "duration") {
+            goal = 1;
+        }
         return {
             completions,
-            color: getCompletionColor(completions, habit.targetMetric.goal, habit.type),
+            color: getCompletionColor(completions, goal, habit.type),
             period: completionGroup.period,
-            tooltip: `${completionGroup.period}: ${completions} / ${habit.targetMetric.goal}`
+            tooltip: `${completionGroup.period}: ${completions} / ${goal}`
         };
     });
 }
