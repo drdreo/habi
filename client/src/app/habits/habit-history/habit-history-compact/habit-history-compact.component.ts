@@ -2,11 +2,13 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, computed, input, Signal } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Habit } from "../../habit.model";
+import { generateLastFivePeriods, getPeriodKey } from "./time.utils";
 
 type HistoryCompletion = {
     completions: number;
     color: string;
     tooltip: string;
+    period: string;
 };
 
 @Component({
@@ -29,36 +31,18 @@ export class HabitHistoryCompactComponent {
 }
 
 function convertHabitToCompletion(habit: Habit): HistoryCompletion[] {
-    if (!habit.completions) {
+    if (!habit.completions || habit.frequency === "finite") {
         return [];
-    }
-
-    function getCompletionGroups(habit: Habit) {
-        const completionGroups: { date: string; completions: number[] }[] = [];
-
-        habit.completions.forEach((completion) => {
-            // TODO refactor this is definitely completely wrongly hallucinated
-            const date = completion.created_at.split("T")[0];
-            const existingGroup = completionGroups.find((group) => group.date === date);
-
-            if (existingGroup) {
-                existingGroup.completions.push(1);
-            } else {
-                completionGroups.push({ date, completions: [1] });
-            }
-        });
-
-        console.log({ completionGroups, name: habit.name });
-        return completionGroups;
     }
 
     const completionGroups = getCompletionGroups(habit);
     return completionGroups.map((completionGroup) => {
-        const completions = completionGroup.completions.length;
+        const completions = completionGroup.completions;
         return {
             completions,
             color: getCompletionColor(completions, habit.targetMetric.goal),
-            tooltip: `${completionGroup.date}: ${completions} / ${habit.targetMetric.goal}`
+            period: completionGroup.period,
+            tooltip: `${completionGroup.period}: ${completions} / ${habit.targetMetric.goal}`
         };
     });
 }
@@ -70,8 +54,23 @@ function getCompletionMock(): HistoryCompletion {
     return {
         completions: mockValue++,
         tooltip: `${mockValue} / ${goal}`,
-        color: getCompletionColor(mockValue, goal)
+        color: getCompletionColor(mockValue, goal),
+        period: "mock"
     };
+}
+
+function getCompletionGroups(habit: Habit) {
+    const completionPeriods = generateLastFivePeriods(habit.frequency, new Date());
+    habit.completions.forEach((completion) => {
+        const periodKey = getPeriodKey(habit.frequency, new Date(completion.created_at));
+        const period = completionPeriods.find((group) => group.period === periodKey);
+        // skip completions out of the period
+        if (period) {
+            period.completions++;
+        }
+    });
+
+    return completionPeriods;
 }
 
 function getCompletionColor(completions: number, goal: number): string {
