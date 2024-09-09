@@ -1,8 +1,10 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { firstValueFrom } from "rxjs";
+import { map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
-import { Habit, HabitInput, LocationUpdate, TrackingSession } from "./habit.model";
+import { Habit, HabitDto, HabitInput, LocationUpdate, TrackingSession } from "./habit.model";
+import { startOfDay, startOfMonth, startOfWeek } from "./time.utils";
 
 @Injectable({
     providedIn: "root"
@@ -15,11 +17,15 @@ export class HabitDataService {
     }
 
     getAllHabits(): Promise<Habit[]> {
-        return firstValueFrom(this.http.get<Habit[]>(`${environment.origins.api}/api/habits`));
+        return firstValueFrom(
+            this.http.get<HabitDto[]>(`${environment.origins.api}/api/habits`).pipe(map(mapHabitsDtoToHabits))
+        );
     }
 
-    createHabit(habitInput: HabitInput) {
-        return firstValueFrom(this.http.post<Habit>(`${environment.origins.api}/api/habits`, habitInput));
+    createHabit(habitInput: HabitInput): Promise<Habit> {
+        return firstValueFrom(
+            this.http.post<HabitDto>(`${environment.origins.api}/api/habits`, habitInput).pipe(map(mapHabitDtoToHabit))
+        );
     }
 
     deleteHabit(habitId: string) {
@@ -51,4 +57,35 @@ export class HabitDataService {
             })
         );
     }
+}
+
+function mapHabitsDtoToHabits(habits: HabitDto[]): Habit[] {
+    return habits.map(mapHabitDtoToHabit);
+}
+
+function mapHabitDtoToHabit(habit: HabitDto): Habit {
+    return { ...habit, currentCompletions: getHabitCurrentCompletions(habit) };
+}
+
+function getHabitCurrentCompletions(habit: HabitDto): number {
+    let startDate: number;
+    const now = new Date();
+    switch (habit.frequency) {
+        case "daily":
+            startDate = startOfDay(now);
+            break;
+        case "weekly":
+            startDate = startOfWeek(now);
+            break;
+        case "monthly":
+            startDate = startOfMonth(now);
+            break;
+        case "finite":
+            startDate = -Infinity;
+            break;
+        default:
+            throw new Error("Invalid frequency");
+    }
+
+    return habit.completions.filter((completion) => new Date(completion.created_at).getTime() >= startDate).length;
 }

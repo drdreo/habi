@@ -4,6 +4,7 @@ import { SnackBarCelebrationComponent } from "../snack-bar/snack-bar-celebration
 import { HabitTrackingService } from "./habit-tracking.service";
 import { HabitDataService } from "./habit.data.service";
 import { Habit, HabitCompletion, HabitFrequency, HabitInput } from "./habit.model";
+import { timeTillEndOfDay, timeTillEndOfMonth, timeTillEndOfWeek } from "./time.utils";
 
 let MOCK_COUNTER = 0;
 
@@ -18,11 +19,12 @@ function getHabitMock(name: string): Habit {
         name,
         description: "Test Description",
         frequency,
-        type: "Health",
+        type: "good",
         targetMetric: {
             type: "duration",
             goal: 10
         },
+        currentCompletions: 1,
         completions: [{ created_at: new Date().toString() }],
         createdAt: Date.now()
     };
@@ -39,7 +41,6 @@ for (let i = 0; i < 10; i++) {
     providedIn: "root"
 })
 export class HabitService {
-    // Store all habits in a signal
     habits = signal<Habit[]>([]);
 
     private readonly snackBar = inject(MatSnackBar);
@@ -84,12 +85,13 @@ export class HabitService {
                 if (habit.targetMetric.type === "duration") {
                     goalReached = (habit.timeTracked ?? 0) >= habit.targetMetric.goal;
                 } else {
-                    goalReached = habit.completions.length + 1 === habit.targetMetric.goal;
+                    goalReached = habit.currentCompletions + 1 === habit.targetMetric.goal;
                 }
                 const tmpCompletion: HabitCompletion = { created_at: new Date().toString() };
                 return {
                     ...habit,
-                    completions: [...habit.completions, tmpCompletion]
+                    completions: [...habit.completions, tmpCompletion],
+                    currentCompletions: habit.currentCompletions + 1
                 };
             });
         });
@@ -133,7 +135,7 @@ export class HabitService {
             return false;
         }
 
-        if (habit.completions.length > 0) {
+        if (habit.currentCompletions > 0) {
             console.log("Habit was already completed");
             return false;
         }
@@ -200,24 +202,4 @@ function getHabitExpiryDate(habit: Habit): number {
         default:
             throw new Error("Invalid frequency");
     }
-}
-
-function timeTillEndOfDay(): number {
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
-    return endOfDay.getTime() - Date.now();
-}
-
-function timeTillEndOfWeek(): number {
-    const endOfWeek = new Date();
-    endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()));
-    endOfWeek.setHours(23, 59, 59, 999);
-    return endOfWeek.getTime() - Date.now();
-}
-
-function timeTillEndOfMonth(): number {
-    const endOfMonth = new Date();
-    endOfMonth.setMonth(endOfMonth.getMonth() + 1, 1); // First day of next month
-    endOfMonth.setHours(0, 0, 0, -1); // Last millisecond of the current month
-    return endOfMonth.getTime() - Date.now();
 }

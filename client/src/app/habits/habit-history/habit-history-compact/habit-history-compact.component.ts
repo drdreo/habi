@@ -1,8 +1,8 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, computed, input, Signal } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
-import { Habit } from "../../habit.model";
-import { generateLastFivePeriods, getPeriodKey } from "./time.utils";
+import { Habit, HabitType } from "../../habit.model";
+import { generateLastFivePeriods, getPeriodKey } from "../../time.utils";
 
 type HistoryCompletion = {
     completions: number;
@@ -10,6 +10,11 @@ type HistoryCompletion = {
     tooltip: string;
     period: string;
 };
+
+const COMPLETION_TARGET_COLOR_GOOD = "#ffdea2";
+const COMPLETION_COLOR_GOOD = { r: 54, g: 94, b: 157 };
+const COMPLETION_COLOR_BAD = { r: 200, g: 57, b: 55 };
+const COMPLETION_TARGET_COLOR_BAD = "red";
 
 @Component({
     selector: "habit-history-compact",
@@ -40,7 +45,7 @@ function convertHabitToCompletion(habit: Habit): HistoryCompletion[] {
         const completions = completionGroup.completions;
         return {
             completions,
-            color: getCompletionColor(completions, habit.targetMetric.goal),
+            color: getCompletionColor(completions, habit.targetMetric.goal, habit.type),
             period: completionGroup.period,
             tooltip: `${completionGroup.period}: ${completions} / ${habit.targetMetric.goal}`
         };
@@ -54,7 +59,7 @@ function getCompletionMock(): HistoryCompletion {
     return {
         completions: mockValue++,
         tooltip: `${mockValue} / ${goal}`,
-        color: getCompletionColor(mockValue, goal),
+        color: getCompletionColor(mockValue, goal, "good"),
         period: "mock"
     };
 }
@@ -73,16 +78,16 @@ function getCompletionGroups(habit: Habit) {
     return completionPeriods;
 }
 
-function getCompletionColor(completions: number, goal: number): string {
+function getCompletionColor(completions: number, goal: number, type: HabitType): string {
     if (completions >= goal) {
-        return "#ffdea2";
+        return type === "bad" ? COMPLETION_TARGET_COLOR_BAD : COMPLETION_TARGET_COLOR_GOOD;
     }
 
     if (completions === 0) {
         return "#f2f2f2";
     }
 
-    const baseRGB = { r: 54, g: 94, b: 157 };
+    const baseRGB = type === "bad" ? COMPLETION_COLOR_BAD : COMPLETION_COLOR_GOOD;
     const ratio = Math.min(1, completions / goal);
     const newColor = {
         r: Math.floor(255 * (1 - ratio) + baseRGB.r * ratio),

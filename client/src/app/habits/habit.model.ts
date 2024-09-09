@@ -2,7 +2,7 @@ export type HabitInput = {
     name: string;
     description?: string;
     frequency: HabitFrequency | null;
-    type: string;
+    type: HabitType;
     targetMetric: {
         type: TargetMetricType | null;
         goal: TargetMetricGoal | null;
@@ -10,26 +10,32 @@ export type HabitInput = {
     };
 };
 
-export type Habit = {
+export type HabitDto = {
     id: string;
     userId: string;
     name: string;
     description?: string;
     frequency: HabitFrequency;
-    type: string;
+    type: HabitType;
     targetMetric: {
         type: TargetMetricType;
         goal: TargetMetricGoal;
         unit?: string;
     };
     completions: HabitCompletion[];
-    isTracking?: boolean;
-    timeTracked?: number;
+
     createdAt: number;
 };
 
+export type Habit = {
+    currentCompletions: number;
+    isTracking?: boolean;
+    timeTracked?: number;
+} & HabitDto;
+
 export type TargetMetricGoal = number;
 export type TargetMetricType = "quantity" | "duration";
+export type HabitType = "good" | "bad";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "finite";
 export type HabitCompletion = {
     created_at: string;
