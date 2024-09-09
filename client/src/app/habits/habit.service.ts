@@ -3,7 +3,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { SnackBarCelebrationComponent } from "../snack-bar/snack-bar-celebration/snack-bar-celebration.component";
 import { HabitTrackingService } from "./habit-tracking.service";
 import { HabitDataService } from "./habit.data.service";
-import { Habit, HabitFrequency, HabitInput } from "./habit.model";
+import { Habit, HabitCompletion, HabitFrequency, HabitInput } from "./habit.model";
 
 let MOCK_COUNTER = 0;
 
@@ -21,9 +21,9 @@ function getHabitMock(name: string): Habit {
         type: "Health",
         targetMetric: {
             type: "duration",
-            goal: 10,
-            completions: 3
+            goal: 10
         },
+        completions: [{ created_at: new Date().toString() }],
         createdAt: Date.now()
     };
 }
@@ -84,14 +84,12 @@ export class HabitService {
                 if (habit.targetMetric.type === "duration") {
                     goalReached = (habit.timeTracked ?? 0) >= habit.targetMetric.goal;
                 } else {
-                    goalReached = habit.targetMetric.completions + 1 === habit.targetMetric.goal;
+                    goalReached = habit.completions.length + 1 === habit.targetMetric.goal;
                 }
+                const tmpCompletion: HabitCompletion = { created_at: new Date().toString() };
                 return {
                     ...habit,
-                    targetMetric: {
-                        ...habit.targetMetric,
-                        completions: habit.targetMetric.completions + 1
-                    }
+                    completions: [...habit.completions, tmpCompletion]
                 };
             });
         });
@@ -135,7 +133,7 @@ export class HabitService {
             return false;
         }
 
-        if (habit.targetMetric.completions > 0) {
+        if (habit.completions.length > 0) {
             console.log("Habit was already completed");
             return false;
         }

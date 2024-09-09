@@ -55,11 +55,11 @@ import { HabitService } from "../habit.service";
 export class HabitCardComponent {
     habit = input.required<Habit>();
     habitProgress = computed(() => {
-        const { targetMetric, timeTracked } = this.habit();
+        const { targetMetric, timeTracked, completions } = this.habit();
         if (targetMetric.type === "duration" && typeof timeTracked !== "undefined") {
             return (timeTracked * 100) / targetMetric.goal;
         }
-        return (targetMetric.completions * 100) / targetMetric.goal;
+        return (completions.length * 100) / targetMetric.goal;
     });
     habitTimer = signal(0);
     completeState: WritableSignal<"start" | "loading" | "success" | "reset"> = signal("start");
@@ -71,7 +71,7 @@ export class HabitCardComponent {
     private intervalId: number | undefined;
 
     progressTooltip = computed(() => {
-        const { timeTracked, targetMetric } = this.habit();
+        const { timeTracked, targetMetric, completions } = this.habit();
         if (targetMetric.type === "duration") {
             const habitTimer = this.habitTimer();
             if (this.intervalId) {
@@ -79,7 +79,7 @@ export class HabitCardComponent {
             }
             return `${convertMinutesToTime(timeTracked ?? 0)} of ${targetMetric.goal}min`;
         }
-        return `${targetMetric.completions} of ${targetMetric.goal} ${targetMetric.unit}`;
+        return `${completions.length} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
 
     async completeHabit() {

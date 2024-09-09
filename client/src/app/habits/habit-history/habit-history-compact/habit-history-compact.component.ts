@@ -29,15 +29,36 @@ export class HabitHistoryCompactComponent {
 }
 
 function convertHabitToCompletion(habit: Habit): HistoryCompletion[] {
-    if (!habit.historicCompletions) {
+    if (!habit.completions) {
         return [];
     }
-    return habit.historicCompletions.map((completion) => {
-        const completions = completion.completions.length;
+
+    function getCompletionGroups(habit: Habit) {
+        const completionGroups: { date: string; completions: number[] }[] = [];
+
+        habit.completions.forEach((completion) => {
+            // TODO refactor this is definitely completely wrongly hallucinated
+            const date = completion.created_at.split("T")[0];
+            const existingGroup = completionGroups.find((group) => group.date === date);
+
+            if (existingGroup) {
+                existingGroup.completions.push(1);
+            } else {
+                completionGroups.push({ date, completions: [1] });
+            }
+        });
+
+        console.log({ completionGroups, name: habit.name });
+        return completionGroups;
+    }
+
+    const completionGroups = getCompletionGroups(habit);
+    return completionGroups.map((completionGroup) => {
+        const completions = completionGroup.completions.length;
         return {
             completions,
             color: getCompletionColor(completions, habit.targetMetric.goal),
-            tooltip: `${completion.groupKey.date}: ${completions} / ${habit.targetMetric.goal}`
+            tooltip: `${completionGroup.date}: ${completions} / ${habit.targetMetric.goal}`
         };
     });
 }

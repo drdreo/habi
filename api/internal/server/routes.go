@@ -77,7 +77,7 @@ func (s *Server) getHabitsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habits, err := s.habitService.GetAllHabits(r.Context(), userId)
+	allHabits, err := s.habitService.GetAllHabits(r.Context(), userId)
 	if err != nil {
 		slog.Error("failed to get all habits", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -85,7 +85,7 @@ func (s *Server) getHabitsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(habits)
+	_ = json.NewEncoder(w).Encode(allHabits)
 }
 
 func (s *Server) getHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
