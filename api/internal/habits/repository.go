@@ -19,30 +19,25 @@ type Repository interface {
 	GetById(ctx context.Context, userId string, habitId string) (Habit, error)
 	DeleteById(ctx context.Context, userId string, habitId string) error
 	ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error)
-	CompleteById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error)
+	CompleteById(ctx context.Context, userId string, habitId string) (*Habit, error)
 }
 
 type habitRepository struct {
-	habitCollection               *mongo.Collection
-	habitCompletionCollection     *mongo.Collection
-	habitCompletionCollectionName string
+	habitCollection           *mongo.Collection
+	habitCompletionCollection *mongo.Collection
 }
 
 func NewRepository(db *mongo.Client) Repository {
 	var habitCollection = "habits"
-	var habitCompletionCollectionName = "habit_completions"
 
 	if os.Getenv("MODE") == "development" {
 		habitCollection = "dev_habits"
-		habitCompletionCollectionName = "dev_habit_completions"
 	}
 
-	slog.Info("Using collections: ", "habitCollection", habitCollection, "habitCompletionCollectionName", habitCompletionCollectionName)
+	slog.Info("Using collections: ", "habitCollection", habitCollection)
 
 	return &habitRepository{
-		habitCollection:               db.Database("habits").Collection(habitCollection),
-		habitCompletionCollection:     db.Database("habits").Collection(habitCompletionCollectionName),
-		habitCompletionCollectionName: habitCompletionCollectionName,
+		habitCollection: db.Database("habits").Collection(habitCollection),
 	}
 }
 
@@ -51,17 +46,9 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	// NOTE: Maybe re-write to create this aggregation pipeline via code
-	pipeline := mongo.Pipeline{
-		bson.D{{"$match", bson.D{{"user_id", userId}}}},
+	filter := bson.M{"user_id": userId}
 
-		getCurrentCompletionsPipeline(r.habitCompletionCollectionName),
-		bson.D{{"$addFields", bson.D{{"target_metric.completions", bson.D{{"$size", "$completions"}}}}}},
-
-		getHistoryPipeline(r.habitCompletionCollectionName),
-	}
-
-	cursor, err := r.habitCollection.Aggregate(ctx, pipeline)
+	cursor, err := r.habitCollection.Find(ctx, filter)
 	if err != nil {
 		slog.Warn("failed to aggregate habit and completions", "err", err)
 		return nil, err
@@ -72,357 +59,11 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, e
 		return nil, err
 	}
 
-	// For each habit, fill in missing historic completions
-	for i, habit := range habits {
-		habits[i].HistoricCompletions = fillMissingDates(habit.Id, habit.HistoricCompletions, habit.Frequency)
-	}
-
 	slog.Info("Successfully got all habits")
 	for i, habit := range habits {
-		slog.Info("Habit "+strconv.Itoa(i), "habitId", habit.Id, "created_at", habit.CreatedAt, "completions", habit.TargetMetric.Completions, "name", habit.Name)
+		slog.Info("Habit "+strconv.Itoa(i), "habitId", habit.Id, "created_at", habit.CreatedAt, "completions", len(habit.Completions), "name", habit.Name)
 	}
 	return habits, nil
-}
-
-func getCurrentCompletionsPipeline(habitCompletionCollectionName string) bson.D {
-	return bson.D{
-			{"$lookup",
-				bson.D{
-					{"from", habitCompletionCollectionName},
-					{"localField", "_id"},
-					{"foreignField", "habit_id"},
-					{"as", "completions"},
-					{"let",
-						bson.D{
-							{"frequency", "$frequency"},
-							{"startOfDay",
-								bson.D{
-									{"$dateTrunc",
-										bson.D{
-											{"date", "$$NOW"},
-											{"unit", "day"},
-										},
-									},
-								},
-							},
-							{"startOfWeek",
-								bson.D{
-									{"$dateTrunc",
-										bson.D{
-											{"date", "$$NOW"},
-											{"unit", "week"},
-											{"startOfWeek", "monday"},
-										},
-									},
-								},
-							},
-						},
-					},
-					{"pipeline",
-						bson.A{
-							bson.D{
-								{"$match",
-									bson.D{
-										{"$expr",
-											bson.D{
-												{"$switch",
-													bson.D{
-														{"branches",
-															bson.A{
-																bson.D{
-																	{"case",
-																		bson.D{
-																			{"$eq",
-																				bson.A{
-																					"$$frequency",
-																					"daily",
-																				},
-																			},
-																		},
-																	},
-																	{"then",
-																		bson.D{
-																			{"$and",
-																				bson.A{
-																					bson.D{
-																						{"$gte",
-																							bson.A{
-																								"$created_at",
-																								"$$startOfDay",
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-																bson.D{
-																	{"case",
-																		bson.D{
-																			{"$eq",
-																				bson.A{
-																					"$$frequency",
-																					"weekly",
-																				},
-																			},
-																		},
-																	},
-																	{"then",
-																		bson.D{
-																			{"$and",
-																				bson.A{
-																					bson.D{
-																						{"$gte",
-																							bson.A{
-																								"$created_at",
-																								"$$startOfWeek",
-																							},
-																						},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-														{"default", false},
-													},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		}
-}
-
-func getHistoryPipeline(habitCompletionCollectionName string) bson.D {
-	return bson.D{
-		{"$lookup",
-			bson.D{
-				{"from", habitCompletionCollectionName},
-				{"localField", "_id"},
-				{"foreignField", "habit_id"},
-				{"as", "historic_completions"},
-				{"let", bson.D{{"frequency", "$frequency"}}},
-				{"pipeline",
-					bson.A{
-						bson.D{
-							{"$addFields",
-								bson.D{
-									{"cutoffDate",
-										bson.D{
-											{"$switch",
-												bson.D{
-													{"branches",
-														bson.A{
-															bson.D{
-																{"case",
-																	bson.D{
-																		{"$eq",
-																			bson.A{
-																				"$$frequency",
-																				"daily",
-																			},
-																		},
-																	},
-																},
-																{"then",
-																	bson.D{
-																		{"$dateSubtract",
-																			bson.D{
-																				{"startDate", "$$NOW"},
-																				{"unit", "day"},
-																				{"amount", 5},
-																			},
-																		},
-																	},
-																},
-															},
-															bson.D{
-																{"case",
-																	bson.D{
-																		{"$eq",
-																			bson.A{
-																				"$$frequency",
-																				"weekly",
-																			},
-																		},
-																	},
-																},
-																{"then",
-																	bson.D{
-																		{"$dateSubtract",
-																			bson.D{
-																				{"startDate", "$$NOW"},
-																				{"unit", "week"},
-																				{"amount", 5},
-																			},
-																		},
-																	},
-																},
-															},
-															bson.D{
-																{"case",
-																	bson.D{
-																		{"$eq",
-																			bson.A{
-																				"$$frequency",
-																				"monthly",
-																			},
-																		},
-																	},
-																},
-																{"then",
-																	bson.D{
-																		{"$dateSubtract",
-																			bson.D{
-																				{"startDate", "$$NOW"},
-																				{"unit", "month"},
-																				{"amount", 5},
-																			},
-																		},
-																	},
-																},
-															},
-														},
-													},
-													{"default", "$$NOW"},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						bson.D{
-							{"$match",
-								bson.D{
-									{"$expr",
-										bson.D{
-											{"$gte",
-												bson.A{
-													"$created_at",
-													"$cutoffDate",
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						bson.D{
-							{"$group",
-								bson.D{
-									{"_id",
-										bson.D{
-											{"habit_id", "$habit_id"},
-											{"date",
-												bson.D{
-													{"$switch",
-														bson.D{
-															{"branches",
-																bson.A{
-																	bson.D{
-																		{"case",
-																			bson.D{
-																				{"$eq",
-																					bson.A{
-																						"$$frequency",
-																						"daily",
-																					},
-																				},
-																			},
-																		},
-																		{"then",
-																			bson.D{
-																				{"$dateToString",
-																					bson.D{
-																						{"format", "%Y-%m-%d"},
-																						{"date", "$created_at"},
-																					},
-																				},
-																			},
-																		},
-																	},
-																	bson.D{
-																		{"case",
-																			bson.D{
-																				{"$eq",
-																					bson.A{
-																						"$$frequency",
-																						"weekly",
-																					},
-																				},
-																			},
-																		},
-																		{"then",
-																			bson.D{
-																				{"$dateToString",
-																					bson.D{
-																						{"format", "%Y-W%V"},
-																						{"date", "$created_at"},
-																					},
-																				},
-																			},
-																		},
-																	},
-																	bson.D{
-																		{"case",
-																			bson.D{
-																				{"$eq",
-																					bson.A{
-																						"$$frequency",
-																						"monthly",
-																					},
-																				},
-																			},
-																		},
-																		{"then",
-																			bson.D{
-																				{"$dateToString",
-																					bson.D{
-																						{"format", "%Y-%m"},
-																						{"date", "$created_at"},
-																					},
-																				},
-																			},
-																		},
-																	},
-																},
-															},
-															{"default", "$created_at"},
-														},
-													},
-												},
-											},
-										},
-									},
-									{"completions",
-										bson.D{
-											{"$push",
-												bson.D{
-													{"date", "$created_at"},
-													{"value", "$value"},
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-						bson.D{{"$sort", bson.D{{"_id.date", -1}}}},
-					},
-				},
-			},
-		},
-	}
 }
 
 func (r *habitRepository) GetById(ctx context.Context, userId string, habitId string) (Habit, error) {
@@ -465,13 +106,13 @@ func (r *habitRepository) Create(ctx context.Context, userId string, habitInput 
 		Frequency:   habitInput.Frequency,
 		Type:        habitInput.Type,
 		TargetMetric: HabitTargetMetric{
-			Type:        habitInput.TargetMetric.Type,
-			Goal:        habitInput.TargetMetric.Goal,
-			Unit:        habitInput.TargetMetric.Unit,
-			Completions: 0,
+			Type: habitInput.TargetMetric.Type,
+			Goal: habitInput.TargetMetric.Goal,
+			Unit: habitInput.TargetMetric.Unit,
 		},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Completions: []HabitCompletion{},
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 
 	res, err := r.habitCollection.InsertOne(ctx, habit)
@@ -506,41 +147,49 @@ func (r *habitRepository) DeleteById(ctx context.Context, userId string, habitId
 	return nil
 }
 
-func (r *habitRepository) CompleteById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error) {
+func (r *habitRepository) CompleteById(ctx context.Context, userId string, habitId string) (*Habit, error) {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	// Get current habit target value
-	var habit Habit
-	habitOId, _ := primitive.ObjectIDFromHex(habitId)
-	err := r.habitCollection.FindOne(ctx, bson.M{"_id": habitOId, "user_id": userId}).Decode(&habit)
-	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			slog.Warn("habit not found", "userId", userId, "habitId", habitId)
-			return nil, errors.New("habit not found")
-		}
-		slog.Warn("failed to find habit", "habitId", habitId, "err", err)
-		return nil, err
-	}
+	// NOTE: lets not do that just now, if the goal changes while completing and it actually becomes a problem, then store it
+	//var habit Habit
+	//habitOId, _ := primitive.ObjectIDFromHex(habitId)
+	//err := r.habitCollection.FindOne(ctx, bson.M{"_id": habitOId, "user_id": userId}).Decode(&habit)
+	//if err != nil {
+	//	if errors.Is(err, mongo.ErrNoDocuments) {
+	//		slog.Warn("habit not found", "userId", userId, "habitId", habitId)
+	//		return nil, errors.New("habit not found")
+	//	}
+	//	slog.Warn("failed to find habit", "habitId", habitId, "err", err)
+	//	return nil, err
+	//}
 
-	// Create a Habit struct and populate it with data from HabitInput
 	habitCompletion := HabitCompletion{
-		HabitId:   habitOId,
-		UserId:    userId,
-		Goal:      habit.TargetMetric.Goal,
 		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
 	}
+	id, _ := primitive.ObjectIDFromHex(habitId)
+	filter := bson.M{"user_id": userId, "_id": id}
+	update := bson.D{
+		{"$push", bson.D{
+			{"completions", habitCompletion},
+		}},
+		{"$set", bson.D{
+			{"updated_at", time.Now()},
+		}},
+	}
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
-	res, err := r.habitCompletionCollection.InsertOne(ctx, habitCompletion)
+	var updatedHabit Habit
+	err := r.habitCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&updatedHabit)
 	if err != nil {
 		slog.Warn("failed to insert habit completion", "habitId", habitId, "err", err)
 		return nil, err
 	}
 
-	slog.Info("Successfully inserted habit completion", "completionId", res.InsertedID)
-	return &habitCompletion, nil
+	slog.Info("Successfully updated habit", "habitId", updatedHabit.Id)
+	return &updatedHabit, nil
 }
 
 func (r *habitRepository) ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error) {

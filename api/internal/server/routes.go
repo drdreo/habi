@@ -25,7 +25,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("GET /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.getHabitsHandler)))
 	mux.Handle("GET /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.getHabitByIdHandler)))
 	mux.Handle("POST /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.createHabitHandler)))
-	mux.Handle("POST /api/habits/{id}/complete", auth.AuthMiddleware(http.HandlerFunc(s.completeHabitByIdHandler)))
+	mux.Handle("POST /api/habits/{habitId}/complete", auth.AuthMiddleware(http.HandlerFunc(s.completeHabitByIdHandler)))
 	mux.Handle("POST /api/habits/{id}/archive", auth.AuthMiddleware(http.HandlerFunc(s.archiveHabitByIdHandler)))
 	mux.Handle("PUT /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.updateHabitByIdHandler)))
 	mux.Handle("DELETE /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.deleteHabitByIdHandler)))
@@ -160,7 +160,6 @@ func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) 
 	_ = json.NewEncoder(w).Encode(habit)
 }
 
-
 func (s *Server) deleteHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Handling DeleteHabit request")
 	habitId := r.PathValue("id")
@@ -183,7 +182,7 @@ func (s *Server) deleteHabitByIdHandler(w http.ResponseWriter, r *http.Request) 
 
 func (s *Server) completeHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Handling CompleteHabit request")
-	habitId := r.PathValue("id")
+	habitId := r.PathValue("habitId")
 	// Extract user ID from context
 	userId, ok := r.Context().Value("userId").(string)
 	if !ok {
@@ -264,7 +263,6 @@ func (s *Server) createTrackingSessionHandler(w http.ResponseWriter, r *http.Req
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(trackingSession)
 }
-
 
 func (s *Server) updateTrackingLocationHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Handling TrackingLocationUpdate request")

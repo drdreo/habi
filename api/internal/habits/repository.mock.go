@@ -21,16 +21,15 @@ var habitMock = Habit{
 	Frequency:   "Daily",
 	Type:        "Health",
 	TargetMetric: HabitTargetMetric{
-		Type:        "Count",
-		Goal:        10,
-		Completions: 0,
+		Type: "Count",
+		Goal: 10,
 	},
-	CreatedAt: time.Now(),
+	Completions: []HabitCompletion{},
+	CreatedAt:   time.Now(),
 }
 
 var habitCompletionMock = HabitCompletion{
-	HabitId: habitMock.Id,
-	UserId:  "testUserId",
+	CreatedAt: time.Now(),
 }
 
 func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *HabitInput) (Habit, error) {
@@ -42,11 +41,11 @@ func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *Habit
 		Frequency:   habit.Frequency,
 		Type:        habit.Type,
 		TargetMetric: HabitTargetMetric{
-			Type:        habit.TargetMetric.Type,
-			Goal:        habit.TargetMetric.Goal,
-			Completions: 0,
+			Type: habit.TargetMetric.Type,
+			Goal: habit.TargetMetric.Goal,
 		},
-		CreatedAt: time.Now(),
+		Completions: []HabitCompletion{},
+		CreatedAt:   time.Now(),
 	}, nil
 }
 
