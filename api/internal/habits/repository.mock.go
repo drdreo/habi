@@ -18,17 +18,15 @@ var habitMock = Habit{
 	UserId:      "testUserId",
 	Name:        "Test Habit",
 	Description: "Test Description",
-	Frequency:   "Daily",
-	Type:        "Health",
+	Frequency:   "daily",
+	Type:        "good",
 	TargetMetric: HabitTargetMetric{
-		Type: "Count",
+		Type: "quantity",
 		Goal: 10,
 	},
-	Completions: []HabitCompletion{},
-	CreatedAt:   time.Now(),
-}
-
-var habitCompletionMock = HabitCompletion{
+	Completions: []HabitCompletion{
+		{CreatedAt: time.Now()},
+	},
 	CreatedAt: time.Now(),
 }
 
@@ -62,8 +60,8 @@ func (m *RepositoryMock) DeleteById(ctx context.Context, userId string, habitId 
 	return nil
 }
 
-func (m *RepositoryMock) CompleteById(ctx context.Context, userId string, habitId string) (*HabitCompletion, error) {
-	return &habitCompletionMock, nil
+func (m *RepositoryMock) CompleteById(ctx context.Context, userId string, habitId string) (*Habit, error) {
+	return &habitMock, nil
 }
 
 func (m *RepositoryMock) ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error) {

@@ -14,7 +14,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-func main() {
+func migrator() {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(os.Getenv("MONGODB_CONNECTION_STRING")))
 	if err != nil {
 		log.Fatal(err)
