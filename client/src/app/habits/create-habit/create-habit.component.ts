@@ -9,6 +9,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatSnackBar } from "@angular/material/snack-bar";
 import { HabitCreateInput, HabitFrequency, TargetMetricGoal, TargetMetricType } from "../habit.model";
 import { HabitService } from "../habit.service";
 
@@ -48,13 +49,18 @@ export class CreateHabitComponent {
 
     private habitService = inject(HabitService);
     private dialogRef = inject(MatDialogRef<CreateHabitComponent>);
+    private readonly snackBar = inject(MatSnackBar);
 
     async createHabit() {
         this.isCreating.set(true);
-        await this.habitService.createHabit(this.habitForm.value as HabitCreateInput);
-        this.isCreating.set(false);
-
-        this.dialogRef.close();
+        try {
+            await this.habitService.createHabit(this.habitForm.value as HabitCreateInput);
+            this.dialogRef.close();
+        } catch (e) {
+            this.snackBar.open("Failed to create habit", undefined, { duration: 3500 });
+        } finally {
+            this.isCreating.set(false);
+        }
     }
 
     dateFilter = (d: Date | null): boolean => {

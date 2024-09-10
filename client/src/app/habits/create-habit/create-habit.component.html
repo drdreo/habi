@@ -54,7 +54,7 @@
         </div>
 
         <button [disabled]="!habitForm.valid || isCreating()" mat-flat-button type="submit">
-            @if (!isCreating()) {
+            @if (isCreating()) {
                 <mat-spinner diameter="20"></mat-spinner>
             } @else {
                 <span>Create</span>
