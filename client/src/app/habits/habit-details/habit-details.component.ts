@@ -8,12 +8,12 @@ import { filter, switchMap } from "rxjs";
 import { map } from "rxjs/operators";
 import { Habit } from "../habit.model";
 import { HabitService } from "../habit.service";
-import { getCompletionGroups } from "../habit.utils";
+import { CompletionPeriod, getCompletionGroups } from "../habit.utils";
 import { LocationService } from "../location.service";
 import { HabitEditComponent } from "./habit-edit/habit-edit.component";
 import { MapComponent } from "./maps/maps.component";
 
-function mapToStatistics(habit: Habit | null): any {
+function mapToStatistics(habit: Habit | null): CompletionPeriod[] | undefined {
     if (!habit) {
         return;
     }

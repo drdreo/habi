@@ -1,6 +1,6 @@
-import { generatePeriods, getPeriodKey } from "./time.utils";
+import { generatePeriods, getPeriodKey } from "./habit.utils";
 
-describe("TimeUtils", () => {
+describe("HabitUtils", () => {
     describe("getPeriodKey", () => {
         let date: Date;
 

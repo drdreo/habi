@@ -54,7 +54,9 @@ export type HabitCompletion = {
     created_at: string;
 };
 
-export type HabitStatistics = {};
+export type HabitStatistics = {
+    completions_WIP: [];
+};
 export type CoordinateUpdate = {
     lat: number;
     lng: number;

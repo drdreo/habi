@@ -121,10 +121,10 @@ export class HabitTrackingService {
 
         openRequest.onsuccess = () => {
             this.db = openRequest.result;
-            this.db.onerror = (event: any) => {
+            this.db.onerror = (event: Event) => {
                 // Generic error handler for all errors targeted at this database's
                 // requests!
-                console.error(`Database error: ${event.target?.error?.message}`);
+                console.error(`Database error: ${(event.target as IDBTransaction)?.error?.message}`);
             };
             console.log("Database opened successfully");
             this.databaseInitialized.resolve();

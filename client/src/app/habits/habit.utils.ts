@@ -60,7 +60,7 @@ export function generatePeriods(frequency: string, date: Date, limit = 5): Compl
     return periods;
 }
 
-export function getCompletionGroups(habit: Habit, limit?: number) {
+export function getCompletionGroups(habit: Habit, limit?: number): CompletionPeriod[] {
     const completionPeriods = generatePeriods(habit.frequency, new Date(), limit);
     habit.completions.forEach((completion) => {
         const periodKey = getPeriodKey(habit.frequency, new Date(completion.created_at));
