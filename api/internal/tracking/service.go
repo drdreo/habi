@@ -30,7 +30,6 @@ func (s *service) Get(ctx context.Context, userId string, habitId string) (*Trac
 	return trackingSession, nil
 }
 
-
 func (s *service) Create(ctx context.Context, userId string, habitId string) (*Tracking, error) {
 	slog.Debug("Create tracking session")
 

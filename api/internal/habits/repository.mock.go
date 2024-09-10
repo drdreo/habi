@@ -30,7 +30,7 @@ var habitMock = Habit{
 	CreatedAt: time.Now(),
 }
 
-func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *HabitInput) (Habit, error) {
+func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *HabitCreateInput) (Habit, error) {
 	return Habit{
 		Id:          primitive.NewObjectID(),
 		UserId:      userId,
@@ -53,6 +53,10 @@ func (m *RepositoryMock) GetAll(ctx context.Context, userId string) ([]Habit, er
 }
 
 func (m *RepositoryMock) GetById(ctx context.Context, userId string, habitId string) (Habit, error) {
+	return habitMock, nil
+}
+
+func (m *RepositoryMock) UpdateById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (Habit, error) {
 	return habitMock, nil
 }
 

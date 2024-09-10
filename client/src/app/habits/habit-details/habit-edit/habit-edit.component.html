@@ -1,6 +1,5 @@
 <section class="habit-form-section">
-    <h3>New Habit</h3>
-    <form (ngSubmit)="createHabit()" [formGroup]="habitForm">
+    <form (ngSubmit)="updateHabit()" [formGroup]="habitForm()">
         <mat-form-field appearance="outline">
             <mat-label>Name</mat-label>
             <input autocomplete="off" data-form-type="other" formControlName="name" matInput/>
@@ -53,11 +52,11 @@
             <p class="form-hint">If a habit should be created to start or stop doing a thing</p>
         </div>
 
-        <button [disabled]="!habitForm.valid || isCreating()" mat-flat-button type="submit">
-            @if (!isCreating()) {
+        <button [disabled]="!habitForm().valid || isSaving()" mat-stroked-button type="submit">
+            @if (isSaving()) {
                 <mat-spinner diameter="20"></mat-spinner>
             } @else {
-                <span>Create</span>
+                <span>Save</span>
             }
         </button>
     </form>

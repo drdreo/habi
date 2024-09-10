@@ -3,7 +3,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { SnackBarCelebrationComponent } from "../snack-bar/snack-bar-celebration/snack-bar-celebration.component";
 import { HabitTrackingService } from "./habit-tracking.service";
 import { HabitDataService } from "./habit.data.service";
-import { Habit, HabitCompletion, HabitFrequency, HabitInput } from "./habit.model";
+import { Habit, HabitCompletion, HabitCreateInput, HabitFrequency, HabitUpdateInput } from "./habit.model";
 import { timeTillEndOfDay, timeTillEndOfMonth, timeTillEndOfWeek } from "./time.utils";
 
 let MOCK_COUNTER = 0;
@@ -60,10 +60,25 @@ export class HabitService {
         return this.habits().find((habit) => habit.id === habitId);
     }
 
-    async createHabit(habitInput: HabitInput) {
+    async createHabit(habitInput: HabitCreateInput) {
         const createdHabit = await this.habitDataService.createHabit(habitInput);
 
         this.habits.update((habits) => [...habits, createdHabit]);
+
+        return createdHabit;
+    }
+
+    async updateHabit(habitId: string, habitInput: HabitUpdateInput) {
+        const createdHabit = await this.habitDataService.updateHabit(habitId, habitInput);
+
+        this.habits.update((habits) => {
+            return habits.map((habit) => {
+                if (habit.id === habitId) {
+                    return createdHabit;
+                }
+                return habit;
+            });
+        });
 
         return createdHabit;
     }
@@ -103,6 +118,10 @@ export class HabitService {
 
     archiveHabit(habitId: string) {
         return this.habitDataService.archiveHabit(habitId);
+    }
+
+    getHabitStatistics(habitId: string) {
+        return this.habitDataService.getHabitStatistics(habitId);
     }
 
     openCelebrationSnackBar() {

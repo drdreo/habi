@@ -10,7 +10,6 @@ import (
 	"sync"
 )
 
-
 const (
 	timeFormat = "[15:04:05.000]"
 )

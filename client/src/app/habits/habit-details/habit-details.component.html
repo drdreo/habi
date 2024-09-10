@@ -1,6 +1,12 @@
 @let h = habit();
 @if (h) {
-    <p>habit-details works! {{ h.id }}</p>
+    <div class="wrapper">
+        <habit-edit [habit]="habit()!"/>
+
+        <div class="habit-stats">
+            {{ statistics() | json }}
+        </div>
+    </div>
 
     @if (isWatchingLocation()) {
         <button mat-button (click)="stopLocationTracking()">
@@ -17,4 +23,4 @@
     no habit
 }
 
-<tracking-map [habitId]="habit()?.id"></tracking-map>
+<!--<tracking-map [habitId]="habit()?.id"></tracking-map>-->

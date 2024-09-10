@@ -1,9 +1,17 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
-import { firstValueFrom } from "rxjs";
+import { delay, firstValueFrom, Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
-import { Habit, HabitDto, HabitInput, LocationUpdate, TrackingSession } from "./habit.model";
+import {
+    Habit,
+    HabitCreateInput,
+    HabitDto,
+    HabitStatistics,
+    HabitUpdateInput,
+    LocationUpdate,
+    TrackingSession
+} from "./habit.model";
 import { startOfDay, startOfMonth, startOfWeek } from "./time.utils";
 
 @Injectable({
@@ -12,8 +20,12 @@ import { startOfDay, startOfMonth, startOfWeek } from "./time.utils";
 export class HabitDataService {
     private readonly http = inject(HttpClient);
 
-    getHabitById(habitId: string): Promise<Habit> {
-        return firstValueFrom(this.http.get<Habit>(`${environment.origins.api}/api/habits/${habitId}`));
+    getHabitById(habitId: string): Promise<Habit | null> {
+        return firstValueFrom(this.http.get<Habit | null>(`${environment.origins.api}/api/habits/${habitId}`));
+    }
+
+    getHabitStatistics(habitId: string): Observable<HabitStatistics | null> {
+        return this.http.get<HabitStatistics | null>(`${environment.origins.api}/api/habits/${habitId}`);
     }
 
     getAllHabits(): Promise<Habit[]> {
@@ -22,9 +34,17 @@ export class HabitDataService {
         );
     }
 
-    createHabit(habitInput: HabitInput): Promise<Habit> {
+    createHabit(habitInput: HabitCreateInput): Promise<Habit> {
         return firstValueFrom(
             this.http.post<HabitDto>(`${environment.origins.api}/api/habits`, habitInput).pipe(map(mapHabitDtoToHabit))
+        );
+    }
+
+    updateHabit(habitId: string, habitInput: HabitUpdateInput): Promise<Habit> {
+        return firstValueFrom(
+            this.http
+                .put<HabitDto>(`${environment.origins.api}/api/habits/${habitId}`, habitInput)
+                .pipe(map(mapHabitDtoToHabit), delay(2000))
         );
     }
 
@@ -42,7 +62,7 @@ export class HabitDataService {
 
     getTrackingSession(habitId: string) {
         return firstValueFrom(
-            this.http.get<TrackingSession>(`${environment.origins.api}/api/habits/${habitId}/tracking`)
+            this.http.get<TrackingSession | null>(`${environment.origins.api}/api/habits/${habitId}/tracking`)
         );
     }
 

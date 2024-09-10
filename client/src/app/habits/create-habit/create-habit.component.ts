@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject, signal } from "@angular/core";
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButton } from "@angular/material/button";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
@@ -8,7 +8,8 @@ import { MatDialogRef } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIcon } from "@angular/material/icon";
 import { MatInput } from "@angular/material/input";
-import { HabitFrequency, HabitInput, TargetMetricGoal, TargetMetricType } from "../habit.model";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { HabitCreateInput, HabitFrequency, TargetMetricGoal, TargetMetricType } from "../habit.model";
 import { HabitService } from "../habit.service";
 
 @Component({
@@ -22,7 +23,8 @@ import { HabitService } from "../habit.service";
         MatIcon,
         MatInput,
         MatButton,
-        FormsModule
+        FormsModule,
+        MatProgressSpinner
     ],
     providers: [provideNativeDateAdapter()],
     templateUrl: "./create-habit.component.html",
@@ -42,11 +44,16 @@ export class CreateHabitComponent {
         type: new FormControl("good", Validators.required)
     });
 
+    isCreating = signal(false);
+
     private habitService = inject(HabitService);
     private dialogRef = inject(MatDialogRef<CreateHabitComponent>);
 
     async createHabit() {
-        await this.habitService.createHabit(this.habitForm.value as HabitInput);
+        this.isCreating.set(true);
+        await this.habitService.createHabit(this.habitForm.value as HabitCreateInput);
+        this.isCreating.set(false);
+
         this.dialogRef.close();
     }
 

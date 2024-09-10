@@ -35,7 +35,6 @@ func NewRepository(db *mongo.Client) Repository {
 	}
 }
 
-
 func (r *trackingRepository) Get(ctx context.Context, userId string, habitId string) (*Tracking, error) {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -43,11 +42,15 @@ func (r *trackingRepository) Get(ctx context.Context, userId string, habitId str
 
 	habitOId, _ := primitive.ObjectIDFromHex(habitId)
 	filter := bson.M{"user_id": userId, "habit_id": habitOId}
-	opts:= options.FindOne().SetSort(bson.D{{"created_at", -1}})
+	opts := options.FindOne().SetSort(bson.D{{"created_at", -1}})
 
 	var trackingSess Tracking
 	err := r.trackingCollection.FindOne(ctx, filter, opts).Decode(&trackingSess)
 	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			slog.Warn("tracking session not found", "userId", userId, "habitId", habitId)
+			return nil, nil
+		}
 		slog.Warn("failed to get tracking session", "err", err)
 		return nil, err
 	}

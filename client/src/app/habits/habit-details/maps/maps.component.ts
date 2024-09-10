@@ -44,6 +44,9 @@ export class MapComponent implements OnInit {
             const habitId = this.habitId();
             if (habitId) {
                 const sess = await this.habitDataService.getTrackingSession(habitId);
+                if (!sess) {
+                    return;
+                }
                 console.log(sess);
                 const trackingData = this.getTrackingDataFromBackend(sess);
                 console.log({ trackingData });

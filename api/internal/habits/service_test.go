@@ -12,7 +12,7 @@ func TestCreateHabit(t *testing.T) {
 
 	service := habits.NewService(mockRepo)
 
-	habitInput := habits.HabitInput{
+	habitInput := habits.HabitCreateInput{
 		Name:        "Test Habit",
 		Description: "Test Description",
 		Frequency:   "Daily",

@@ -1,4 +1,17 @@
-export type HabitInput = {
+export type HabitUpdateInput = {
+    id: string;
+    name: string;
+    description?: string;
+    frequency: HabitFrequency;
+    type: HabitType;
+    targetMetric: {
+        type: TargetMetricType;
+        goal: TargetMetricGoal;
+        unit?: string;
+    };
+};
+
+export type HabitCreateInput = {
     name: string;
     description?: string;
     frequency: HabitFrequency | null;
@@ -41,6 +54,7 @@ export type HabitCompletion = {
     created_at: string;
 };
 
+export type HabitStatistics = {};
 export type CoordinateUpdate = {
     lat: number;
     lng: number;

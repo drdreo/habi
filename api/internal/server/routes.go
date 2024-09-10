@@ -25,9 +25,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("GET /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.getHabitsHandler)))
 	mux.Handle("GET /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.getHabitByIdHandler)))
 	mux.Handle("POST /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.createHabitHandler)))
+	mux.Handle("PUT /api/habits/{habitId}", auth.AuthMiddleware(http.HandlerFunc(s.updateHabitByIdHandler)))
 	mux.Handle("POST /api/habits/{habitId}/complete", auth.AuthMiddleware(http.HandlerFunc(s.completeHabitByIdHandler)))
 	mux.Handle("POST /api/habits/{id}/archive", auth.AuthMiddleware(http.HandlerFunc(s.archiveHabitByIdHandler)))
-	mux.Handle("PUT /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.updateHabitByIdHandler)))
 	mux.Handle("DELETE /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.deleteHabitByIdHandler)))
 
 	// Tracking routes
@@ -118,7 +118,7 @@ func (s *Server) createHabitHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var habitInput habits.HabitInput
+	var habitInput habits.HabitCreateInput
 	err := json.NewDecoder(r.Body).Decode(&habitInput)
 	if err != nil {
 		slog.Error("failed to parse habit input", "err", err)
@@ -140,7 +140,7 @@ func (s *Server) createHabitHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Handling UpdateHabit request")
-	habitId := r.PathValue("id")
+	habitId := r.PathValue("habitId")
 	// Extract user ID from context
 	userId, ok := r.Context().Value("userId").(string)
 	if !ok {
@@ -148,8 +148,15 @@ func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	// TODO: Implement update habit
-	habit, err := s.habitService.GetHabitById(r.Context(), userId, habitId)
+	var habitUpdate habits.HabitUpdateInput
+	err := json.NewDecoder(r.Body).Decode(&habitUpdate)
+	if err != nil {
+		slog.Error("failed to parse habit update", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	habit, err := s.habitService.UpdateHabitById(r.Context(), userId, habitId, &habitUpdate)
 	if err != nil {
 		slog.Error("failed to update habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)

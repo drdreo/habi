@@ -1,0 +1,13 @@
+$gap: 16px;
+
+h3 {
+    margin: $gap;
+}
+
+.wrapper {
+    display: grid;
+    gap: $gap;
+    grid-column-gap: $gap;
+    grid-template-columns: 1fr 1fr;
+    padding: $gap;
+}

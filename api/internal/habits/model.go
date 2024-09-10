@@ -11,12 +11,20 @@ type HabitTargetMetricInput struct {
 	Unit string
 }
 
-type HabitInput struct {
+type HabitCreateInput struct {
 	Name         string
 	Description  string
 	Frequency    string
 	Type         string
 	TargetMetric HabitTargetMetricInput
+}
+
+type HabitUpdateInput struct {
+	Name         string            `json:"name" bson:"name"`
+	Description  string            `json:"description" bson:"description"`
+	Frequency    string            `json:"frequency" bson:"frequency"`
+	Type         string            `json:"type" bson:"type"`
+	TargetMetric HabitTargetMetric `json:"targetMetric" bson:"target_metric"`
 }
 
 type HabitTargetMetric struct {
