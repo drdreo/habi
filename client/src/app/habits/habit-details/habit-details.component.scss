@@ -8,6 +8,8 @@ h3 {
     display: grid;
     gap: $gap;
     grid-column-gap: $gap;
-    grid-template-columns: 1fr 1fr;
+    //grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    
     padding: $gap;
 }

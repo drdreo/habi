@@ -1,4 +1,4 @@
-import { generateLastFivePeriods, getPeriodKey } from "./time.utils";
+import { generatePeriods, getPeriodKey } from "./time.utils";
 
 describe("TimeUtils", () => {
     describe("getPeriodKey", () => {
@@ -69,7 +69,7 @@ describe("TimeUtils", () => {
     describe("generateLastFivePeriods", () => {
         const date = new Date("2024-09-03");
         it("should generate 5 days", () => {
-            const periods = generateLastFivePeriods("daily", date);
+            const periods = generatePeriods("daily", date);
             expect(periods).toHaveLength(5);
             expect(periods[0].period).toBe("2024-09-03");
             expect(periods[1].period).toBe("2024-09-02");
@@ -79,7 +79,7 @@ describe("TimeUtils", () => {
         });
 
         it("should generate 5 weeks", () => {
-            const periods = generateLastFivePeriods("weekly", date);
+            const periods = generatePeriods("weekly", date);
             expect(periods).toHaveLength(5);
             expect(periods[0].period).toBe("2024-W36");
             expect(periods[1].period).toBe("2024-W35");
@@ -89,7 +89,7 @@ describe("TimeUtils", () => {
         });
 
         it("should generate 5 months", () => {
-            const periods = generateLastFivePeriods("monthly", date);
+            const periods = generatePeriods("monthly", date);
             expect(periods).toHaveLength(5);
             expect(periods[0].period).toBe("2024-9");
             expect(periods[1].period).toBe("2024-8");

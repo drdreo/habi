@@ -5,10 +5,20 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { ActivatedRoute } from "@angular/router";
 import { filter, switchMap } from "rxjs";
+import { map } from "rxjs/operators";
+import { Habit } from "../habit.model";
 import { HabitService } from "../habit.service";
+import { getCompletionGroups } from "../habit.utils";
 import { LocationService } from "../location.service";
 import { HabitEditComponent } from "./habit-edit/habit-edit.component";
 import { MapComponent } from "./maps/maps.component";
+
+function mapToStatistics(habit: Habit | null): any {
+    if (!habit) {
+        return;
+    }
+    return getCompletionGroups(habit, 10);
+}
 
 @Component({
     selector: "app-habit-details",
@@ -20,23 +30,26 @@ import { MapComponent } from "./maps/maps.component";
 })
 export class HabitDetailsComponent {
     isWatchingLocation = signal(false);
-    private routeParam = toSignal(this.route.paramMap);
-    private habitService = inject(HabitService);
-    private locationService = inject(LocationService);
-    private readonly route = inject(ActivatedRoute);
+
     habit = computed(() => {
         const id = this.routeParam()?.get("id");
         if (!id) {
             return undefined;
         }
-        return this.habitService.getHabit(id);
+        return this.habitService.findHabit(id);
     });
+
     statistics = toSignal(
         toObservable(this.habit).pipe(
             filter(Boolean),
-            switchMap((habit) => this.habitService.getHabitStatistics(habit.id))
+            switchMap((habit) => this.habitService.getHabitById(habit.id).pipe(map(mapToStatistics)))
         )
     );
+
+    private habitService = inject(HabitService);
+    private locationService = inject(LocationService);
+    private readonly route = inject(ActivatedRoute);
+    private routeParam = toSignal(this.route.paramMap);
 
     startLocationTracking() {
         const habit = this.habit();

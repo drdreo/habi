@@ -56,8 +56,16 @@ export class HabitService {
         // this.habits.set(habitsMock);
     }
 
-    getHabit(habitId: string): Habit | undefined {
+    findHabit(habitId: string): Habit | undefined {
         return this.habits().find((habit) => habit.id === habitId);
+    }
+
+    getHabitById(habitId: string) {
+        return this.habitDataService.getHabitById(habitId);
+    }
+
+    getHabitStatistics(habitId: string) {
+        return this.habitDataService.getHabitById(habitId);
     }
 
     async createHabit(habitInput: HabitCreateInput) {
@@ -118,10 +126,6 @@ export class HabitService {
 
     archiveHabit(habitId: string) {
         return this.habitDataService.archiveHabit(habitId);
-    }
-
-    getHabitStatistics(habitId: string) {
-        return this.habitDataService.getHabitStatistics(habitId);
     }
 
     openCelebrationSnackBar() {

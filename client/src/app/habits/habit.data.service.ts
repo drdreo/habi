@@ -20,8 +20,8 @@ import { startOfDay, startOfMonth, startOfWeek } from "./time.utils";
 export class HabitDataService {
     private readonly http = inject(HttpClient);
 
-    getHabitById(habitId: string): Promise<Habit | null> {
-        return firstValueFrom(this.http.get<Habit | null>(`${environment.origins.api}/api/habits/${habitId}`));
+    getHabitById(habitId: string): Observable<Habit | null> {
+        return this.http.get<Habit | null>(`${environment.origins.api}/api/habits/${habitId}`);
     }
 
     getHabitStatistics(habitId: string): Observable<HabitStatistics | null> {
