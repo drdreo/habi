@@ -30,8 +30,8 @@ var habitMock = Habit{
 	CreatedAt: time.Now(),
 }
 
-func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *HabitCreateInput) (Habit, error) {
-	return Habit{
+func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *HabitCreateInput) (*Habit, error) {
+	return &Habit{
 		Id:          primitive.NewObjectID(),
 		UserId:      userId,
 		Name:        habit.Name,
@@ -47,17 +47,17 @@ func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *Habit
 	}, nil
 }
 
-func (m *RepositoryMock) GetAll(ctx context.Context, userId string) ([]Habit, error) {
+func (m *RepositoryMock) GetAll(ctx context.Context, userId string) (*[]Habit, error) {
 	var habits []Habit
-	return habits, nil
+	return &habits, nil
 }
 
-func (m *RepositoryMock) GetById(ctx context.Context, userId string, habitId string) (Habit, error) {
-	return habitMock, nil
+func (m *RepositoryMock) GetById(ctx context.Context, userId string, habitId string) (*Habit, error) {
+	return &habitMock, nil
 }
 
-func (m *RepositoryMock) UpdateById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (Habit, error) {
-	return habitMock, nil
+func (m *RepositoryMock) UpdateById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (*Habit, error) {
+	return &habitMock, nil
 }
 
 func (m *RepositoryMock) DeleteById(ctx context.Context, userId string, habitId string) error {
@@ -68,6 +68,6 @@ func (m *RepositoryMock) CompleteById(ctx context.Context, userId string, habitI
 	return &habitMock, nil
 }
 
-func (m *RepositoryMock) ArchiveById(ctx context.Context, userId string, habitId string) (Habit, error) {
-	return habitMock, nil
+func (m *RepositoryMock) ArchiveById(ctx context.Context, userId string, habitId string) (*Habit, error) {
+	return &habitMock, nil
 }
