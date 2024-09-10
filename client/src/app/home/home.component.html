@@ -6,8 +6,8 @@
     <filter-bar></filter-bar>
 
     @if (isLoading()) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
         <div class="loading">
-            <mat-spinner diameter="30"></mat-spinner>
             loading habits...
         </div>
     } @else {

@@ -33,6 +33,11 @@ filter-bar {
     gap: $gap;
 }
 
+mat-progress-bar {
+    position: absolute;
+    top: 0;
+}
+
 .habit-group {
     margin: $gap;
     

@@ -8,6 +8,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatIcon } from "@angular/material/icon";
 import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
+import { MatProgressBar } from "@angular/material/progress-bar";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { RouterLink } from "@angular/router";
 import { HabitCardComponent } from "../habits/habit-card/habit-card.component";
@@ -39,7 +40,8 @@ import { FiltersService } from "./filter-bar/filters.service";
         GroupByPipe,
         SortFrequencyPipe,
         RouterLink,
-        MatProgressSpinner
+        MatProgressSpinner,
+        MatProgressBar
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
