@@ -8,6 +8,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatIcon } from "@angular/material/icon";
 import { MatListModule, MatListSubheaderCssMatStyler } from "@angular/material/list";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { RouterLink } from "@angular/router";
 import { HabitCardComponent } from "../habits/habit-card/habit-card.component";
 import { HabitEntryComponent } from "../habits/habit-entry/habit-entry.component";
@@ -37,7 +38,8 @@ import { FiltersService } from "./filter-bar/filters.service";
         FilterBarComponent,
         GroupByPipe,
         SortFrequencyPipe,
-        RouterLink
+        RouterLink,
+        MatProgressSpinner
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
@@ -47,6 +49,7 @@ export class HomeComponent {
     numCols = signal(5);
     // habits: Signal<Habit[]>;
     filteredHabits: Signal<Habit[]>;
+    isLoading: Signal<boolean>;
 
     private habitService = inject(HabitService);
     private filtersService = inject(FiltersService);
@@ -54,6 +57,7 @@ export class HomeComponent {
 
     constructor() {
         // this.habits = this.habitService.habits;
+        this.isLoading = this.habitService.isLoading;
 
         this.filteredHabits = computed(() => {
             const habits = [...this.habitService.habits()];

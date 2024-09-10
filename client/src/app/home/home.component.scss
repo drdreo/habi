@@ -25,6 +25,14 @@ filter-bar {
     text-align: center;
 }
 
+.loading {
+    align-self: center;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: $gap;
+}
+
 .habit-group {
     margin: $gap;
     

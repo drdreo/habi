@@ -5,22 +5,30 @@
 
     <filter-bar></filter-bar>
 
-    @for (habitGroup of filteredHabits() | groupBy: "frequency" | sortByFrequency; track $index) {
-        <div class="habit-group">
-            <h3 mat-subheader>{{ habitGroup.key }}</h3>
+    @if (isLoading()) {
+        <div class="loading">
+            <mat-spinner diameter="30"></mat-spinner>
+            loading habits...
+        </div>
+    } @else {
+        @for (habitGroup of filteredHabits() | groupBy: "frequency" | sortByFrequency; track $index) {
+            <div class="habit-group">
+                <h3 mat-subheader>{{ habitGroup.key }}</h3>
 
-            <div class="habit-group__grid">
-                @for (habit of habitGroup.value; track habit.id) {
-                    <habit-card [habit]="habit"></habit-card>
-                }
+                <div class="habit-group__grid">
+                    @for (habit of habitGroup.value; track habit.id) {
+                        <habit-card [habit]="habit"></habit-card>
+                    }
+                </div>
             </div>
-        </div>
-    } @empty {
-        <div class="empty-state">
-            <h4>No habits found</h4>
-            <p>Add a new habit to get started</p>
-        </div>
+        } @empty {
+            <div class="empty-state">
+                <h4>No habits found</h4>
+                <p>Add a new habit to get started</p>
+            </div>
+        }
     }
+
 
     <!--        <mat-grid-list [cols]="numCols()" gutterSize="16" style="margin: 16px" rowHeight="2:1">-->
     <!--            @for (habit of habits(); track habit.id) {-->

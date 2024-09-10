@@ -42,6 +42,7 @@ for (let i = 0; i < 10; i++) {
 })
 export class HabitService {
     habits = signal<Habit[]>([]);
+    isLoading = signal(true);
 
     private readonly snackBar = inject(MatSnackBar);
     private readonly habitDataService = inject(HabitDataService);
@@ -49,6 +50,7 @@ export class HabitService {
 
     constructor() {
         this.habitDataService.getAllHabits().then((habits) => {
+            this.isLoading.set(false);
             this.habits.set(habits);
 
             this.checkTrackingState();
