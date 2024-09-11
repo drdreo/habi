@@ -1,52 +1,88 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, computed, input } from "@angular/core";
+import { MatTooltip } from "@angular/material/tooltip";
+import { Habit } from "../../habit.model";
+import { getCompletionColor, getPeriodKey } from "../../habit.utils";
 
-type Week = (number | null)[];
+type Day = {
+    color: string;
+    tooltip: string;
+    today: boolean;
+};
 
-const generateCalendarData = (startDate: Date, daysInMonth: number): Week[] => {
+type Week = (Day | null)[];
+
+function generateYearCalendarData(year: number, habit?: Habit): Week[] {
     const weeks: Week[] = [];
-    let currentWeek: Week = new Array(7).fill(null);
-    let dayOfWeek = (startDate.getDay() + 6) % 7; // Monday as start day
+    let currentWeek: Week = new Array(7).fill(null); // Start with an empty week
 
-    for (let day = 1; day <= daysInMonth; day++) {
-        currentWeek[dayOfWeek] = day;
-        dayOfWeek++;
+    const today = new Date();
+    const todayKey = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
 
-        // End of week or month
-        if (dayOfWeek > 6 || day === daysInMonth) {
-            weeks.push(currentWeek);
-            currentWeek = new Array(7).fill(null); // New week
-            dayOfWeek = 0;
+    for (let month = 0; month < 12; month++) {
+        const startMonth = new Date(year, month, 1);
+        const daysInMonth = new Date(startMonth.getFullYear(), month + 1, 0).getDate();
+        let monthDayOfWeek = (startMonth.getDay() + 6) % 7; // Adjust to Monday start
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const periodKey = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+            let color = "#f2f2f2";
+
+            let tooltip = periodKey;
+            if (habit) {
+                const completions = habit.completions.filter(
+                    (completion) => getPeriodKey("daily", new Date(completion.created_at)) === periodKey
+                );
+                if (completions.length > 0) {
+                    color = getCompletionColor(completions.length, habit.targetMetric.goal, habit.type);
+                    tooltip = `${periodKey}: ${completions.length} / ${habit.targetMetric.goal}`;
+                }
+            }
+            currentWeek[monthDayOfWeek] = {
+                tooltip,
+                color,
+                today: periodKey === todayKey
+            };
+            monthDayOfWeek++;
+
+            if (monthDayOfWeek > 6) {
+                // End of week
+                weeks.push(currentWeek);
+                currentWeek = new Array(7).fill(null); // Start a new week
+                monthDayOfWeek = 0;
+            }
         }
+
+        // After the end of the month, do not push the current week until it's filled by the next month
+    }
+
+    // push the last week if it contains any days
+    if (currentWeek.some((day) => day !== null)) {
+        weeks.push(currentWeek);
     }
 
     return weeks;
-};
+}
 
 @Component({
     selector: "habit-history-heatmap",
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, MatTooltip],
     templateUrl: "./habit-history-heatmap.component.html",
     styleUrl: "./habit-history-heatmap.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HabitHistoryHeatmapComponent {
-    weekdays = ["M", "T", "W", "T", "F", "S", "S"];
-    calendarData = signal<Week[][]>([[]]);
-
-    constructor() {
+    weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    calendarData = computed(() => {
         const year = new Date().getFullYear();
-
-        const calendarData: Week[][] = [];
-        for (let month = 0; month < 12; month++) {
-            const startDate = new Date(year, month, 1);
-            const daysInMonth = new Date(year, month + 1, 0).getDate(); // 0:day is the last day of last month, giving days in month
-            calendarData.push(generateCalendarData(startDate, daysInMonth));
+        let habit;
+        // TODO fix for other frequencies
+        if (this.habit().frequency === "daily") {
+            habit = this.habit();
         }
+        return generateYearCalendarData(year, habit);
+    });
 
-        this.calendarData.set(calendarData);
-
-        console.log(calendarData);
-    }
+    habit = input.required<Habit>();
 }
