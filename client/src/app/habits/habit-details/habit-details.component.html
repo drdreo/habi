@@ -4,18 +4,22 @@
         <habit-edit [habit]="habit()!"/>
 
         <div class="habit-stats">
-            Current: {{ h.currentCompletions }}
 
-            @if (h.frequency !== "finite") {
-                @for (stat of statistics(); track $index) {
-                    <br/>
-                    {{ stat.period }} - {{ stat.completions }}
-                }
-            } @else {
-                WIP: Finite habits
-            }
+            <habit-history-heatmap></habit-history-heatmap>
         </div>
     </div>
+
+    Current: {{ h.currentCompletions }}
+
+    @if (h.frequency !== "finite") {
+        @for (stat of statistics(); track $index) {
+            <br/>
+            {{ stat.period }} - {{ stat.completions }}
+        }
+    } @else {
+        WIP: Finite habits
+    }
+
 
     @if (isWatchingLocation()) {
         <button mat-button (click)="stopLocationTracking()">

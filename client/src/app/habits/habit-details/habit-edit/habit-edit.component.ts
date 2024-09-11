@@ -41,7 +41,10 @@ export class HabitEditComponent {
             description: new FormControl(description),
             frequency: new FormControl<HabitFrequency>(frequency, Validators.required),
             targetMetric: new FormGroup({
-                type: new FormControl<TargetMetricType>(targetMetric.type, Validators.required),
+                type: new FormControl<TargetMetricType>(
+                    { value: targetMetric.type, disabled: true },
+                    Validators.required
+                ),
                 goal: new FormControl<TargetMetricGoal>(targetMetric.goal, Validators.required),
                 unit: new FormControl(targetMetric.unit)
             }),

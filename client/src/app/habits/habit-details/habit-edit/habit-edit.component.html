@@ -23,9 +23,9 @@
 
         <div class="habit-target-metric" formGroupName="targetMetric">
             <div class="habit-target-metric__type">
-                <mat-button-toggle-group aria-label="Target Metric Type" formControlName="type" [disabled]="true">
-                    <mat-button-toggle value="quantity" [disabled]="true">Quantity</mat-button-toggle>
-                    <mat-button-toggle value="duration" [disabled]="true">Duration</mat-button-toggle>
+                <mat-button-toggle-group aria-label="Target Metric Type" formControlName="type">
+                    <mat-button-toggle value="quantity">Quantity</mat-button-toggle>
+                    <mat-button-toggle value="duration">Duration</mat-button-toggle>
                 </mat-button-toggle-group>
                 <p class="form-hint">The target of your habit</p>
             </div>

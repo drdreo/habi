@@ -30,7 +30,15 @@ export class HabitDataService {
 
     getAllHabits(): Promise<Habit[]> {
         return firstValueFrom(
-            this.http.get<HabitDto[]>(`${environment.origins.api}/api/habits`).pipe(map(mapHabitsDtoToHabits))
+            this.http.get<HabitDto[] | null>(`${environment.origins.api}/api/habits`).pipe(
+                map((habits) => {
+                    if (!habits) {
+                        console.warn("No habits available");
+                        return [];
+                    }
+                    return mapHabitsDtoToHabits(habits);
+                })
+            )
         );
     }
 

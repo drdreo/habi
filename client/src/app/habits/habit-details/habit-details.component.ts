@@ -6,6 +6,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { ActivatedRoute } from "@angular/router";
 import { filter, switchMap } from "rxjs";
 import { map } from "rxjs/operators";
+import { HabitHistoryHeatmapComponent } from "../habit-history/habit-history-heatmap/habit-history-heatmap.component";
 import { Habit } from "../habit.model";
 import { HabitService } from "../habit.service";
 import { CompletionPeriod, getCompletionGroups } from "../habit.utils";
@@ -23,7 +24,14 @@ function mapToStatistics(habit: Habit | null): CompletionPeriod[] | undefined {
 @Component({
     selector: "app-habit-details",
     standalone: true,
-    imports: [CommonModule, MatButtonModule, MatIconModule, MapComponent, HabitEditComponent],
+    imports: [
+        CommonModule,
+        MatButtonModule,
+        MatIconModule,
+        MapComponent,
+        HabitEditComponent,
+        HabitHistoryHeatmapComponent
+    ],
     templateUrl: "./habit-details.component.html",
     styleUrl: "./habit-details.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush

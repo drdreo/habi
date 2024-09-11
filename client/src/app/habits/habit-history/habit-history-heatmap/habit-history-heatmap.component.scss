@@ -1,0 +1,38 @@
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 1fr);
+    grid-auto-rows: auto;
+    
+    font-size: 8px;
+    font-weight: bold;
+}
+
+.weekdays-row {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 2px;
+    
+    .weekday-label {
+        width: 20px
+    }
+}
+
+.day-cell {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+}
+
+.day-cell.filled {
+    background-color: lightgreen;
+}
+
+.day-cell.empty {
+    background-color: #f0f0f0;
+}

@@ -1,0 +1,36 @@
+<div class="calendar-grid">
+    <!-- Weekday Labels -->
+    @for (weekDay of weekdays; let weekdayIndex = $index; track weekdayIndex) {
+        <div class="weekdays-row">
+            <div class="weekday-label">{{ weekDay }}</div>
+            @for (month of calendarData(); let monthIndex = $index; track monthIndex) {
+                @for (week of month; track $index) {
+                    <div class="week-column">
+                        @if (week[weekdayIndex] !== null) {
+                            <div class="day-cell"
+                                 [ngClass]="{ filled: week[weekdayIndex], empty: !week[weekdayIndex] }">
+                                {{ week[weekdayIndex] || "" }}
+                            </div>
+                        } @else {
+                            <div class="day-cell empty"></div>
+                        }
+                    </div>
+                }
+
+            }
+        </div>
+    }
+
+    <!-- Render All Weeks Combined -->
+    <!--    <div class="weeks-container">-->
+    <!--        @for (week of calendarData(); track $index) {-->
+    <!--            <div class="week-row">-->
+    <!--                @for (day of week; track $index) {-->
+    <!--                    <div class="day-cell" [ngClass]="{ filled: day, empty: !day }">-->
+    <!--                        {{ day || "" }}-->
+    <!--                    </div>-->
+    <!--                }-->
+    <!--            </div>-->
+    <!--        }-->
+    <!--    </div>-->
+</div>
