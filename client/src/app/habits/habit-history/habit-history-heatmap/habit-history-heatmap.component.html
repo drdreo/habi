@@ -7,7 +7,7 @@
             @for (week of calendarData(); let monthIndex = $index; track monthIndex) {
                 @let day = week[weekdayIndex];
                 @if (day) {
-                    <div class="day-cell" [style.background-color]="day.color" [class.today]="day.today"
+                    <div class="day-cell" [style.background-color]="day.color" [class.today]="day.current"
                          [matTooltip]="day.tooltip">
 
                     </div>

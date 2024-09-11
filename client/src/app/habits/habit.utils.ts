@@ -13,7 +13,7 @@ export type HistoryCompletion = {
 const COMPLETION_TARGET_COLOR_GOOD = "#ffdea2";
 const COMPLETION_COLOR_GOOD = { r: 54, g: 94, b: 157 };
 const COMPLETION_COLOR_BAD = { r: 200, g: 57, b: 55 };
-const COMPLETION_TARGET_COLOR_BAD = "red";
+const COMPLETION_TARGET_COLOR_BAD = "rgb(200, 8, 5)";
 
 export type CompletionPeriod = { period: string; completions: number };
 

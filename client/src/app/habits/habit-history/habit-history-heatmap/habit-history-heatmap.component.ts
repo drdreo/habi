@@ -4,20 +4,20 @@ import { MatTooltip } from "@angular/material/tooltip";
 import { Habit } from "../../habit.model";
 import { getCompletionColor, getPeriodKey } from "../../habit.utils";
 
-type Day = {
+type Period = {
     color: string;
     tooltip: string;
-    today: boolean;
+    current: boolean;
 };
 
-type Week = (Day | null)[];
+type Week = (Period | null)[];
 
 function generateYearCalendarData(year: number, habit?: Habit): Week[] {
     const weeks: Week[] = [];
     let currentWeek: Week = new Array(7).fill(null); // Start with an empty week
 
     const today = new Date();
-    const todayKey = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+    const currentKey = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
 
     for (let month = 0; month < 12; month++) {
         const startMonth = new Date(year, month, 1);
@@ -26,23 +26,7 @@ function generateYearCalendarData(year: number, habit?: Habit): Week[] {
 
         for (let day = 1; day <= daysInMonth; day++) {
             const periodKey = `${year}-${(month + 1).toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
-            let color = "#f2f2f2";
-
-            let tooltip = periodKey;
-            if (habit) {
-                const completions = habit.completions.filter(
-                    (completion) => getPeriodKey("daily", new Date(completion.created_at)) === periodKey
-                );
-                if (completions.length > 0) {
-                    color = getCompletionColor(completions.length, habit.targetMetric.goal, habit.type);
-                    tooltip = `${periodKey}: ${completions.length} / ${habit.targetMetric.goal}`;
-                }
-            }
-            currentWeek[monthDayOfWeek] = {
-                tooltip,
-                color,
-                today: periodKey === todayKey
-            };
+            currentWeek[monthDayOfWeek] = getPeriodData(periodKey, currentKey, habit);
             monthDayOfWeek++;
 
             if (monthDayOfWeek > 6) {
@@ -62,6 +46,26 @@ function generateYearCalendarData(year: number, habit?: Habit): Week[] {
     }
 
     return weeks;
+}
+
+function getPeriodData(periodKey: string, currentKey: string, habit?: Habit): Period {
+    let color = "#f2f2f2";
+    let tooltip = periodKey;
+    if (habit) {
+        const completions = habit.completions.filter(
+            (completion) => getPeriodKey("daily", new Date(completion.created_at)) === periodKey
+        );
+        if (completions.length > 0) {
+            color = getCompletionColor(completions.length, habit.targetMetric.goal, habit.type);
+            tooltip = `${periodKey}: ${completions.length} / ${habit.targetMetric.goal}`;
+        }
+    }
+
+    return {
+        tooltip,
+        color,
+        current: periodKey === currentKey
+    };
 }
 
 @Component({
