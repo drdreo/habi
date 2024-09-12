@@ -15,6 +15,7 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, userId string, habit *HabitCreateInput) (*Habit, error)
+	AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error)
 	GetAll(ctx context.Context, userId string) (*[]Habit, error)
 	GetById(ctx context.Context, userId string, habitId string) (*Habit, error)
 	UpdateById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (*Habit, error)
@@ -126,6 +127,31 @@ func (r *habitRepository) Create(ctx context.Context, userId string, habitInput 
 
 	slog.Info("Successfully created habit", "habitId", habit.Id)
 	return &habit, nil
+}
+
+func (r *habitRepository) AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error) {
+	// timeout for the database operation
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	demoHabits := getDemoHabits(userId)
+	var docs []interface{}
+	for _, habit := range *demoHabits {
+		docs = append(docs, habit)
+	}
+	res, err := r.habitCollection.InsertMany(ctx, docs)
+	if err != nil {
+		slog.Warn("failed to create habit", "err", err)
+		return nil, err
+	}
+
+	// Patch the generated ObjectIDs to each habit
+	for i, insertedID := range res.InsertedIDs {
+		(*demoHabits)[i].Id = insertedID.(primitive.ObjectID)
+	}
+
+	slog.Info("Successfully added demo habits")
+	return demoHabits, nil
 }
 
 func (r *habitRepository) UpdateById(ctx context.Context, userId string, habitId string, habit *HabitUpdateInput) (*Habit, error) {

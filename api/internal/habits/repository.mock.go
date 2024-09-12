@@ -47,6 +47,11 @@ func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *Habit
 	}, nil
 }
 
+func (m *RepositoryMock) AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error) {
+	var habits []Habit
+	return &habits, nil
+}
+
 func (m *RepositoryMock) GetAll(ctx context.Context, userId string) (*[]Habit, error) {
 	var habits []Habit
 	return &habits, nil

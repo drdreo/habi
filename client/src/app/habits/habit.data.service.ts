@@ -48,6 +48,20 @@ export class HabitDataService {
         );
     }
 
+    addDemoHabits() {
+        return firstValueFrom(
+            this.http.post<HabitDto[] | null>(`${environment.origins.api}/api/habits/demo`, undefined).pipe(
+                map((habits) => {
+                    if (!habits) {
+                        console.error("Failed to add demo habits");
+                        return [];
+                    }
+                    return mapHabitsDtoToHabits(habits);
+                })
+            )
+        );
+    }
+
     updateHabit(habitId: string, habitInput: HabitUpdateInput): Promise<Habit> {
         return firstValueFrom(
             this.http

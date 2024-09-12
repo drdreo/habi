@@ -25,6 +25,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	mux.Handle("GET /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.getHabitsHandler)))
 	mux.Handle("GET /api/habits/{id}", auth.AuthMiddleware(http.HandlerFunc(s.getHabitByIdHandler)))
 	mux.Handle("POST /api/habits", auth.AuthMiddleware(http.HandlerFunc(s.createHabitHandler)))
+	mux.Handle("POST /api/habits/demo", auth.AuthMiddleware(http.HandlerFunc(s.addDemoHabitsHandler)))
 	mux.Handle("PUT /api/habits/{habitId}", auth.AuthMiddleware(http.HandlerFunc(s.updateHabitByIdHandler)))
 	mux.Handle("POST /api/habits/{habitId}/complete", auth.AuthMiddleware(http.HandlerFunc(s.completeHabitByIdHandler)))
 	mux.Handle("POST /api/habits/{id}/archive", auth.AuthMiddleware(http.HandlerFunc(s.archiveHabitByIdHandler)))
@@ -136,6 +137,26 @@ func (s *Server) createHabitHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(habit)
+}
+
+func (s *Server) addDemoHabitsHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("Handling AddDemoHabits request")
+	// Extract user ID from context
+	userId, ok := r.Context().Value("userId").(string)
+	if !ok {
+		http.Error(w, "failed to get user ID from context", http.StatusUnauthorized)
+		return
+	}
+	demoHabits, err := s.habitService.AddDemoHabits(r.Context(), userId)
+	if err != nil {
+		slog.Error("failed to add demo habits", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_ = json.NewEncoder(w).Encode(demoHabits)
 }
 
 func (s *Server) updateHabitByIdHandler(w http.ResponseWriter, r *http.Request) {

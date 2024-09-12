@@ -78,6 +78,14 @@ export class HabitService {
         return createdHabit;
     }
 
+    addDemoHabits() {
+        this.isLoading.set(true);
+        this.habitDataService.addDemoHabits().then((demoHabits) => {
+            this.isLoading.set(false);
+            this.habits.update((habits) => [...habits, ...demoHabits]);
+        });
+    }
+
     async updateHabit(habitId: string, habitInput: HabitUpdateInput) {
         const createdHabit = await this.habitDataService.updateHabit(habitId, habitInput);
 

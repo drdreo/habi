@@ -1,7 +1,7 @@
 import { BreakpointObserver, Breakpoints, LayoutModule } from "@angular/cdk/layout";
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from "@angular/core";
-import { MatIconButton } from "@angular/material/button";
+import { MatButton, MatIconButton } from "@angular/material/button";
 import { MatChipsModule } from "@angular/material/chips";
 import { MatDivider } from "@angular/material/divider";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -41,7 +41,8 @@ import { FiltersService } from "./filter-bar/filters.service";
         SortFrequencyPipe,
         RouterLink,
         MatProgressSpinner,
-        MatProgressBar
+        MatProgressBar,
+        MatButton
     ],
     templateUrl: "./home.component.html",
     styleUrl: "./home.component.scss",
@@ -73,5 +74,9 @@ export class HomeComponent {
             }
             console.log(result);
         });
+    }
+
+    addDemoHabits() {
+        this.habitService.addDemoHabits();
     }
 }

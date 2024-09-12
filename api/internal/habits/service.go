@@ -10,6 +10,7 @@ type Service interface {
 	GetAllHabits(ctx context.Context, userId string) (*[]Habit, error)
 	GetHabitById(ctx context.Context, userId string, habitId string) (*Habit, error)
 	CreateHabit(ctx context.Context, userId string, habitInput *HabitCreateInput) (*Habit, error)
+	AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error)
 	UpdateHabitById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (*Habit, error)
 	DeleteHabitById(ctx context.Context, userId string, habitId string) error
 	CompleteHabitById(ctx context.Context, userId string, habitId string) (*Habit, error)
@@ -61,6 +62,18 @@ func (s *service) CreateHabit(ctx context.Context, userId string, habitInput *Ha
 
 	return habit, nil
 }
+
+func (s *service) AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error) {
+	slog.Debug("Add demo habits")
+
+	habits, err := s.repo.AddDemoHabits(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return habits, nil
+}
+
 
 func (s *service) UpdateHabitById(ctx context.Context, userId string, habitId string, habit *HabitUpdateInput) (*Habit, error) {
 	slog.Debug("Update habit by id")
