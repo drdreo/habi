@@ -71,44 +71,37 @@ describe("HabitUtils", () => {
         it("should generate 5 days", () => {
             const periods = generatePeriods("daily", date, 5);
             expect(periods).toHaveLength(5);
-            expect(periods[0].period).toBe("2024-09-03");
-            expect(periods[1].period).toBe("2024-09-02");
-            expect(periods[2].period).toBe("2024-09-01");
-            expect(periods[3].period).toBe("2024-08-31");
-            expect(periods[4].period).toBe("2024-08-30");
+            const tests = ["2024-08-30", "2024-08-31", "2024-09-01", "2024-09-02", "2024-09-03"];
+            for (let i = 0; i < tests.length; i++) {
+                expect(periods[i].period).toBe(tests[i]);
+            }
         });
 
         it("should generate 5 weeks", () => {
             const periods = generatePeriods("weekly", date, 5);
             expect(periods).toHaveLength(5);
-            expect(periods[0].period).toBe("2024-W36");
-            expect(periods[1].period).toBe("2024-W35");
-            expect(periods[2].period).toBe("2024-W34");
-            expect(periods[3].period).toBe("2024-W33");
-            expect(periods[4].period).toBe("2024-W32");
+            const tests = ["2024-W32", "2024-W33", "2024-W34", "2024-W35", "2024-W36"];
+            for (let i = 0; i < tests.length; i++) {
+                expect(periods[i].period).toBe(tests[i]);
+            }
         });
 
         it("should generate 5 months", () => {
             const periods = generatePeriods("monthly", date, 5);
             expect(periods).toHaveLength(5);
-            expect(periods[0].period).toBe("2024-9");
-            expect(periods[1].period).toBe("2024-8");
-            expect(periods[2].period).toBe("2024-7");
-            expect(periods[3].period).toBe("2024-6");
-            expect(periods[4].period).toBe("2024-5");
+            const tests = ["2024-5", "2024-6", "2024-7", "2024-8", "2024-9"];
+            for (let i = 0; i < tests.length; i++) {
+                expect(periods[i].period).toBe(tests[i]);
+            }
         });
 
         it("should generate 12 months from last day", () => {
             const lastDayOfYear = new Date(1733007600000);
             const periods = generatePeriods("monthly", lastDayOfYear, 12);
             expect(periods).toHaveLength(12);
-            expect(periods[0].period).toBe("2024-12");
-            expect(periods[1].period).toBe("2024-11");
-            expect(periods[2].period).toBe("2024-10");
-            expect(periods[3].period).toBe("2024-9");
-            expect(periods[4].period).toBe("2024-8");
-            expect(periods[5].period).toBe("2024-7");
-            expect(periods[6].period).toBe("2024-6");
+            for (let i = 0; i < periods.length; i++) {
+                expect(periods[i].period).toBe(`2024-${i + 1}`);
+            }
         });
     });
 });
