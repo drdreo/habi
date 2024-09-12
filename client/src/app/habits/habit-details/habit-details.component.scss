@@ -8,8 +8,16 @@ h3 {
     display: grid;
     gap: $gap;
     grid-column-gap: $gap;
+    //grid-template-columns: 300px 1fr;
     grid-template-columns: 300px 1fr;
-    //grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     
+    @media (max-width: 900px) {
+        grid-template-columns: minmax(300px, 1fr);
+    }
     padding: $gap;
+    
+    .habit-stats {
+        display: inline-block;
+        overflow: hidden;
+    }
 }

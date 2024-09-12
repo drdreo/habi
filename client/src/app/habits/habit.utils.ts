@@ -8,6 +8,7 @@ export type HistoryCompletion = {
     color: string;
     tooltip: string;
     period: string;
+    current: boolean;
 };
 
 const COMPLETION_TARGET_COLOR_GOOD = "#ffdea2";
@@ -28,17 +29,16 @@ export function getPeriodKey(frequency: HabitFrequency, date: Date): string {
             return `${year}-W${weekNumber}`;
         }
         case "monthly": {
-            const month = new Date(date.setMonth(date.getMonth()));
-            return `${month.getFullYear()}-${month.getMonth() + 1}`;
+            return `${date.getFullYear()}-${date.getMonth() + 1}`;
         }
         default:
             throw new Error(`Invalid frequency ${frequency}`);
     }
 }
 
-export function generatePeriods(frequency: string, date: Date, limit = 5): CompletionPeriod[] {
+export function generatePeriods(frequency: string, date: Date, limit: number): CompletionPeriod[] {
     const periods: { period: string; completions: number }[] = [];
-    for (let i = 0; i < limit; i++) {
+    for (let i = limit - 1; i >= 0; i--) {
         let periodKey: string;
         const currentDate = new Date(date);
         switch (frequency) {
@@ -60,8 +60,8 @@ export function generatePeriods(frequency: string, date: Date, limit = 5): Compl
     return periods;
 }
 
-export function getCompletionGroups(habit: Habit, limit?: number): CompletionPeriod[] {
-    const completionPeriods = generatePeriods(habit.frequency, new Date(), limit);
+export function getCompletionPeriods(habit: Habit, date: Date, limit = 5): CompletionPeriod[] {
+    const completionPeriods = generatePeriods(habit.frequency, date, limit);
     habit.completions.forEach((completion) => {
         const periodKey = getPeriodKey(habit.frequency, new Date(completion.created_at));
         const period = completionPeriods.find((group) => group.period === periodKey);
@@ -94,22 +94,25 @@ export function getCompletionColor(completions: number, goal: number, type: Habi
     return `rgb(${newColor.r}, ${newColor.g}, ${newColor.b})`;
 }
 
-export function convertHabitToCompletion(habit: Habit): HistoryCompletion[] {
+export function convertHabitToCompletion(habit: Habit, date: Date, limit = 5): HistoryCompletion[] {
     if (!habit.completions || habit.frequency === "finite") {
         return [];
     }
 
-    const completionGroups = getCompletionGroups(habit);
+    const completionGroups = getCompletionPeriods(habit, date, limit);
     return completionGroups.map((completionGroup) => {
         const completions = completionGroup.completions;
         let goal = habit.targetMetric.goal;
         if (habit.targetMetric.type === "duration") {
             goal = 1;
         }
+        const currentKey = getPeriodKey(habit.frequency, new Date());
+        const current = currentKey === completionGroup.period;
         return {
             completions,
             color: getCompletionColor(completions, goal, habit.type),
             period: completionGroup.period,
+            current,
             tooltip: `${completionGroup.period}: ${completions} / ${goal}`
         };
     });
@@ -121,6 +124,7 @@ export function getHistoryCompletionMock(): HistoryCompletion {
         completions: mockValue++,
         tooltip: `${mockValue} / ${goal}`,
         color: getCompletionColor(mockValue, goal, "good"),
-        period: "mock"
+        period: "mock",
+        current: false
     };
 }

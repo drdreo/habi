@@ -69,7 +69,7 @@ describe("HabitUtils", () => {
     describe("generateLastFivePeriods", () => {
         const date = new Date("2024-09-03");
         it("should generate 5 days", () => {
-            const periods = generatePeriods("daily", date);
+            const periods = generatePeriods("daily", date, 5);
             expect(periods).toHaveLength(5);
             expect(periods[0].period).toBe("2024-09-03");
             expect(periods[1].period).toBe("2024-09-02");
@@ -79,7 +79,7 @@ describe("HabitUtils", () => {
         });
 
         it("should generate 5 weeks", () => {
-            const periods = generatePeriods("weekly", date);
+            const periods = generatePeriods("weekly", date, 5);
             expect(periods).toHaveLength(5);
             expect(periods[0].period).toBe("2024-W36");
             expect(periods[1].period).toBe("2024-W35");
@@ -89,13 +89,26 @@ describe("HabitUtils", () => {
         });
 
         it("should generate 5 months", () => {
-            const periods = generatePeriods("monthly", date);
+            const periods = generatePeriods("monthly", date, 5);
             expect(periods).toHaveLength(5);
             expect(periods[0].period).toBe("2024-9");
             expect(periods[1].period).toBe("2024-8");
             expect(periods[2].period).toBe("2024-7");
             expect(periods[3].period).toBe("2024-6");
             expect(periods[4].period).toBe("2024-5");
+        });
+
+        it("should generate 12 months from last day", () => {
+            const lastDayOfYear = new Date(1733007600000);
+            const periods = generatePeriods("monthly", lastDayOfYear, 12);
+            expect(periods).toHaveLength(12);
+            expect(periods[0].period).toBe("2024-12");
+            expect(periods[1].period).toBe("2024-11");
+            expect(periods[2].period).toBe("2024-10");
+            expect(periods[3].period).toBe("2024-9");
+            expect(periods[4].period).toBe("2024-8");
+            expect(periods[5].period).toBe("2024-7");
+            expect(periods[6].period).toBe("2024-6");
         });
     });
 });

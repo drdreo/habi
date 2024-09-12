@@ -44,8 +44,8 @@ type Habit struct {
 	Completions  []HabitCompletion `json:"completions" bson:"completions"`
 	// Mongo related stuff
 	Id        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
-	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
+	CreatedAt time.Time          `json:"createdAt" bson:"created_at"`
+	UpdatedAt time.Time          `json:"updatedAt" bson:"updated_at"`
 }
 
 // Completions are auto-archived by a Trigger after a certain limit

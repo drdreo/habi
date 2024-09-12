@@ -1,8 +1,16 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, computed, input } from "@angular/core";
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    ElementRef,
+    input,
+    viewChild
+} from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Habit } from "../../habit.model";
-import { getCompletionColor, getPeriodKey } from "../../habit.utils";
+import { convertHabitToCompletion, getCompletionColor, getPeriodKey } from "../../habit.utils";
 
 type Period = {
     color: string;
@@ -10,11 +18,11 @@ type Period = {
     current: boolean;
 };
 
-type Week = (Period | null)[];
+type Periods = (Period | null)[];
 
-function generateYearCalendarData(year: number, habit?: Habit): Week[] {
-    const weeks: Week[] = [];
-    let currentWeek: Week = new Array(7).fill(null); // Start with an empty week
+function generateDailyCalendarData(year: number, habit?: Habit): Periods[] {
+    const weeks: Periods[] = [];
+    let currentWeek: Periods = new Array(7).fill(null); // Start with an empty week
 
     const today = new Date();
     const currentKey = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
@@ -76,17 +84,50 @@ function getPeriodData(periodKey: string, currentKey: string, habit?: Habit): Pe
     styleUrl: "./habit-history-heatmap.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class HabitHistoryHeatmapComponent {
-    weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export class HabitHistoryHeatmapComponent implements AfterViewInit {
+    weekdays = computed(() => {
+        const habit = this.habit();
+        if (habit.frequency === "daily") {
+            return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        } else if (habit.frequency === "weekly") {
+            return ["Weeks"];
+        } else if (habit.frequency === "monthly") {
+            return ["Months"];
+        }
+        return [];
+    });
     calendarData = computed(() => {
         const year = new Date().getFullYear();
-        let habit;
-        // TODO fix for other frequencies
-        if (this.habit().frequency === "daily") {
-            habit = this.habit();
+        const habit = this.habit();
+        if (habit.frequency === "daily") {
+            return generateDailyCalendarData(year, habit);
         }
-        return generateYearCalendarData(year, habit);
+        return [];
+    });
+
+    yearData = computed(() => {
+        const habit = this.habit();
+        if (habit.frequency === "weekly") {
+            return convertHabitToCompletion(habit, new Date(new Date().getFullYear(), 11, 1), 52); // most years have 52 weeks
+        } else if (habit.frequency === "monthly") {
+            return convertHabitToCompletion(habit, new Date(new Date().getFullYear(), 11, 1), 12);
+        }
+        return [];
     });
 
     habit = input.required<Habit>();
+    calendarGrid = viewChild<ElementRef<HTMLElement>>("calendarGrid");
+
+    ngAfterViewInit() {
+        this.scrollToTodayCell();
+    }
+
+    scrollToTodayCell() {
+        const currentCell = this.calendarGrid()?.nativeElement?.querySelector(".current");
+        if (!currentCell) {
+            console.log("Tried to scroll to current period, but not found");
+            return;
+        }
+        currentCell.scrollIntoView({ inline: "center" });
+    }
 }

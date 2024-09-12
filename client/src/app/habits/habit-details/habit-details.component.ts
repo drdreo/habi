@@ -1,25 +1,14 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from "@angular/core";
-import { toObservable, toSignal } from "@angular/core/rxjs-interop";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { ActivatedRoute } from "@angular/router";
-import { filter, switchMap } from "rxjs";
-import { map } from "rxjs/operators";
 import { HabitHistoryHeatmapComponent } from "../habit-history/habit-history-heatmap/habit-history-heatmap.component";
-import { Habit } from "../habit.model";
 import { HabitService } from "../habit.service";
-import { CompletionPeriod, getCompletionGroups } from "../habit.utils";
 import { LocationService } from "../location.service";
 import { HabitEditComponent } from "./habit-edit/habit-edit.component";
 import { MapComponent } from "./maps/maps.component";
-
-function mapToStatistics(habit: Habit | null): CompletionPeriod[] | undefined {
-    if (!habit) {
-        return;
-    }
-    return getCompletionGroups(habit, 10);
-}
 
 @Component({
     selector: "app-habit-details",
@@ -46,13 +35,6 @@ export class HabitDetailsComponent {
         }
         return this.habitService.findHabit(id);
     });
-
-    statistics = toSignal(
-        toObservable(this.habit).pipe(
-            filter(Boolean),
-            switchMap((habit) => this.habitService.getHabitById(habit.id).pipe(map(mapToStatistics)))
-        )
-    );
 
     private habitService = inject(HabitService);
     private locationService = inject(LocationService);

@@ -1,9 +1,14 @@
-$today-highlight-color: #aa14eb;
+$today-highlight-color: #b81bfb;
 $cell-gap: 3px;
+
+:host {
+    display: block;
+    overflow-x: auto;
+    padding: 1px;
+}
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 1fr);
     grid-auto-rows: auto;
 
     font-size: 8px;
@@ -18,10 +23,12 @@ $cell-gap: 3px;
 
     .weekday-label {
         width: 25px;
+        position: sticky;
+        left: 0;
     }
 }
 
-.day-cell {
+.period-cell {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -32,9 +39,8 @@ $cell-gap: 3px;
     height: 12px;
     background-color: #f0f0f0;
     
-    user-select: none;
     
-    &.today {
+    &.current {
         border: 1px solid $today-highlight-color;
         margin: -1px;
     }

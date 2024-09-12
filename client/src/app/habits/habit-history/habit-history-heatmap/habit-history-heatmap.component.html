@@ -1,18 +1,31 @@
-<div class="calendar-grid">
-    @for (weekDay of weekdays; let weekdayIndex = $index; track weekdayIndex) {
+<div class="calendar-grid" #calendarGrid>
+    @for (weekDay of weekdays(); let weekdayIndex = $index; track weekdayIndex) {
         <div class="weekdays-row">
             <div class="weekday-label">{{ weekDay }}</div>
 
-            <!-- Loop over each week to extract the day corresponding to the current weekday -->
-            @for (week of calendarData(); let monthIndex = $index; track monthIndex) {
-                @let day = week[weekdayIndex];
-                @if (day) {
-                    <div class="day-cell" [style.background-color]="day.color" [class.today]="day.current"
-                         [matTooltip]="day.tooltip">
-
-                    </div>
-                } @else {
-                    <div class="day-cell empty"></div>
+            @if (habit().frequency === "daily") {
+                <!-- Loop over each week to extract the day corresponding to the current weekday -->
+                @for (week of calendarData(); let monthIndex = $index; track monthIndex) {
+                    @let day = week[weekdayIndex] ;
+                    @if (day) {
+                        <div
+                                class="period-cell"
+                                [style.background-color]="day.color"
+                                [class.current]="day.current"
+                                [matTooltip]="day.tooltip"
+                        ></div>
+                    } @else {
+                        <div class="period-cell empty"></div>
+                    }
+                }
+            } @else {
+                @for (period of yearData(); track period.period) {
+                    <div
+                            class="period-cell"
+                            [class.current]="period.current"
+                            [matTooltip]="period.tooltip"
+                            [style.background-color]="period.color"
+                    ></div>
                 }
             }
         </div>

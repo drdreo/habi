@@ -19,6 +19,6 @@ export class HabitHistoryCompactComponent {
     constructor() {
         // this.completions = signal(Array.from({ length: 5 }, getCompletionMock));
 
-        this.completions = computed(() => convertHabitToCompletion(this.habit()));
+        this.completions = computed(() => convertHabitToCompletion(this.habit(), new Date()));
     }
 }

@@ -1,4 +1,4 @@
-@let h = habit();
+@let h = habit() ;
 @if (h) {
     <div class="wrapper">
         <habit-edit [habit]="habit()!"/>
@@ -9,15 +9,6 @@
     </div>
 
     Current: {{ h.currentCompletions }}
-
-    @if (h.frequency !== "finite") {
-        @for (stat of statistics(); track $index) {
-            <br/>
-            {{ stat.period }} - {{ stat.completions }}
-        }
-    } @else {
-        WIP: Finite habits
-    }
 
 
     @if (isWatchingLocation()) {
