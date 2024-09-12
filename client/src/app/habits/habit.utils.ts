@@ -48,9 +48,15 @@ export function generatePeriods(frequency: string, date: Date, limit: number): C
             case "weekly":
                 periodKey = getPeriodKey(frequency, new Date(currentDate.setDate(currentDate.getDate() - 7 * i)));
                 break;
-            case "monthly":
-                periodKey = getPeriodKey(frequency, new Date(currentDate.setMonth(currentDate.getMonth() - i)));
+            case "monthly": {
+                const dayOfMonth = currentDate.getDate(); // Save the original day
+                currentDate.setDate(1); // Temporarily set to the 1st to avoid overflow
+                currentDate.setMonth(currentDate.getMonth() - i);
+                const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+                currentDate.setDate(Math.min(dayOfMonth, lastDayOfMonth)); // Reset to original day or last day of the month
+                periodKey = getPeriodKey(frequency, currentDate);
                 break;
+            }
             default:
                 throw new Error(`Invalid frequency ${frequency}`);
         }

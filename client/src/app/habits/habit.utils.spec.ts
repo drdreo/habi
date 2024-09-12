@@ -96,7 +96,7 @@ describe("HabitUtils", () => {
         });
 
         it("should generate 12 months from last day", () => {
-            const lastDayOfYear = new Date(1733007600000);
+            const lastDayOfYear = new Date(Date.UTC(2024, 11, 31)); // Using UTC to avoid time zone issues
             const periods = generatePeriods("monthly", lastDayOfYear, 12);
             expect(periods).toHaveLength(12);
             for (let i = 0; i < periods.length; i++) {
