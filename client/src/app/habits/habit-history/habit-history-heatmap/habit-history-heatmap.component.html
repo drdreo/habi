@@ -43,4 +43,13 @@
             }
         </div>
     }
+
+    <div class="explanation">
+
+        Less
+        @for (explanation of explanations(); let index = $index; track index) {
+            <div class="period-cell" [style.background-color]="explanation.color"></div>
+        }
+        More
+    </div>
 </div>

@@ -32,7 +32,7 @@ $cell-gap: 3px;
     display: flex;
     align-items: center;
     margin-bottom: $cell-gap;
-    
+
     //Empty cell for alignment with weekdays
     padding-left: 30px;
     
@@ -52,9 +52,22 @@ $cell-gap: 3px;
     height: 12px;
     background-color: #f0f0f0;
     
-    
     &.current {
         border: 1px solid $today-highlight-color;
         margin: -1px;
+    }
+}
+
+.explanation {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 30px;
+    
+    .period-cell {
+        margin-right: $cell-gap;
+        
+        &:first-child {
+            margin-left: $cell-gap;
+        }
     }
 }

@@ -121,6 +121,17 @@ export class HabitHistoryHeatmapComponent implements AfterViewInit {
     habit = input.required<Habit>();
     calendarGrid = viewChild<ElementRef<HTMLElement>>("calendarGrid");
 
+    explanations = computed(() => {
+        const { type } = this.habit();
+        return [
+            { color: getCompletionColor(0, 10, type) },
+            { color: getCompletionColor(4, 10, type) },
+            { color: getCompletionColor(6, 10, type) },
+            { color: getCompletionColor(8, 10, type) },
+            { color: getCompletionColor(10, 10, type) }
+        ];
+    });
+
     ngAfterViewInit() {
         this.scrollToTodayCell();
     }
