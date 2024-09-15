@@ -10,12 +10,13 @@ import {
 } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Habit } from "../../habit.model";
-import { convertHabitToCompletion, getCompletionColor, getPeriodKey } from "../../habit.utils";
+import { convertHabitToCompletion, getCompletionColor, getDateFromPeriodKey, getPeriodKey } from "../../habit.utils";
 
 type Period = {
     color: string;
     tooltip: string;
     current: boolean;
+    date?: Date;
 };
 
 type Periods = (Period | null)[];
@@ -59,6 +60,7 @@ function generateDailyCalendarData(year: number, habit?: Habit): Periods[] {
 function getPeriodData(periodKey: string, currentKey: string, habit?: Habit): Period {
     let color = "#f2f2f2";
     let tooltip = periodKey;
+    const date = getDateFromPeriodKey(periodKey);
     if (habit) {
         const completions = habit.completions.filter(
             (completion) => getPeriodKey("daily", new Date(completion.created_at)) === periodKey
@@ -72,7 +74,8 @@ function getPeriodData(periodKey: string, currentKey: string, habit?: Habit): Pe
     return {
         tooltip,
         color,
-        current: periodKey === currentKey
+        current: periodKey === currentKey,
+        date
     };
 }
 

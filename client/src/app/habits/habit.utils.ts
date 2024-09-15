@@ -36,6 +36,11 @@ export function getPeriodKey(frequency: HabitFrequency, date: Date): string {
     }
 }
 
+export function getDateFromPeriodKey(periodKey: string): Date {
+    const [year, month, day] = periodKey.split("-").map((part) => parseInt(part, 10));
+    return new Date(year, month - 1, day);
+}
+
 export function generatePeriods(frequency: string, date: Date, limit: number): CompletionPeriod[] {
     const periods: { period: string; completions: number }[] = [];
     for (let i = limit - 1; i >= 0; i--) {

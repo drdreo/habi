@@ -28,6 +28,19 @@ $cell-gap: 3px;
     }
 }
 
+.month-labels-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: $cell-gap;
+    
+    //Empty cell for alignment with weekdays
+    padding-left: 30px;
+    
+    .month-label {
+        width: 15px;
+    }
+}
+
 .period-cell {
     display: inline-flex;
     justify-content: center;
