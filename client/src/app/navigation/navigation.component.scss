@@ -23,7 +23,7 @@ $theme: m3-theme.$light-theme;
     flex-direction: column;
     justify-content: center;
     margin-bottom: 40px;
-
+    
     button {
         @include mat.fab-color($theme, $color-variant: tertiary);
         @include mat.fab-overrides(
@@ -41,7 +41,7 @@ mat-sidenav {
             container-width: 88px
         )
     );
-
+    
     .logo {
         @include mat.toolbar-overrides(
             $tokens: (
@@ -58,4 +58,11 @@ mat-sidenav-container {
             // TODO dark
         )
     );
+}
+
+.nav-bottom {
+    display: block;
+    position: absolute;
+    bottom: 16px;
+    width: 100%;
 }

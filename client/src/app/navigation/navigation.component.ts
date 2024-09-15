@@ -14,6 +14,7 @@ import { Observable } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
 import { CreateHabitComponent } from "../habits/create-habit/create-habit.component";
 import { NavigationButtonComponent } from "./navigation-button/navigation-button.component";
+import { UserProfileButtonComponent } from "./user-profile-button/user-profile-button.component";
 
 @Component({
     selector: "app-navigation",
@@ -31,7 +32,8 @@ import { NavigationButtonComponent } from "./navigation-button/navigation-button
         RouterLink,
         RouterLinkActive,
         NavigationButtonComponent,
-        MatTooltipModule
+        MatTooltipModule,
+        UserProfileButtonComponent
     ]
 })
 export class NavigationComponent {
