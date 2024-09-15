@@ -72,7 +72,6 @@ export class HomeComponent {
             if (result.matches) {
                 this.numCols.set(2);
             }
-            console.log(result);
         });
     }
 

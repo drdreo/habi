@@ -36,8 +36,6 @@ export class HabitStatsComponent {
             undefined as { key: string; value: number } | undefined
         );
 
-        console.dir(periodCompletions);
-
         return {
             total: totalCompletions,
             totalPeriods,

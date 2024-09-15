@@ -1,10 +1,18 @@
+@use "@angular/material" as mat;
+@use "../../../themes/m3-theme";
+
+$theme: m3-theme.$light-theme;
+@media (prefers-color-scheme: dark) {
+    $theme: m3-theme.$dark-theme;
+}
+
+$header-color: mat.get-theme-color($theme, "surface-tint");
 
 :host {
     display: block;
     overflow-x: auto;
     padding: 1px;
 }
-
 
 td,
 th {
@@ -16,6 +24,6 @@ th {
     padding-top: 8px;
     padding-bottom: 8px;
     text-align: left;
-    background-color: #04aa6d;
+    background-color: $header-color;
     color: white;
 }
