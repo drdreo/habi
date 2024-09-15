@@ -1,14 +1,14 @@
 @let h = habit() ;
 @if (h) {
     <div class="wrapper">
-        <habit-edit [habit]="habit()!"/>
+        <habit-edit [habit]="h"/>
 
         <div class="habit-stats">
-            <habit-history-heatmap [habit]="habit()!"></habit-history-heatmap>
+            <habit-history-heatmap [habit]="h"></habit-history-heatmap>
+            <habit-stats [habit]="h"/>
+
         </div>
     </div>
-
-    Current: {{ h.currentCompletions }}
 
 
     @if (isWatchingLocation()) {

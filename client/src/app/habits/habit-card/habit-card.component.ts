@@ -84,6 +84,13 @@ export class HabitCardComponent {
         }
         return `${currentCompletions} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
+    lastCompletion = computed(() => {
+        const { completions, targetMetric } = this.habit();
+        if (targetMetric.type === "duration") {
+            return undefined;
+        }
+        return completions[completions.length - 1]?.created_at;
+    });
 
     async completeHabit() {
         this.completeState.set("loading");

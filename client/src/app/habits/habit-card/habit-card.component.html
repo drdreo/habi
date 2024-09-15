@@ -14,19 +14,12 @@
         </button>
     </mat-card-header>
 
-    <!--    <mat-card-content>-->
-    <!--        <p>sarsarars asdas</p>-->
-    <!--    </mat-card-content>-->
-
-    <!--    <mat-card-footer class="habit-card__footer">-->
-    <!--        <mat-chip-set>-->
-    <!--            <mat-chip>Mark Completed</mat-chip>-->
-    <!--            <mat-chip>delete</mat-chip>-->
-    <!--        </mat-chip-set>-->
-    <!--    </mat-card-footer>-->
-
-    <mat-card-content>
-        <span>{{ progressTooltip() }}</span>
+    <mat-card-content class="habit-card__content">
+        <span class="progress">{{ progressTooltip() }}</span>
+        @if (lastCompletion()) {
+            <span class="last-completion"
+                  matTooltip="Last completion">{{ lastCompletion() | date: "dd.MM.YY HH:mm" }}</span>
+        }
     </mat-card-content>
 
     <habit-history-compact [habit]="habit()"></habit-history-compact>

@@ -1,0 +1,21 @@
+<table>
+    <thead>
+    <tr>
+        <th>Current</th>
+        <th>Last Completion</th>
+        <th>Total Completions</th>
+        <th>Average / Period</th>
+        <th>Tracked Periods</th>
+        <th>Best Period</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>{{ habit().currentCompletions }}</td>
+        <td>{{ stats().lastCompletion | date: "dd.MM.YY HH:mm" }}</td>
+        <td>{{ stats().total }}</td>
+        <td>{{ stats().averagePeriod }}</td>
+        <td>{{ stats().totalPeriods }}</td>
+        <td>{{ stats().bestPeriod }}</td>
+    </tbody>
+</table>

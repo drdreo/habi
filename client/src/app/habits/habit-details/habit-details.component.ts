@@ -5,6 +5,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatIconModule } from "@angular/material/icon";
 import { ActivatedRoute } from "@angular/router";
 import { HabitHistoryHeatmapComponent } from "../habit-history/habit-history-heatmap/habit-history-heatmap.component";
+import { HabitStatsComponent } from "../habit-stats/habit-stats.component";
 import { HabitService } from "../habit.service";
 import { LocationService } from "../location.service";
 import { HabitEditComponent } from "./habit-edit/habit-edit.component";
@@ -19,7 +20,8 @@ import { MapComponent } from "./maps/maps.component";
         MatIconModule,
         MapComponent,
         HabitEditComponent,
-        HabitHistoryHeatmapComponent
+        HabitHistoryHeatmapComponent,
+        HabitStatsComponent
     ],
     templateUrl: "./habit-details.component.html",
     styleUrl: "./habit-details.component.scss",
