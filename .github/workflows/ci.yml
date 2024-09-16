@@ -97,6 +97,8 @@ jobs:
                 token: '${{ github.token }}'
                 environment-url: ${{ steps.cloudflare-deploy.outputs.deployment-url }}
                 environment: 'habi (Production)'
+                production-environment: true
+                ref: master
 
             - name: "Docker: Log in to the Container registry"
               if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
