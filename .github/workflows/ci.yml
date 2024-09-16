@@ -99,7 +99,6 @@ jobs:
                 environment: 'habi (Production)'
                 production-environment: true
                 ref: master
-                auto-merge: true
                 initial-status: 'success'
 
             - name: "Docker: Log in to the Container registry"
