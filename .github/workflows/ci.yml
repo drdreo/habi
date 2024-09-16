@@ -76,6 +76,7 @@ jobs:
             - run: npx nx affected -t lint test build
 
             - name: "Cloudflare: deploy"
+              id: cloudflare-deploy
               if: ${{steps.nx_affected_client.outputs.is_affected == 'true'}}
               uses: cloudflare/wrangler-action@v3
               with:
@@ -83,6 +84,14 @@ jobs:
                 accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
                 command: pages deploy dist/client/browser --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME }}
                 wranglerVersion: '3'
+
+            - uses: chrnorm/deployment-action@v2
+              name: "GitHub: create deployment"
+              if: ${{steps.nx_affected_client.outputs.is_affected == 'true'}}
+              with:
+                token: '${{ github.token }}'
+                environment-url: ${{ steps.cloudflare-deploy.outputs.deployment-url }}
+                environment: production
 
             - name: Log in to the Container registry
               if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
