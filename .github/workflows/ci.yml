@@ -100,6 +100,7 @@ jobs:
                 production-environment: true
                 ref: master
                 auto-merge: true
+                initial-status: 'success'
 
             - name: "Docker: Log in to the Container registry"
               if: ${{steps.nx_affected_api.outputs.is_affected == 'true'}}
