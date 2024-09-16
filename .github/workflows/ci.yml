@@ -84,6 +84,7 @@ jobs:
                 accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
                 command: pages deploy dist/client/browser --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME }}
                 wranglerVersion: '3'
+                packageManager: pnpm
 
             - uses: chrnorm/deployment-action@v2
               name: "GitHub: create deployment"
