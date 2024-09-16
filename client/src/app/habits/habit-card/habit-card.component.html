@@ -9,42 +9,48 @@
             <!--                3 days-->
             <!--            </mat-card-subtitle>-->
         </mat-card-title-group>
-        <button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu" mat-icon-button>
+        <button
+                class="habit-card__menu-btn"
+                [matMenuTriggerFor]="menu"
+                aria-label="Example icon-button with a menu"
+                mat-icon-button
+        >
             <mat-icon>more_vert</mat-icon>
         </button>
     </mat-card-header>
 
     <mat-card-content class="habit-card__content">
+        <habit-history-compact [habit]="habit()"></habit-history-compact>
         <span class="progress">{{ progressTooltip() }}</span>
-        @if (lastCompletion()) {
-            <span class="last-completion"
-                  matTooltip="Last completion">{{ lastCompletion() | date: "dd.MM.YY HH:mm" }}</span>
-        }
     </mat-card-content>
 
-    <habit-history-compact [habit]="habit()"></habit-history-compact>
-
     <mat-card-actions align="end">
-        <button [routerLink]="['/app/habit', habit().id]" mat-button>Details</button>
+        <div class="last-completion" [matTooltip]="lastCompletion() | date: 'dd.MM.YY HH:mm'">
+            {{ lastCompletion() | timeAgo | async }}
+        </div>
 
-        @if (habit().targetMetric.type === "duration") {
-            @if (habit().isTracking) {
-                <button mat-button (click)="stopHabit()">Stop</button>
+        <div class="habit-card__actions">
+            <button [routerLink]="['/app/habit', habit().id]" mat-button>Details</button>
+
+            @if (habit().targetMetric.type === "duration") {
+                @if (habit().isTracking) {
+                    <button mat-button (click)="stopHabit()">Stop</button>
+                } @else {
+                    <button mat-button (click)="startHabit()">Start</button>
+                }
             } @else {
-                <button mat-button (click)="startHabit()">Start</button>
+                <button mat-button (click)="completeHabit()" [disabled]="!showCompleteButton()">
+                    @if (completeState() === "loading") {
+                        <mat-spinner diameter="20"></mat-spinner>
+                    } @else if (completeState() === "success") {
+                        <mat-icon class="complete-checkmark" @checkmarkAnimation>check</mat-icon>
+                    }
+                    @if (showCompleteButton()) {
+                        <span @fadeIn>Complete</span>
+                    }
+                </button>
             }
-        } @else {
-            <button mat-button (click)="completeHabit()" [disabled]="!showCompleteButton()">
-                @if (completeState() === "loading") {
-                    <mat-spinner diameter="20"></mat-spinner>
-                } @else if (completeState() === "success") {
-                    <mat-icon class="complete-checkmark" @checkmarkAnimation>check</mat-icon>
-                }
-                @if (showCompleteButton()) {
-                    <span @fadeIn>Complete</span>
-                }
-            </button>
-        }
+        </div>
     </mat-card-actions>
 
     <mat-card-footer>

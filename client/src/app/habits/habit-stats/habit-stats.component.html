@@ -1,26 +1,15 @@
-@if (habit().currentCompletions === 0) {
+@if (habit().completions.length === 0) {
     <p>No completions yet.</p>
 } @else {
-    <table>
-        <thead>
-        <tr>
-            <th>Current</th>
-            <th>Last Completion</th>
-            <th>Total Completions</th>
-            <th>Average / Period</th>
-            <th>Tracked Periods</th>
-            <th>Best Period</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>{{ habit().currentCompletions }}</td>
-            <td>{{ stats().lastCompletion | date: "dd.MM.YY HH:mm" }}</td>
-            <td>{{ stats().total }}</td>
-            <td>{{ stats().averagePeriod }}</td>
-            <td>{{ stats().totalPeriods }}</td>
-            <td>{{ stats().bestPeriod }}</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="stat-grid">
+        <stat-card [value]="habit().currentCompletions" label="Current Completions" icon="check_circle"></stat-card>
+        <stat-card
+                [value]="(stats().lastCompletion | date: 'dd.MM.YY HH:mm') ?? ''"
+                label="Last Completion"
+                icon="schedule"
+        ></stat-card>
+        <stat-card [value]="stats().totalPeriods" label="Periods Tracked" icon="calendar_today"></stat-card>
+        <stat-card [value]="stats().averagePeriod" label="Average per Period" icon="avg_time"></stat-card>
+        <stat-card [value]="stats().total" label="Total Completions" icon="done_all"></stat-card>
+    </div>
 }

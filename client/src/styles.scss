@@ -32,6 +32,8 @@ html {
     // @include mat.all-component-themes($theme); // remove since this imports all styles
     // Optimized theme imports
     @include mat.core-theme($theme);
+    //@include mat.typography-hierarchy($theme);
+    // Components
     @include mat.sidenav-theme($theme);
     @include mat.toolbar-theme($theme);
     @include mat.tooltip-theme($theme);

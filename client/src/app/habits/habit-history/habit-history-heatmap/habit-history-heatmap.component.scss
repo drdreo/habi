@@ -1,5 +1,15 @@
+@use "@angular/material" as mat;
+@use "../../../../themes/m3-theme";
+
+$theme: m3-theme.$light-theme;
+
+
 $today-highlight-color: #b81bfb;
-$cell-gap: 3px;
+$cell-gap: 2px;
+
+
+$label-font-size: mat.get-theme-typography($theme, label-small, $property: font-size);
+$label-font-weight: mat.get-theme-typography($theme, label-small, $property: font-weight);
 
 :host {
     display: block;
@@ -10,9 +20,9 @@ $cell-gap: 3px;
 .calendar-grid {
     display: grid;
     grid-auto-rows: auto;
-
-    font-size: 8px;
-    font-weight: bold;
+    
+    font-size: $label-font-size;
+    font-weight: $label-font-weight;
 }
 
 .weekdays-row {
@@ -31,13 +41,14 @@ $cell-gap: 3px;
 .month-labels-row {
     display: flex;
     align-items: center;
+    gap: $cell-gap;
     margin-bottom: $cell-gap;
 
     //Empty cell for alignment with weekdays
-    padding-left: 30px;
+    padding-left: 28px;
     
     .month-label {
-        width: 15px;
+        width: 12px;
     }
 }
 

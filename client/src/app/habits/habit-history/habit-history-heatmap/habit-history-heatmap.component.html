@@ -1,14 +1,13 @@
 <div class="calendar-grid" #calendarGrid>
-
     <!-- Month labels row -->
     <div class="month-labels-row">
         @for (weekDay of calendarData(); let weekdayIndex = $index; track weekdayIndex) {
-            @if (weekdayIndex === 0 || weekDay[0]?.date?.getMonth() !== calendarData()[weekdayIndex - 1][0]?.date?.getMonth()) {
-                <div class="month-label">{{ weekDay[0]?.date | date: 'MMMM' }}</div>
+            @if (weekdayIndex === 0 ||
+            weekDay[0]?.date?.getMonth() !== calendarData()[weekdayIndex - 1][0]?.date?.getMonth()) {
+                <div class="month-label">{{ weekDay[0]?.date | date: "MMMM" }}</div>
             } @else {
                 <div class="month-label"></div>
             }
-
         }
     </div>
 
@@ -19,7 +18,7 @@
             @if (habit().frequency === "daily") {
                 <!-- Loop over each week to extract the day corresponding to the current weekday -->
                 @for (week of calendarData(); track $index) {
-                    @let day = week[weekdayIndex] ;
+                @let day = week[weekdayIndex] ;
                     @if (day) {
                         <div
                                 class="period-cell"
@@ -45,7 +44,6 @@
     }
 
     <div class="explanation">
-
         Less
         @for (explanation of explanations(); let index = $index; track index) {
             <div class="period-cell" [style.background-color]="explanation.color"></div>

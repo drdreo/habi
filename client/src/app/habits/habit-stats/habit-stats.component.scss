@@ -6,6 +6,7 @@ $theme: m3-theme.$light-theme;
     $theme: m3-theme.$dark-theme;
 }
 
+$gap: 16px;
 $header-color: mat.get-theme-color($theme, "surface-tint");
 
 :host {
@@ -26,4 +27,11 @@ th {
     text-align: left;
     background-color: $header-color;
     color: white;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 8px;
+    padding: $gap;
 }

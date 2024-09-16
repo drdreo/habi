@@ -1,7 +1,10 @@
 @use "@angular/material" as mat;
 @use "../../../themes/m3-theme";
 
+$theme: m3-theme.$light-theme;
+
 $gap: 16px;
+$card-content-font: mat.get-theme-typography($theme, label-small, $property: font);
 
 :host {
     width: 100%;
@@ -17,28 +20,46 @@ $gap: 16px;
         white-space: nowrap;
     }
     
+    &__menu-btn {
+        margin: -10px;
+    }
+
     &__content {
         display: inline-flex;
         justify-content: space-between;
         align-items: center;
         
-        .last-completion {
-            font-size: 12px;
-        }
+        padding: $gap $gap 0;
+        
+        font: $card-content-font;
     }
-
+    
+    &__actions {
+    }
+    
     &__footer {
         padding: $gap;
     }
     
+    .last-completion {
+        font-size: 12px;
+        
+        padding-left: 8px;
+    }
+
     .complete-checkmark {
         @include mat.icon-color(m3-theme.$light-theme, $color-variant: primary);
     }
 }
 
-habit-history-compact {
-    bottom: calc($gap + 6px);
-    display: block;
-    left: $gap;
-    position: absolute;
+//
+//habit-history-compact {
+//    bottom: calc($gap + 6px);
+//    display: block;
+//    left: $gap;
+//    position: absolute;
+//}
+
+mat-card-actions {
+    justify-content: space-between;
 }

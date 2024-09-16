@@ -1,12 +1,13 @@
 import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, computed, input } from "@angular/core";
+import { StatCardComponent } from "../../utils/stat-card/stat-card.component";
 import { Habit } from "../habit.model";
 import { getPeriodKey } from "../habit.utils";
 
 @Component({
     selector: "habit-stats",
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, StatCardComponent],
     templateUrl: "./habit-stats.component.html",
     styleUrl: "./habit-stats.component.scss",
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -26,21 +27,11 @@ export class HabitStatsComponent {
         const totalPeriods = periodCompletions.size;
         const totalCompletions = habit.completions.length;
         const averagePerPeriod = totalCompletions / totalPeriods;
-        const bestPeriod = Array.from(periodCompletions.entries()).reduce(
-            (best, [key, value]) => {
-                if (!best || value > best.value) {
-                    return { key, value };
-                }
-                return best;
-            },
-            undefined as { key: string; value: number } | undefined
-        );
 
         return {
             total: totalCompletions,
             totalPeriods,
             averagePeriod: Math.round(averagePerPeriod),
-            bestPeriod: `${bestPeriod?.key ?? "N/A"} (${bestPeriod?.value ?? 0})`,
             lastCompletion: habit.completions[habit.completions.length - 1]?.created_at ?? "N/A"
         };
     });
