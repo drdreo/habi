@@ -7,8 +7,18 @@ $theme: m3-theme.$light-theme;
 }
 
 $stat-label-font: mat.get-theme-typography($theme, title-small, $property: font);
+$stat-title-color: mat.get-theme-color($theme, primary);
+
+mat-card-title {
+    color: $stat-title-color;
+}
 
 mat-card-subtitle {
     font: $stat-label-font;
     opacity: 0.6;
+    font-weight: 300;
+}
+
+mat-icon {
+    font-size: 36px;
 }
