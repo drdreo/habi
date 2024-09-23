@@ -59,7 +59,8 @@ export class HabitEditComponent {
     async updateHabit() {
         this.isSaving.set(true);
 
-        await this.habitService.updateHabit(this.habit().id, this.habitForm().value as HabitUpdateInput);
+        const habitUpdate = this.habitForm().getRawValue() as HabitUpdateInput;
+        await this.habitService.updateHabit(this.habit().id, habitUpdate);
         this.isSaving.set(false);
     }
 

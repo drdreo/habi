@@ -43,7 +43,6 @@ export type HabitDto = {
 export type Habit = {
     currentCompletions: number;
     isTracking?: boolean;
-    timeTracked?: number;
 } & HabitDto;
 
 export type TargetMetricGoal = number;
@@ -52,6 +51,7 @@ export type HabitType = "good" | "bad";
 export type HabitFrequency = "daily" | "weekly" | "monthly" | "finite";
 export type HabitCompletion = {
     created_at: string;
+    amount?: number;
 };
 
 export type HabitStatistics = {

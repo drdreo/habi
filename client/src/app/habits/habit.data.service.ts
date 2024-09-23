@@ -74,8 +74,12 @@ export class HabitDataService {
         return firstValueFrom(this.http.delete(`${environment.origins.api}/api/habits/${habitId}`));
     }
 
-    completeHabit(habitId: string) {
-        return firstValueFrom(this.http.post(`${environment.origins.api}/api/habits/${habitId}/complete`, undefined));
+    completeHabit(habitId: string, amount: number) {
+        return firstValueFrom(
+            this.http.post(`${environment.origins.api}/api/habits/${habitId}/complete`, {
+                amount
+            })
+        );
     }
 
     archiveHabit(habitId: string) {
@@ -129,5 +133,8 @@ function getHabitCurrentCompletions(habit: HabitDto): number {
             throw new Error("Invalid frequency");
     }
 
-    return habit.completions.filter((completion) => new Date(completion.created_at).getTime() >= startDate).length;
+    const currentPeriodCompletions = habit.completions.filter(
+        (completion) => new Date(completion.created_at).getTime() >= startDate
+    );
+    return currentPeriodCompletions.reduce((acc, completion) => acc + (completion.amount || 1), 0);
 }

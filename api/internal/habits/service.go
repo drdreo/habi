@@ -13,7 +13,7 @@ type Service interface {
 	AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error)
 	UpdateHabitById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (*Habit, error)
 	DeleteHabitById(ctx context.Context, userId string, habitId string) error
-	CompleteHabitById(ctx context.Context, userId string, habitId string) (*Habit, error)
+	CompleteHabitById(ctx context.Context, userId string, habitId string, habitCompletion *HabitCompletionInput) (*Habit, error)
 	ArchiveHabitById(ctx context.Context, userId string, habitId string) (*Habit, error)
 }
 
@@ -91,9 +91,9 @@ func (s *service) DeleteHabitById(ctx context.Context, userId string, habitId st
 	return s.repo.DeleteById(ctx, userId, habitId)
 }
 
-func (s *service) CompleteHabitById(ctx context.Context, userId string, habitId string) (*Habit, error) {
+func (s *service) CompleteHabitById(ctx context.Context, userId string, habitId string, habitCompletion *HabitCompletionInput) (*Habit, error) {
 	slog.Debug("Complete habit by id")
-	return s.repo.CompleteById(ctx, userId, habitId)
+	return s.repo.CompleteById(ctx, userId, habitId, habitCompletion)
 }
 
 func (s *service) ArchiveHabitById(ctx context.Context, userId string, habitId string) (*Habit, error) {

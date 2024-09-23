@@ -25,7 +25,7 @@ function getHabitMock(name: string): Habit {
             goal: 10
         },
         currentCompletions: 1,
-        completions: [{ created_at: new Date().toString() }],
+        completions: [{ created_at: new Date().toString(), amount: 1 }],
         createdAt: Date.now()
     };
 }
@@ -106,8 +106,8 @@ export class HabitService {
         this.habits.update((habits) => habits.filter((habit) => habit.id !== habitId));
     }
 
-    async completeHabit(habitId: string) {
-        await this.habitDataService.completeHabit(habitId);
+    async completeHabit(habitId: string, amount = 1) {
+        await this.habitDataService.completeHabit(habitId, amount);
 
         let goalReached = false;
         this.habits.update((habits) => {
@@ -115,16 +115,13 @@ export class HabitService {
                 if (habit.id !== habitId) {
                     return habit;
                 }
-                if (habit.targetMetric.type === "duration") {
-                    goalReached = (habit.timeTracked ?? 0) >= habit.targetMetric.goal;
-                } else {
-                    goalReached = habit.currentCompletions + 1 === habit.targetMetric.goal;
-                }
-                const tmpCompletion: HabitCompletion = { created_at: new Date().toString() };
+                goalReached = habit.currentCompletions + amount >= habit.targetMetric.goal;
+                const tmpCompletion: HabitCompletion = { created_at: new Date().toString(), amount };
                 return {
                     ...habit,
                     completions: [...habit.completions, tmpCompletion],
-                    currentCompletions: habit.currentCompletions + 1
+                    currentCompletions: habit.currentCompletions + amount,
+                    isTracking: false
                 };
             });
         });
@@ -150,31 +147,30 @@ export class HabitService {
             console.error("Habit not found");
             return;
         }
-        const timeTracked = await this.habitTrackingService.startTrackingHabit(habitId);
-        this.updateHabitTrackingState(habitId, true, timeTracked);
+        await this.habitTrackingService.startTrackingHabit(habitId);
+        this.updateHabitTrackingState(habitId, true);
     }
 
-    async stopHabit(habitId: string): Promise<boolean> {
+    async stopHabit(habitId: string) {
         const habit = this.habits().find((habit) => habit.id === habitId);
         if (!habit) {
             throw new Error("Habit not found");
         }
 
         const timeTracked = await this.habitTrackingService.stopTrackingHabit(habitId);
-        this.updateHabitTrackingState(habitId, false, timeTracked);
+        // this.updateHabitTrackingState(habitId, false, timeTracked);
 
-        if (timeTracked < habit.targetMetric.goal) {
-            console.log("Habit was not completed, time tracked: ", timeTracked);
-            return false;
-        }
-
-        if (habit.currentCompletions > 0) {
-            console.log("Habit was already completed");
-            return false;
-        }
-        console.log("Habit was completed");
-        await this.completeHabit(habitId);
-        return true;
+        // if (timeTracked < habit.targetMetric.goal) {
+        //     console.log("Habit was not completed, time tracked: ", timeTracked);
+        //     return false;
+        // }
+        //
+        // if (habit.currentCompletions > 0) {
+        //     console.log("Habit was already completed");
+        //     return false;
+        // }
+        // console.log("Habit was completed");
+        return this.completeHabit(habitId, timeTracked);
     }
 
     private async checkTrackingState() {
@@ -188,25 +184,22 @@ export class HabitService {
                 const isTrackingEntryExpired =
                     trackingEntry && trackingEntry.startTime + trackingExpiryDate < Date.now();
                 let isTracking;
-                let timeTracked;
                 if (isTrackingEntryExpired) {
                     console.log("Tracking entry expired");
                     this.habitTrackingService.deleteHabitTrackingEntry(trackingEntry.id);
                 }
                 if (trackingEntry && !isTrackingEntryExpired) {
                     isTracking = trackingEntry.isTracking;
-                    timeTracked = trackingEntry.timeTracked;
                 }
                 return {
                     ...habit,
-                    isTracking,
-                    timeTracked
+                    isTracking
                 };
             });
         });
     }
 
-    private updateHabitTrackingState(habitId: string, isTracking: boolean, timeTracked: number) {
+    private updateHabitTrackingState(habitId: string, isTracking: boolean) {
         this.habits.update((habits) => {
             return habits.map((habit: Habit) => {
                 if (habit.id !== habitId) {
@@ -214,8 +207,7 @@ export class HabitService {
                 }
                 return {
                     ...habit,
-                    isTracking,
-                    timeTracked
+                    isTracking
                 };
             });
         });

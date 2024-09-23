@@ -78,7 +78,7 @@ export function getCompletionPeriods(habit: Habit, date: Date, limit = 5): Compl
         const period = completionPeriods.find((group) => group.period === periodKey);
         // skip completions out of the period
         if (period) {
-            period.completions++;
+            period.completions += completion.amount || 1;
         }
     });
 
@@ -105,7 +105,7 @@ export function getCompletionColor(completions: number, goal: number, type: Habi
     return `rgb(${newColor.r}, ${newColor.g}, ${newColor.b})`;
 }
 
-export function convertHabitToCompletion(habit: Habit, date: Date, limit = 5): HistoryCompletion[] {
+export function convertHabitToHistoryCompletion(habit: Habit, date: Date, limit = 5): HistoryCompletion[] {
     if (!habit.completions || habit.frequency === "finite") {
         return [];
     }
@@ -113,10 +113,7 @@ export function convertHabitToCompletion(habit: Habit, date: Date, limit = 5): H
     const completionGroups = getCompletionPeriods(habit, date, limit);
     return completionGroups.map((completionGroup) => {
         const completions = completionGroup.completions;
-        let goal = habit.targetMetric.goal;
-        if (habit.targetMetric.type === "duration") {
-            goal = 1;
-        }
+        const goal = habit.targetMetric.goal;
         const currentKey = getPeriodKey(habit.frequency, new Date());
         const current = currentKey === completionGroup.period;
         return {
@@ -124,7 +121,7 @@ export function convertHabitToCompletion(habit: Habit, date: Date, limit = 5): H
             color: getCompletionColor(completions, goal, habit.type),
             period: completionGroup.period,
             current,
-            tooltip: `${completionGroup.period}: ${completions} / ${goal}`
+            tooltip: `${completionGroup.period}: ${Math.floor(completions)} / ${goal}`
         };
     });
 }

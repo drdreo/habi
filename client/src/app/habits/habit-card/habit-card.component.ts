@@ -57,13 +57,7 @@ import { HabitService } from "../habit.service";
 export class HabitCardComponent {
     habit = input.required<Habit>();
     habitProgress = computed(() => {
-        const { targetMetric, timeTracked, currentCompletions } = this.habit();
-        if (targetMetric.type === "duration") {
-            if (typeof timeTracked === "undefined") {
-                return 0;
-            }
-            return (timeTracked * 100) / targetMetric.goal;
-        }
+        const { targetMetric, currentCompletions } = this.habit();
         return (currentCompletions * 100) / targetMetric.goal;
     });
     habitTimer = signal(0);
@@ -76,13 +70,13 @@ export class HabitCardComponent {
     private intervalId: number | undefined;
 
     progressTooltip = computed(() => {
-        const { timeTracked, targetMetric, currentCompletions } = this.habit();
+        const { targetMetric, currentCompletions } = this.habit();
         if (targetMetric.type === "duration") {
             const habitTimer = this.habitTimer();
             if (this.intervalId) {
                 return `${convertSecondsToTime(habitTimer)} of ${targetMetric.goal}min`;
             }
-            return `${convertMinutesToTime(timeTracked ?? 0)} of ${targetMetric.goal}min`;
+            return `${convertMinutesToTime(currentCompletions)} of ${targetMetric.goal}min`;
         }
         return `${currentCompletions} of ${targetMetric.goal} ${targetMetric.unit}`;
     });
@@ -117,7 +111,7 @@ export class HabitCardComponent {
 
     startHabit() {
         this.habitService.startHabit(this.habit().id);
-        this.startHabitTimer(this.habit().timeTracked);
+        this.startHabitTimer(this.habit().currentCompletions);
     }
 
     async stopHabit() {
@@ -125,7 +119,7 @@ export class HabitCardComponent {
         this.stopHabitTimer();
     }
 
-    private startHabitTimer(timeTracked?: number) {
+    private startHabitTimer(timeTracked: number) {
         this.habitTimer.set(timeTracked ? Math.round(timeTracked * 60) : 0);
         this.intervalId = window.setInterval(() => {
             this.habitTimer.update((time) => time + 1);
@@ -135,7 +129,6 @@ export class HabitCardComponent {
     private stopHabitTimer() {
         clearInterval(this.intervalId);
         this.intervalId = undefined;
-        this.habitTimer.set(0);
     }
 }
 

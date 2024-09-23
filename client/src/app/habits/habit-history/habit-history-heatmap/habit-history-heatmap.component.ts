@@ -10,7 +10,12 @@ import {
 } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Habit } from "../../habit.model";
-import { convertHabitToCompletion, getCompletionColor, getDateFromPeriodKey, getPeriodKey } from "../../habit.utils";
+import {
+    convertHabitToHistoryCompletion,
+    getCompletionColor,
+    getDateFromPeriodKey,
+    getPeriodKey
+} from "../../habit.utils";
 
 type Period = {
     color: string;
@@ -62,13 +67,11 @@ function getPeriodData(periodKey: string, currentKey: string, habit?: Habit): Pe
     let tooltip = periodKey;
     const date = getDateFromPeriodKey(periodKey);
     if (habit) {
-        const completions = habit.completions.filter(
-            (completion) => getPeriodKey("daily", new Date(completion.created_at)) === periodKey
-        );
-        if (completions.length > 0) {
-            color = getCompletionColor(completions.length, habit.targetMetric.goal, habit.type);
-            tooltip = `${periodKey}: ${completions.length} / ${habit.targetMetric.goal}`;
-        }
+        const completions = habit.completions
+            .filter((completion) => getPeriodKey("daily", new Date(completion.created_at)) === periodKey)
+            .reduce((acc, completion) => acc + (completion.amount || 1), 0);
+        color = getCompletionColor(completions, habit.targetMetric.goal, habit.type);
+        tooltip = `${periodKey}: ${Math.round(completions)} / ${habit.targetMetric.goal}`;
     }
 
     return {
@@ -111,9 +114,9 @@ export class HabitHistoryHeatmapComponent implements AfterViewInit {
     yearData = computed(() => {
         const habit = this.habit();
         if (habit.frequency === "weekly") {
-            return convertHabitToCompletion(habit, new Date(new Date().getFullYear(), 11, 1), 52); // most years have 52 weeks
+            return convertHabitToHistoryCompletion(habit, new Date(new Date().getFullYear(), 11, 1), 52); // most years have 52 weeks
         } else if (habit.frequency === "monthly") {
-            return convertHabitToCompletion(habit, new Date(new Date().getFullYear(), 11, 1), 12);
+            return convertHabitToHistoryCompletion(habit, new Date(new Date().getFullYear(), 11, 1), 12);
         }
         return [];
     });

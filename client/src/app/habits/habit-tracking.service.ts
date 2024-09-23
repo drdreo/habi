@@ -39,34 +39,35 @@ export class HabitTrackingService {
         this.initDB();
     }
 
-    async startTrackingHabit(habitId: string): Promise<number> {
+    async startTrackingHabit(habitId: string) {
         const habitEntry = await this.getHabitTrackingEntry(habitId);
         if (habitEntry) {
             console.log("resuming tracking");
             habitEntry.startTime = Date.now();
             habitEntry.isTracking = true;
             await this.updateHabitTrackingEntry(habitEntry);
-            return habitEntry.timeTracked;
         } else {
             console.log("start new tracking");
             await this.addHabitTrackingEntry(habitId);
-            return 0;
         }
     }
 
+    // Returns time tracked in minutes
     async stopTrackingHabit(habitId: string) {
         console.log("stop tracking");
         const habitEntry = await this.getHabitTrackingEntry(habitId);
         if (!habitEntry) {
             throw new Error("Trying to stop tracking a habit that is not being tracked");
         }
-        if (habitEntry.isTracking) {
-            const timeTracked = (Date.now() - habitEntry.startTime) / 60000;
-            habitEntry.timeTracked += timeTracked;
-            habitEntry.isTracking = false;
-            await this.updateHabitTrackingEntry(habitEntry);
+        if (!habitEntry.isTracking) {
+            throw new Error("Trying to stop tracking a habit that is not being tracked");
         }
-        return habitEntry.timeTracked;
+        const timeTracked = (Date.now() - habitEntry.startTime) / 60_000; // in minutes
+        habitEntry.timeTracked += timeTracked;
+        habitEntry.isTracking = false;
+        await this.updateHabitTrackingEntry(habitEntry);
+
+        return timeTracked;
     }
 
     getHabitTrackingEntry(habitId: string) {

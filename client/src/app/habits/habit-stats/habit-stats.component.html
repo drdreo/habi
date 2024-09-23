@@ -2,7 +2,7 @@
     <p>No completions yet.</p>
 } @else {
     <div class="stat-grid">
-        <stat-card [value]="habit().currentCompletions" label="Current Completions" icon="check_circle"></stat-card>
+        <stat-card [value]="stats().currentCompletions" label="Current Completions" icon="check_circle"></stat-card>
         <stat-card
                 [value]="(stats().lastCompletion | date: 'dd.MM.YY HH:mm') ?? ''"
                 label="Last Completion"

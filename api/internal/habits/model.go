@@ -27,6 +27,10 @@ type HabitUpdateInput struct {
 	TargetMetric HabitTargetMetric `json:"targetMetric" bson:"target_metric"`
 }
 
+type HabitCompletionInput struct {
+	Amount float64 `json:"amount" bson:"amount"`
+}
+
 type HabitTargetMetric struct {
 	Type string `json:"type" bson:"type"`
 	Goal int    `json:"goal" bson:"goal"`
@@ -59,7 +63,7 @@ type ArchivedHabitCompletion struct {
 }
 
 type HabitCompletion struct {
-	//Goal    int                `json:"goal" bson:"goal"`
+	Amount    float64       `json:"amount" bson:"amount"`
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 }
 

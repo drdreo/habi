@@ -21,7 +21,7 @@ type Repository interface {
 	UpdateById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (*Habit, error)
 	DeleteById(ctx context.Context, userId string, habitId string) error
 	ArchiveById(ctx context.Context, userId string, habitId string) (*Habit, error)
-	CompleteById(ctx context.Context, userId string, habitId string) (*Habit, error)
+	CompleteById(ctx context.Context, userId string, habitId string, habitCompletion *HabitCompletionInput) (*Habit, error)
 }
 
 type habitRepository struct {
@@ -204,7 +204,7 @@ func (r *habitRepository) DeleteById(ctx context.Context, userId string, habitId
 	return nil
 }
 
-func (r *habitRepository) CompleteById(ctx context.Context, userId string, habitId string) (*Habit, error) {
+func (r *habitRepository) CompleteById(ctx context.Context, userId string, habitId string, habitCompletionInput *HabitCompletionInput) (*Habit, error) {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
@@ -225,6 +225,7 @@ func (r *habitRepository) CompleteById(ctx context.Context, userId string, habit
 
 	habitCompletion := HabitCompletion{
 		CreatedAt: time.Now(),
+		Amount:    habitCompletionInput.Amount,
 	}
 	id, _ := primitive.ObjectIDFromHex(habitId)
 	filter := bson.M{"user_id": userId, "_id": id}

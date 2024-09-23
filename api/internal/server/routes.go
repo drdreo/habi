@@ -218,7 +218,16 @@ func (s *Server) completeHabitByIdHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	habitCompletion, err := s.habitService.CompleteHabitById(r.Context(), userId, habitId)
+	var habitCompletion habits.HabitCompletionInput
+	err := json.NewDecoder(r.Body).Decode(&habitCompletion)
+	if err != nil {
+		slog.Error("failed to parse habit completion", "err", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+
+	habit, err := s.habitService.CompleteHabitById(r.Context(), userId, habitId, &habitCompletion)
 	if err != nil {
 		slog.Error("failed to complete habit", "err", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -226,7 +235,7 @@ func (s *Server) completeHabitByIdHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(habitCompletion)
+	_ = json.NewEncoder(w).Encode(habit)
 }
 
 func (s *Server) archiveHabitByIdHandler(w http.ResponseWriter, r *http.Request) {

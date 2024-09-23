@@ -25,11 +25,12 @@ export class HabitStatsComponent {
         });
 
         const totalPeriods = periodCompletions.size;
-        const totalCompletions = habit.completions.length;
+        const totalCompletions = habit.completions.reduce((acc, completion) => acc + (completion.amount || 1), 0);
         const averagePerPeriod = totalCompletions / totalPeriods;
 
         return {
-            total: totalCompletions,
+            currentCompletions: Math.round(habit.currentCompletions),
+            total: Math.round(totalCompletions),
             totalPeriods,
             averagePeriod: Math.round(averagePerPeriod),
             lastCompletion: habit.completions[habit.completions.length - 1]?.created_at ?? "N/A"

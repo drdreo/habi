@@ -2,7 +2,7 @@ import { CommonModule } from "@angular/common";
 import { ChangeDetectionStrategy, Component, computed, input, Signal } from "@angular/core";
 import { MatTooltip } from "@angular/material/tooltip";
 import { Habit } from "../../habit.model";
-import { convertHabitToCompletion, HistoryCompletion } from "../../habit.utils";
+import { convertHabitToHistoryCompletion, HistoryCompletion } from "../../habit.utils";
 
 @Component({
     selector: "habit-history-compact",
@@ -19,6 +19,6 @@ export class HabitHistoryCompactComponent {
     constructor() {
         // this.completions = signal(Array.from({ length: 5 }, getCompletionMock));
 
-        this.completions = computed(() => convertHabitToCompletion(this.habit(), new Date()));
+        this.completions = computed(() => convertHabitToHistoryCompletion(this.habit(), new Date()));
     }
 }
