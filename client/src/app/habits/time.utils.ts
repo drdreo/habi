@@ -1,14 +1,11 @@
 // Fucking JavaScript
 // https://www.geeksforgeeks.org/calculate-current-week-number-in-javascript/
 export function getWeekNumber(date: Date): number {
-    const currentDate = typeof date === "object" ? date : new Date();
-    const januaryFirst = new Date(currentDate.getFullYear(), 0, 1);
-    const daysToNextMonday = januaryFirst.getDay() === 1 ? 0 : (7 - januaryFirst.getDay()) % 7;
-    const nextMonday = new Date(currentDate.getFullYear(), 0, januaryFirst.getDate() + daysToNextMonday);
+    const januaryFirst = new Date(Date.UTC(date.getFullYear(), 0, 1));
+    const daysToNextMonday = januaryFirst.getUTCDay() === 1 ? 0 : (7 - januaryFirst.getUTCDay()) % 7;
+    const nextMonday = new Date(Date.UTC(date.getFullYear(), 0, januaryFirst.getUTCDate() + daysToNextMonday));
 
-    return currentDate > nextMonday
-        ? Math.ceil((currentDate.getTime() - nextMonday.getTime()) / (24 * 3600 * 1000) / 7)
-        : 1;
+    return date > nextMonday ? Math.ceil((date.getTime() - nextMonday.getTime()) / (24 * 3600 * 1000) / 7) : 1;
 }
 
 export function timeTillEndOfDay(): number {

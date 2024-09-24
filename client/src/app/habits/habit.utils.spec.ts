@@ -3,7 +3,7 @@ import { generatePeriods, getPeriodKey } from "./habit.utils";
 describe("HabitUtils", () => {
     beforeAll(() => {
         jest.useFakeTimers({
-            now: new Date(Date.UTC(2024, 9, 3, 12, 0, 0))
+            now: new Date(Date.UTC(2024, 8, 3, 12, 0, 0))
         });
     });
 
@@ -37,13 +37,13 @@ describe("HabitUtils", () => {
 
             const expected = "2024-W36";
             const dates = [
-                new Date("2024-09-02"), // monday
-                new Date("2024-09-03"),
-                new Date("2024-09-04"),
-                new Date("2024-09-05"),
-                new Date("2024-09-06"),
-                new Date("2024-09-07"),
-                new Date("2024-09-08") // sunday
+                new Date(Date.UTC(2024, 8, 2, 12, 0, 0)), // monday
+                new Date(Date.UTC(2024, 8, 3, 12, 0, 0)),
+                new Date(Date.UTC(2024, 8, 4, 12, 0, 0)),
+                new Date(Date.UTC(2024, 8, 5, 12, 0, 0)),
+                new Date(Date.UTC(2024, 8, 6, 12, 0, 0)),
+                new Date(Date.UTC(2024, 8, 7, 12, 0, 0)),
+                new Date(Date.UTC(2024, 8, 8, 12, 0, 0)) // sunday
             ];
             for (const date of dates) {
                 it(`should be same period key through Mon-Sun [${date.toLocaleDateString()}]`, () => {
