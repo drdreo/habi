@@ -2,71 +2,85 @@ import { generatePeriods, getPeriodKey } from "./habit.utils";
 
 describe("HabitUtils", () => {
     describe("getPeriodKey", () => {
-        let date: Date;
-
-        beforeEach(() => {
-            date = new Date("2024-09-03");
-        });
-
         describe("daily", () => {
             it("should get daily period key", () => {
+                const date = new Date("2024-09-03");
                 expect(getPeriodKey("daily", date)).toBe("2024-09-03");
             });
 
             it("should get daily period key for Jan", () => {
-                date = new Date("2024-01-01");
+                const date = new Date("2024-01-01");
                 expect(getPeriodKey("daily", date)).toBe("2024-01-01");
             });
 
             it("should get daily period key for NewYears", () => {
-                date = new Date("2024-12-31");
+                const date = new Date("2024-12-31");
                 expect(getPeriodKey("daily", date)).toBe("2024-12-31");
             });
         });
 
         describe("weekly", () => {
-            it("should get weekly period key", () => {
+            it("should get period key", () => {
+                const date = new Date("2024-09-03");
                 expect(getPeriodKey("weekly", date)).toBe("2024-W36");
             });
 
+            const expected = "2024-W36";
+            const dates = [
+                new Date("2024-09-02"), // monday
+                new Date("2024-09-03"),
+                new Date("2024-09-04"),
+                new Date("2024-09-05"),
+                new Date("2024-09-06"),
+                new Date("2024-09-07"),
+                new Date("2024-09-08") // sunday
+            ];
+            for (const date of dates) {
+                it(`should be same period key through Mon-Sun [${date.toLocaleDateString()}]`, () => {
+                    expect(getPeriodKey("weekly", date)).toBe(expected);
+                });
+            }
+
             it("should get weekly period key for Jan", () => {
-                date = new Date("2024-01-01");
+                const date = new Date("2024-01-01");
                 expect(getPeriodKey("weekly", date)).toBe("2024-W1");
             });
 
             it("should get weekly period key for NewYears", () => {
-                date = new Date("2024-12-31");
+                const date = new Date("2024-12-31");
                 expect(getPeriodKey("weekly", date)).toBe("2024-W53");
             });
 
             it("should get weekly period key for next year in same week", () => {
-                date = new Date("2025-01-02");
+                const date = new Date("2025-01-02");
                 expect(getPeriodKey("weekly", date)).toBe("2025-W1");
             });
         });
 
         describe("monthly", () => {
             it("should get a monthly period key", () => {
+                const date = new Date("2024-09-03");
                 expect(getPeriodKey("monthly", date)).toBe("2024-9");
             });
 
             it("should get monthly period key for Jan", () => {
-                date = new Date("2024-01-01");
+                const date = new Date("2024-01-01");
                 expect(getPeriodKey("monthly", date)).toBe("2024-1");
             });
 
             it("should get monthly period key for NewYears", () => {
-                date = new Date("2024-12-31");
+                const date = new Date("2024-12-31");
                 expect(getPeriodKey("monthly", date)).toBe("2024-12");
             });
         });
 
         it("should throw for a finite frequency", () => {
+            const date = new Date("2024-09-03");
             expect(() => getPeriodKey("finite", date)).toThrow();
         });
     });
 
-    describe("generateLastFivePeriods", () => {
+    describe("generatePeriods", () => {
         const date = new Date("2024-09-03");
         it("should generate 5 days", () => {
             const periods = generatePeriods("daily", date, 5);
