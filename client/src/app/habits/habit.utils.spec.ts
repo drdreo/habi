@@ -2,8 +2,9 @@ import { generatePeriods, getPeriodKey } from "./habit.utils";
 
 describe("HabitUtils", () => {
     beforeAll(() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date(Date.UTC(2024, 9, 3, 12, 0, 0)));
+        jest.useFakeTimers({
+            now: new Date(Date.UTC(2024, 9, 3, 12, 0, 0))
+        });
     });
 
     afterAll(() => {
