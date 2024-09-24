@@ -47,14 +47,14 @@ func (m *RepositoryMock) Create(ctx context.Context, userId string, habit *Habit
 	}, nil
 }
 
-func (m *RepositoryMock) AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error) {
+func (m *RepositoryMock) AddDemoHabits(ctx context.Context, userId string) ([]Habit, error) {
 	var habits []Habit
-	return &habits, nil
+	return habits, nil
 }
 
-func (m *RepositoryMock) GetAll(ctx context.Context, userId string) (*[]Habit, error) {
+func (m *RepositoryMock) GetAll(ctx context.Context, userId string) ([]Habit, error) {
 	var habits []Habit
-	return &habits, nil
+	return habits, nil
 }
 
 func (m *RepositoryMock) GetById(ctx context.Context, userId string, habitId string) (*Habit, error) {
@@ -69,7 +69,7 @@ func (m *RepositoryMock) DeleteById(ctx context.Context, userId string, habitId 
 	return nil
 }
 
-func (m *RepositoryMock) CompleteById(ctx context.Context, userId string, habitId string) (*Habit, error) {
+func (m *RepositoryMock) CompleteById(ctx context.Context, userId string, habitId string, habitCompletionInput *HabitCompletionInput) (*Habit, error) {
 	return &habitMock, nil
 }
 

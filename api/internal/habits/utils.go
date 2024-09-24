@@ -2,7 +2,7 @@ package habits
 
 import "time"
 
-func getDemoHabits(userId string) *[]Habit {
+func getDemoHabits(userId string) []Habit {
 	yesterday := time.Now().Add(-24 * time.Hour)
 	previousDay := yesterday.Add(-48 * time.Hour)
 	drinkHabit := Habit{
@@ -74,5 +74,5 @@ func getDemoHabits(userId string) *[]Habit {
 		UpdatedAt: time.Now(),
 	}
 
-	return &[]Habit{testHabit, drinkHabit, walkHabit}
+	return []Habit{testHabit, drinkHabit, walkHabit}
 }

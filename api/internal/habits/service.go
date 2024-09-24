@@ -7,10 +7,10 @@ import (
 )
 
 type Service interface {
-	GetAllHabits(ctx context.Context, userId string) (*[]Habit, error)
+	GetAllHabits(ctx context.Context, userId string) ([]Habit, error)
 	GetHabitById(ctx context.Context, userId string, habitId string) (*Habit, error)
 	CreateHabit(ctx context.Context, userId string, habitInput *HabitCreateInput) (*Habit, error)
-	AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error)
+	AddDemoHabits(ctx context.Context, userId string) ([]Habit, error)
 	UpdateHabitById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (*Habit, error)
 	DeleteHabitById(ctx context.Context, userId string, habitId string) error
 	CompleteHabitById(ctx context.Context, userId string, habitId string, habitCompletion *HabitCompletionInput) (*Habit, error)
@@ -25,7 +25,7 @@ func NewService(repo Repository) Service {
 	return &service{repo: repo}
 }
 
-func (s *service) GetAllHabits(ctx context.Context, userId string) (*[]Habit, error) {
+func (s *service) GetAllHabits(ctx context.Context, userId string) ([]Habit, error) {
 	slog.Debug("Get all habits")
 
 	habit, err := s.repo.GetAll(ctx, userId)
@@ -63,7 +63,7 @@ func (s *service) CreateHabit(ctx context.Context, userId string, habitInput *Ha
 	return habit, nil
 }
 
-func (s *service) AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error) {
+func (s *service) AddDemoHabits(ctx context.Context, userId string) ([]Habit, error) {
 	slog.Debug("Add demo habits")
 
 	habits, err := s.repo.AddDemoHabits(ctx, userId)

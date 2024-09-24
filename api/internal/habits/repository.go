@@ -15,8 +15,8 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, userId string, habit *HabitCreateInput) (*Habit, error)
-	AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error)
-	GetAll(ctx context.Context, userId string) (*[]Habit, error)
+	AddDemoHabits(ctx context.Context, userId string) ([]Habit, error)
+	GetAll(ctx context.Context, userId string) ([]Habit, error)
 	GetById(ctx context.Context, userId string, habitId string) (*Habit, error)
 	UpdateById(ctx context.Context, userId string, habitId string, habitUpdate *HabitUpdateInput) (*Habit, error)
 	DeleteById(ctx context.Context, userId string, habitId string) error
@@ -43,7 +43,7 @@ func NewRepository(db *mongo.Client) Repository {
 	}
 }
 
-func (r *habitRepository) GetAll(ctx context.Context, userId string) (*[]Habit, error) {
+func (r *habitRepository) GetAll(ctx context.Context, userId string) ([]Habit, error) {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
@@ -65,7 +65,7 @@ func (r *habitRepository) GetAll(ctx context.Context, userId string) (*[]Habit, 
 	for i, habit := range habits {
 		slog.Info("Habit "+strconv.Itoa(i), "habitId", habit.Id, "created_at", habit.CreatedAt, "completions", len(habit.Completions), "name", habit.Name)
 	}
-	return &habits, nil
+	return habits, nil
 }
 
 func (r *habitRepository) GetById(ctx context.Context, userId string, habitId string) (*Habit, error) {
@@ -129,14 +129,14 @@ func (r *habitRepository) Create(ctx context.Context, userId string, habitInput 
 	return &habit, nil
 }
 
-func (r *habitRepository) AddDemoHabits(ctx context.Context, userId string) (*[]Habit, error) {
+func (r *habitRepository) AddDemoHabits(ctx context.Context, userId string) ([]Habit, error) {
 	// timeout for the database operation
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	demoHabits := getDemoHabits(userId)
 	var docs []interface{}
-	for _, habit := range *demoHabits {
+	for _, habit := range demoHabits {
 		docs = append(docs, habit)
 	}
 	res, err := r.habitCollection.InsertMany(ctx, docs)
@@ -147,7 +147,7 @@ func (r *habitRepository) AddDemoHabits(ctx context.Context, userId string) (*[]
 
 	// Patch the generated ObjectIDs to each habit
 	for i, insertedID := range res.InsertedIDs {
-		(*demoHabits)[i].Id = insertedID.(primitive.ObjectID)
+		demoHabits[i].Id = insertedID.(primitive.ObjectID)
 	}
 
 	slog.Info("Successfully added demo habits")
