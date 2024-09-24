@@ -8,6 +8,7 @@ import { HabitHistoryHeatmapComponent } from "../habit-history/habit-history-hea
 import { HabitStatsComponent } from "../habit-stats/habit-stats.component";
 import { HabitService } from "../habit.service";
 import { LocationService } from "../location.service";
+import { HabitChartComponent } from "./habit-chart/habit-chart.component";
 import { HabitEditComponent } from "./habit-edit/habit-edit.component";
 import { MapComponent } from "./maps/maps.component";
 
@@ -21,7 +22,8 @@ import { MapComponent } from "./maps/maps.component";
         MapComponent,
         HabitEditComponent,
         HabitHistoryHeatmapComponent,
-        HabitStatsComponent
+        HabitStatsComponent,
+        HabitChartComponent
     ],
     templateUrl: "./habit-details.component.html",
     styleUrl: "./habit-details.component.scss",

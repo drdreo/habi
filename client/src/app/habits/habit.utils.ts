@@ -105,7 +105,7 @@ export function getCompletionColor(completions: number, goal: number, type: Habi
     return `rgb(${newColor.r}, ${newColor.g}, ${newColor.b})`;
 }
 
-export function convertHabitToHistoryCompletion(habit: Habit, date: Date, limit = 5): HistoryCompletion[] {
+export function convertHabitToHistoryCompletion(habit: Habit, date = new Date(), limit = 5): HistoryCompletion[] {
     if (!habit.completions || habit.frequency === "finite") {
         return [];
     }
