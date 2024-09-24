@@ -2,6 +2,8 @@ import { Route } from "@angular/router";
 import { AuthGuard } from "@auth0/auth0-angular";
 import { PageNotFoundComponent } from "./errors/not-found/not-found.component";
 import { LandingComponent } from "./landing/landing.component";
+import { PrivacyPolicyComponent } from "./terms/privacy-policy/privacy-policy.component";
+import { TermsOfServiceComponent } from "./terms/terms-of-service.component";
 
 export const appRoutes: Route[] = [
     { path: "", component: LandingComponent },
@@ -29,5 +31,7 @@ export const appRoutes: Route[] = [
             }
         ]
     },
+    { path: "tos", component: TermsOfServiceComponent },
+    { path: "pp", component: PrivacyPolicyComponent },
     { path: "**", component: PageNotFoundComponent }
 ];
