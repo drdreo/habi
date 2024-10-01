@@ -13,6 +13,7 @@ import { AuthService } from "@auth0/auth0-angular";
 import { Observable } from "rxjs";
 import { map, shareReplay } from "rxjs/operators";
 import { CreateHabitComponent } from "../habits/create-habit/create-habit.component";
+import { DarkThemeSwitchComponent } from "../utils/dark-theme-switch/dark-theme-switch.component";
 import { NavigationButtonComponent } from "./navigation-button/navigation-button.component";
 import { UserProfileButtonComponent } from "./user-profile-button/user-profile-button.component";
 
@@ -33,7 +34,8 @@ import { UserProfileButtonComponent } from "./user-profile-button/user-profile-b
         RouterLinkActive,
         NavigationButtonComponent,
         MatTooltipModule,
-        UserProfileButtonComponent
+        UserProfileButtonComponent,
+        DarkThemeSwitchComponent
     ]
 })
 export class NavigationComponent {
