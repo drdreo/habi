@@ -28,6 +28,9 @@ html {
     --completion-target-color--good: #ffdea2;
     --completion-target-color--bad: #c80805;
     
+    // Habit Stat Styles
+    --habit-stat-title-color: #{mat.get-theme-color(m3-theme.$light-theme, primary)};
+    
     // SideNav Styles
     #new-habit-button {
         @include mat.fab-color(m3-theme.$light-theme, $color-variant: tertiary);
@@ -59,6 +62,10 @@ html {
         // Habit Card Styles
         --completion-target-color--good: #cd8c16;
         --completion-target-color--bad: #c80805;
+        
+        // Habit Stat Styles
+        --habit-stat-title-color: #{mat.get-theme-color(m3-theme.$dark-theme, primary)};
+        
         
         // SideNav Styles
         @include mat.sidenav-overrides(
