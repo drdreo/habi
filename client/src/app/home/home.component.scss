@@ -1,4 +1,10 @@
 @use "@angular/material" as mat;
+@use "../../themes/m3-theme";
+
+$theme: m3-theme.$light-theme;
+@media (prefers-color-scheme: dark) {
+    $theme: m3-theme.$dark-theme;
+}
 
 $gap: 16px;
 
@@ -46,4 +52,9 @@ mat-progress-bar {
         gap: $gap;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     }
+}
+
+.link {
+    color: mat.get-theme-color($theme, "primary");
+    cursor: pointer;
 }

@@ -1,10 +1,4 @@
 @use "@angular/material" as mat;
-@use "../../themes/m3-theme";
-
-$theme: m3-theme.$light-theme;
-@media (prefers-color-scheme: dark) {
-    $theme: m3-theme.$dark-theme;
-}
 
 .sidenav-container {
     height: 100%;
@@ -24,8 +18,7 @@ $theme: m3-theme.$light-theme;
     justify-content: center;
     margin-bottom: 40px;
     
-    button {
-        @include mat.fab-color($theme, $color-variant: tertiary);
+    #new-habit-button {
         @include mat.fab-overrides(
             $tokens: (
                 container-elevation-shadow: 0
@@ -37,7 +30,6 @@ $theme: m3-theme.$light-theme;
 mat-sidenav {
     @include mat.sidenav-overrides(
         $tokens: (
-            container-background-color: #f2ecee,
             container-width: 88px
         )
     );
@@ -49,15 +41,6 @@ mat-sidenav {
             )
         );
     }
-}
-
-mat-sidenav-container {
-    @include mat.sidenav-overrides(
-        $tokens: (
-            content-background-color: #fefbff,
-            // TODO dark
-        )
-    );
 }
 
 .nav-bottom {

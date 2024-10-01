@@ -3,6 +3,7 @@
 // MATERIAL
 @use "@angular/material" as mat;
 @use "themes/m3-theme";
+@use "themes/mat-imports";
 
 @include mat.core();
 
@@ -14,59 +15,62 @@
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Symbols+Outlined|Material+Symbols+Rounded|");
 .material-icons {
     font-family: "Material Symbols Outlined", sans-serif;
-    
     font-variation-settings: "FILL" 1,
     "wght" 400,
     "GRAD" 0,
     "opsz" 20;
 }
 
-
 html {
-    $theme: m3-theme.$light-theme;
-    //@media (prefers-color-scheme: dark) {
-    //    $theme: m3-theme.$dark-theme;
-    //}
+    @include mat-imports.optimized(m3-theme.$light-theme);
     
-    // Apply the light theme by default
-    // @include mat.all-component-themes($theme); // remove since this imports all styles
-    // Optimized theme imports
-    @include mat.core-theme($theme);
-    //@include mat.typography-hierarchy($theme);
-    // Components
-    @include mat.sidenav-theme($theme);
-    @include mat.toolbar-theme($theme);
-    @include mat.tooltip-theme($theme);
-    @include mat.button-theme($theme);
-    @include mat.button-toggle-theme($theme);
-    @include mat.fab-theme($theme);
-    @include mat.icon-theme($theme);
-    @include mat.icon-button-theme($theme);
-    @include mat.list-theme($theme);
-    @include mat.grid-list-theme($theme);
-    @include mat.divider-theme($theme);
-    @include mat.dialog-theme($theme);
-    @include mat.chips-theme($theme);
-    @include mat.card-theme($theme);
-    @include mat.menu-theme($theme);
-    @include mat.progress-bar-theme($theme);
-    @include mat.progress-spinner-theme($theme);
-    @include mat.form-field-theme($theme);
-    @include mat.expansion-theme($theme);
-    @include mat.snack-bar-theme($theme);
-    @include mat.slide-toggle-theme($theme);
+    // SideNav Styles
+    #new-habit-button {
+        @include mat.fab-color(m3-theme.$light-theme, $color-variant: tertiary);
+    }
     
-    // maybe override menu colors
-    //$color: mat.get-theme-color(m3-theme.$light-theme, surface);
-    //@include mat.menu-overrides($tokens: (
-    //    container-color: $color,
-    //
-    //));
-
-    // When using system variables, remember to provide values for them
-    // or uncomment the lines below to generate them from the theme.
-    // @include mat.system-level-colors(theme.$light-theme);
-    // @include mat.system-level-typography(theme.$light-theme);
+    mat-sidenav {
+        @include mat.sidenav-overrides(
+            $tokens: (
+                content-background-color: #f2ecee
+            )
+        );
+    }
+    
+    mat-sidenav-container {
+        @include mat.sidenav-overrides(
+            $tokens: (
+                content-background-color: #fefbff,
+                container-background-color: #f2ecee
+            )
+        );
+    }
+    
+    body.dark-mode {
+        @include mat.all-component-colors(m3-theme.$dark-theme);
+        
+        // SideNav Styles
+        @include mat.sidenav-overrides(
+            $tokens: (
+                content-background-color: #141314
+            )
+        );
+        
+        #new-habit-button {
+            @include mat.fab-color(m3-theme.$dark-theme, $color-variant: tertiary);
+        }
+        
+        mat-sidenav-container {
+            @include mat.sidenav-overrides(
+                $tokens: (
+                    content-background-color: #141314,
+                    container-background-color: #211f21
+                )
+            );
+        }
+        
+        //--mat-sidenav-content-background-color: #e4e2e5;
+    }
 }
 
 html,

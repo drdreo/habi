@@ -1,0 +1,44 @@
+@use "@angular/material" as mat;
+
+
+// Apply the light theme by default
+// @include mat.all-component-themes($theme); // remove since this imports all styles
+@mixin optimized($theme) {
+    // Optimized theme imports
+    @include mat.core-theme($theme);
+    // @include mat.typography-hierarchy($theme);
+    // Components
+    @include mat.sidenav-theme($theme);
+    @include mat.toolbar-theme($theme);
+    @include mat.tooltip-theme($theme);
+    @include mat.button-theme($theme);
+    @include mat.button-toggle-theme($theme);
+    @include mat.fab-theme($theme);
+    @include mat.icon-theme($theme);
+    @include mat.icon-button-theme($theme);
+    @include mat.list-theme($theme);
+    @include mat.grid-list-theme($theme);
+    @include mat.divider-theme($theme);
+    @include mat.dialog-theme($theme);
+    @include mat.chips-theme($theme);
+    @include mat.card-theme($theme);
+    @include mat.menu-theme($theme);
+    @include mat.progress-bar-theme($theme);
+    @include mat.progress-spinner-theme($theme);
+    @include mat.form-field-theme($theme);
+    @include mat.expansion-theme($theme);
+    @include mat.snack-bar-theme($theme);
+    @include mat.slide-toggle-theme($theme);
+    
+    // maybe override menu colors
+    //$color: mat.get-theme-color(m3-theme.$light-theme, surface);
+    //@include mat.menu-overrides($tokens: (
+    //    container-color: $color,
+    //
+    //));
+    
+    // When using system variables, remember to provide values for them
+    // or uncomment the lines below to generate them from the theme.
+    // @include mat.system-level-colors(theme.$light-theme);
+    // @include mat.system-level-typography(theme.$light-theme);
+}

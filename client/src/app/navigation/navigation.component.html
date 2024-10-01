@@ -10,12 +10,11 @@
         <mat-toolbar class="logo">Logo</mat-toolbar>
 
         <div (click)="openCreateHabitDialog()" class="fab-button" matTooltip="Create new habit">
-            <button aria-label="Create new habit" mat-fab type="button">
+            <button aria-label="Create new habit" mat-fab type="button" id="new-habit-button">
                 <mat-icon aria-label="new habit button icon">add</mat-icon>
             </button>
         </div>
 
-        
         <div class="nav-buttons">
             <navigation-button icon="home" label="Home" link="/app/home"/>
             <navigation-button icon="rule" label="Missed" link="/app/missed"/>
