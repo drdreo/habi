@@ -46,10 +46,6 @@ $card-content-font: mat.get-theme-typography($theme, label-small, $property: fon
         
         padding-left: 8px;
     }
-
-    .complete-checkmark {
-        @include mat.icon-color(m3-theme.$light-theme, $color-variant: primary);
-    }
 }
 
 //
