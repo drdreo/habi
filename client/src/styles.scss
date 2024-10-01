@@ -23,12 +23,16 @@
 
 html {
     @include mat-imports.optimized(m3-theme.$light-theme);
-
+    
+    // Habit Card Styles
+    --completion-target-color--good: #ffdea2;
+    --completion-target-color--bad: #c80805;
+    
     // SideNav Styles
     #new-habit-button {
         @include mat.fab-color(m3-theme.$light-theme, $color-variant: tertiary);
     }
-
+    
     mat-sidenav {
         @include mat.sidenav-overrides(
             $tokens: (
@@ -36,7 +40,7 @@ html {
             )
         );
     }
-
+    
     mat-sidenav-container {
         @include mat.sidenav-overrides(
             $tokens: (
@@ -48,9 +52,13 @@ html {
     
     --nav-button-color: #{mat.get-theme-color(m3-theme.$light-theme, "on-surface")};
     --nav-button-background-active: #{mat.get-theme-color(m3-theme.$light-theme, "secondary-container")};
-
+    
     body.dark-mode {
         @include mat.all-component-colors(m3-theme.$dark-theme);
+        
+        // Habit Card Styles
+        --completion-target-color--good: #cd8c16;
+        --completion-target-color--bad: #c80805;
         
         // SideNav Styles
         @include mat.sidenav-overrides(
