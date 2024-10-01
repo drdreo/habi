@@ -15,6 +15,7 @@ const COMPLETION_TARGET_COLOR_GOOD = "var(--completion-target-color--good)";
 const COMPLETION_COLOR_GOOD = { r: 54, g: 94, b: 157 };
 const COMPLETION_COLOR_BAD = { r: 200, g: 57, b: 55 };
 const COMPLETION_TARGET_COLOR_BAD = "var(--completion-target-color--bad)";
+const COMPLETION_COLOR_ZERO = "var(--completion-color--zero)";
 
 export type CompletionPeriod = { period: string; completions: number };
 
@@ -91,7 +92,7 @@ export function getCompletionColor(completions: number, goal: number, type: Habi
     }
 
     if (completions === 0) {
-        return "#f2f2f2";
+        return COMPLETION_COLOR_ZERO;
     }
 
     const baseRGB = type === "bad" ? COMPLETION_COLOR_BAD : COMPLETION_COLOR_GOOD;

@@ -27,6 +27,7 @@ html {
     // Habit Card Styles
     --completion-target-color--good: #ffdea2;
     --completion-target-color--bad: #c80805;
+    --completion-color--zero: #f2f2f2;
     
     // Habit Stat Styles
     --habit-stat-title-color: #{mat.get-theme-color(m3-theme.$light-theme, primary)};
@@ -62,6 +63,7 @@ html {
         // Habit Card Styles
         --completion-target-color--good: #cd8c16;
         --completion-target-color--bad: #c80805;
+        --completion-color--zero: #1c1c1c;
         
         // Habit Stat Styles
         --habit-stat-title-color: #{mat.get-theme-color(m3-theme.$dark-theme, primary)};

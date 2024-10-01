@@ -61,7 +61,7 @@ $label-font-weight: mat.get-theme-typography($theme, label-small, $property: fon
 
     width: 12px;
     height: 12px;
-    background-color: #f0f0f0;
+    background-color: transparent;
     
     &.current {
         border: 1px solid $today-highlight-color;
