@@ -1,13 +1,7 @@
 @use "@angular/material" as mat;
 @use "../../../themes/m3-theme";
-
 $theme: m3-theme.$light-theme;
-@media (prefers-color-scheme: dark) {
-    $theme: m3-theme.$dark-theme;
-}
 
-$nav-button-color: mat.get-theme-color($theme, "on-surface");
-$nav-button-background-active: mat.get-theme-color($theme, "secondary-container");
 $nav-button-label-font: mat.get-theme-typography($theme, label-medium, "font");
 $nav-button-label-active-font-weight: bold;
 
@@ -18,7 +12,7 @@ a {
 
 .nav-button {
     align-items: center;
-    color: $nav-button-color;
+    color: var(--nav-button-color);
     display: flex;
     flex-direction: column;
 
@@ -44,7 +38,7 @@ a {
     
     &.active {
         button {
-            background-color: $nav-button-background-active;
+            background-color: var(--nav-button-background-active);
         }
         
         .label {
