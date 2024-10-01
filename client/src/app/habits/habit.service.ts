@@ -43,18 +43,26 @@ for (let i = 0; i < 10; i++) {
 export class HabitService {
     habits = signal<Habit[]>([]);
     isLoading = signal(true);
+    hasInitFailed = signal(false);
 
     private readonly snackBar = inject(MatSnackBar);
     private readonly habitDataService = inject(HabitDataService);
     private readonly habitTrackingService = inject(HabitTrackingService);
 
     constructor() {
-        this.habitDataService.getAllHabits().then((habits) => {
-            this.isLoading.set(false);
-            this.habits.set(habits);
+        this.habitDataService
+            .getAllHabits()
+            .then((habits) => {
+                this.isLoading.set(false);
+                this.habits.set(habits);
 
-            this.checkTrackingState();
-        });
+                this.checkTrackingState();
+            })
+            .catch((error) => {
+                console.error("Failed to load habits", error);
+                this.isLoading.set(false);
+                this.hasInitFailed.set(true);
+            });
         // this.habits.set(habitsMock);
     }
 

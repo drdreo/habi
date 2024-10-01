@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { MatSlideToggleChange, MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { SettingsService } from "./settings.service";
 
 @Component({
     selector: "app-settings",
@@ -11,16 +12,11 @@ import { MatSlideToggleChange, MatSlideToggleModule } from "@angular/material/sl
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsComponent {
-    darkModeEnabled = signal(localStorage.getItem("darkMode") === "true");
+    private settingsService = inject(SettingsService);
+
+    darkModeEnabled = this.settingsService.darkModeEnabled;
 
     toggleTheme($event: MatSlideToggleChange) {
-        const darkMode = $event.checked;
-        if (darkMode) {
-            document.body.classList.add("dark-mode");
-            localStorage.setItem("darkMode", "true");
-        } else {
-            document.body.classList.remove("dark-mode");
-            localStorage.setItem("darkMode", "false");
-        }
+        this.settingsService.toggleTheme($event);
     }
 }

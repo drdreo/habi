@@ -53,6 +53,7 @@ export class HomeComponent {
     // habits: Signal<Habit[]>;
     filteredHabits: Signal<Habit[]>;
     isLoading: Signal<boolean>;
+    hasInitFailed: Signal<boolean>;
 
     private habitService = inject(HabitService);
     private filtersService = inject(FiltersService);
@@ -61,6 +62,7 @@ export class HomeComponent {
     constructor() {
         // this.habits = this.habitService.habits;
         this.isLoading = this.habitService.isLoading;
+        this.hasInitFailed = this.habitService.hasInitFailed;
 
         this.filteredHabits = computed(() => {
             const habits = [...this.habitService.habits()];
@@ -77,5 +79,9 @@ export class HomeComponent {
 
     addDemoHabits() {
         this.habitService.addDemoHabits();
+    }
+
+    refreshPage() {
+        window.location.reload();
     }
 }

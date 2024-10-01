@@ -7,9 +7,7 @@
 
     @if (isLoading()) {
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <div class="loading">
-            loading habits...
-        </div>
+        <div class="loading">loading habits...</div>
     } @else {
         @for (habitGroup of filteredHabits() | groupBy: "frequency" | sortByFrequency; track $index) {
             <div class="habit-group">
@@ -22,15 +20,22 @@
                 </div>
             </div>
         } @empty {
-            <div class="empty-state">
-                <h4>No habits found</h4>
-                <p>Add a new habit to get started</p>
-                <p>or let me generate some habits to get started quickly</p>
-                <button mat-button (click)="addDemoHabits()">Add Demo Habits for me</button>
-            </div>
+            @if (hasInitFailed()) {
+                <div class="empty-state">
+                    <h4>Failed to load habits</h4>
+                    <p>Something went wrong while loading habits</p>
+                    <span class="link" (click)="refreshPage()">Try refreshing the page</span>
+                </div>
+            } @else {
+                <div class="empty-state">
+                    <h4>No habits found</h4>
+                    <p>Add a new habit to get started</p>
+                    <p>or let me generate some habits to get started quickly</p>
+                    <button mat-button (click)="addDemoHabits()">Add Demo Habits for me</button>
+                </div>
+            }
         }
     }
-
 
     <!--        <mat-grid-list [cols]="numCols()" gutterSize="16" style="margin: 16px" rowHeight="2:1">-->
     <!--            @for (habit of habits(); track habit.id) {-->
